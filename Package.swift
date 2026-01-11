@@ -9,6 +9,7 @@ extension String {
 extension Target.Dependency {
     static var rfc8446: Self { .target(name: .rfc8446) }
     static var standards: Self { .product(name: "Standard Library Extensions", package: "swift-standard-library-extensions") }
+    static var binary: Self { .product(name: "Binary Primitives", package: "swift-binary-primitives") }
     static var incits41986: Self { .product(name: "INCITS 4 1986", package: "swift-incits-4-1986") }
 }
 
@@ -26,6 +27,7 @@ let package = Package(
     ],
     dependencies: [
         .package(path: "../../swift-primitives/swift-standard-library-extensions"),
+        .package(path: "../../swift-primitives/swift-binary-primitives"),
         .package(path: "../swift-incits-4-1986"),
     ],
     targets: [
@@ -33,6 +35,7 @@ let package = Package(
             name: .rfc8446,
             dependencies: [
                 .standards,
+                .binary,
                 .incits41986,
             ]
         ),
