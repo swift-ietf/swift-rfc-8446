@@ -26,9 +26,9 @@ let package = Package(
         .library(name: .rfc8446, targets: [.rfc8446])
     ],
     dependencies: [
-        .package(path: "../../swift-primitives/swift-standard-library-extensions"),
-        .package(path: "../../swift-primitives/swift-binary-primitives"),
-        .package(path: "../../swift-foundations/swift-ascii"),
+        .package(url: "https://github.com/swift-primitives/swift-standard-library-extensions.git", from: "0.0.1"),
+        .package(url: "https://github.com/swift-primitives/swift-binary-primitives.git", from: "0.0.1"),
+        .package(url: "https://github.com/swift-foundations/swift-ascii.git", from: "0.0.1"),
     ],
     targets: [
         .target(
