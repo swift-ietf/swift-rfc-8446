@@ -38,7 +38,13 @@ let package = Package(
                 .binary,
                 .incits41986
             ]
-        )
+        ),
+        .testTarget(
+            name: "RFC 8446 Tests",
+            dependencies: [
+                "RFC 8446",
+            ]
+        ),
     ],
     swiftLanguageModes: [.v6]
 )
@@ -53,6 +59,7 @@ for target in package.targets where ![.system, .binary, .plugin, .macro].contain
         .enableUpcomingFeature("ExistentialAny"),
         .enableUpcomingFeature("InternalImportsByDefault"),
         .enableUpcomingFeature("MemberImportVisibility"),
+        .enableUpcomingFeature("NonisolatedNonsendingByDefault"),
         .enableExperimentalFeature("Lifetimes"),
         .enableExperimentalFeature("SuppressedAssociatedTypes"),
         .enableExperimentalFeature("SuppressedAssociatedTypesWithDefaults"),
