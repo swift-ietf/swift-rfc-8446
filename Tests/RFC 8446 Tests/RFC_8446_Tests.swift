@@ -18,36 +18,36 @@ struct RFC8446Tests {
 
     @Suite("Protocol Version Tests")
     struct ProtocolVersionTests {
-        @Test("TLS version values")
-        func tlsVersionValues() {
+        @Test
+        func `TLS version values`() {
             #expect(RFC_8446.ProtocolVersion.tls1_0.rawValue == 0x0301)
             #expect(RFC_8446.ProtocolVersion.tls1_1.rawValue == 0x0302)
             #expect(RFC_8446.ProtocolVersion.tls1_2.rawValue == 0x0303)
             #expect(RFC_8446.ProtocolVersion.tls1_3.rawValue == 0x0304)
         }
 
-        @Test("Legacy version is TLS 1.2")
-        func legacyVersion() {
+        @Test
+        func `Legacy version is TLS 1.2`() {
             #expect(RFC_8446.ProtocolVersion.legacy == .tls1_2)
         }
 
-        @Test("Version components")
-        func versionComponents() {
+        @Test
+        func `Version components`() {
             let v = RFC_8446.ProtocolVersion.tls1_3
             #expect(v.major == 3)
             #expect(v.minor == 4)
         }
 
-        @Test("Versions are comparable")
-        func versionsComparable() {
+        @Test
+        func `Versions are comparable`() {
             #expect(RFC_8446.ProtocolVersion.tls1_2 < RFC_8446.ProtocolVersion.tls1_3)
         }
     }
 
     @Suite("Content Type Tests")
     struct ContentTypeTests {
-        @Test("Content type values")
-        func contentTypeValues() {
+        @Test
+        func `Content type values`() {
             #expect(RFC_8446.ContentType.invalid.rawValue == 0)
             #expect(RFC_8446.ContentType.changeCipherSpec.rawValue == 20)
             #expect(RFC_8446.ContentType.alert.rawValue == 21)
@@ -58,8 +58,8 @@ struct RFC8446Tests {
 
     @Suite("Record Tests")
     struct RecordTests {
-        @Test("Create TLS record")
-        func createRecord() throws {
+        @Test
+        func `Create TLS record`() throws {
             let record = try RFC_8446.Record(
                 contentType: .handshake,
                 fragment: [1, 2, 3, 4]
@@ -70,8 +70,8 @@ struct RFC8446Tests {
             #expect(record.fragment == [1, 2, 3, 4])
         }
 
-        @Test("Serialize record")
-        func serializeRecord() throws {
+        @Test
+        func `Serialize record`() throws {
             let record = try RFC_8446.Record(
                 contentType: .applicationData,
                 fragment: [0x01, 0x02, 0x03]
@@ -88,8 +88,8 @@ struct RFC8446Tests {
             #expect(buffer[4] == 0x03) // length low byte
         }
 
-        @Test("Parse record")
-        func parseRecord() throws {
+        @Test
+        func `Parse record`() throws {
             let bytes: [UInt8] = [
                 22,         // handshake
                 0x03, 0x03, // TLS 1.2
@@ -104,8 +104,8 @@ struct RFC8446Tests {
             #expect(record.fragment == [1, 2, 3, 4])
         }
 
-        @Test("Reject oversized fragment")
-        func rejectOversizedFragment() {
+        @Test
+        func `Reject oversized fragment`() {
             let largeFragment = Array(repeating: UInt8(0), count: 16385)
 
             #expect(throws: RFC_8446.Record.Error.self) {
@@ -113,8 +113,8 @@ struct RFC8446Tests {
             }
         }
 
-        @Test("Record limits")
-        func recordLimits() {
+        @Test
+        func `Record limits`() {
             #expect(RFC_8446.Record.Limits.maxPlaintextLength == 16384)
             #expect(RFC_8446.Record.Limits.maxCiphertextLength == 16640)
             #expect(RFC_8446.Record.Limits.headerSize == 5)
@@ -123,21 +123,21 @@ struct RFC8446Tests {
 
     @Suite("Cipher Suite Tests")
     struct CipherSuiteTests {
-        @Test("TLS 1.3 cipher suite values")
-        func cipherSuiteValues() {
+        @Test
+        func `TLS 1.3 cipher suite values`() {
             #expect(RFC_8446.CipherSuite.aes128GcmSha256.rawValue == 0x1301)
             #expect(RFC_8446.CipherSuite.aes256GcmSha384.rawValue == 0x1302)
             #expect(RFC_8446.CipherSuite.chacha20Poly1305Sha256.rawValue == 0x1303)
         }
 
-        @Test("Cipher suite classification")
-        func cipherSuiteClassification() {
+        @Test
+        func `Cipher suite classification`() {
             #expect(RFC_8446.CipherSuite.aes128GcmSha256.isTLS13 == true)
             #expect(RFC_8446.CipherSuite(rawValue: 0x002F).isTLS13 == false)
         }
 
-        @Test("Cipher suite properties")
-        func cipherSuiteProperties() {
+        @Test
+        func `Cipher suite properties`() {
             let cs = RFC_8446.CipherSuite.aes256GcmSha384
             #expect(cs.aeadAlgorithm == "AES-256-GCM")
             #expect(cs.hashAlgorithm == "SHA-384")
@@ -147,28 +147,28 @@ struct RFC8446Tests {
 
     @Suite("Alert Tests")
     struct AlertTests {
-        @Test("Alert level values")
-        func alertLevelValues() {
+        @Test
+        func `Alert level values`() {
             #expect(RFC_8446.Alert.Level.warning.rawValue == 1)
             #expect(RFC_8446.Alert.Level.fatal.rawValue == 2)
         }
 
-        @Test("Alert description values")
-        func alertDescriptionValues() {
+        @Test
+        func `Alert description values`() {
             #expect(RFC_8446.Alert.Description.closeNotify.rawValue == 0)
             #expect(RFC_8446.Alert.Description.handshakeFailure.rawValue == 40)
             #expect(RFC_8446.Alert.Description.noApplicationProtocol.rawValue == 120)
         }
 
-        @Test("Create fatal alert")
-        func createFatalAlert() {
+        @Test
+        func `Create fatal alert`() {
             let alert = RFC_8446.Alert.fatal(.handshakeFailure)
             #expect(alert.level == .fatal)
             #expect(alert.alertDescription == .handshakeFailure)
         }
 
-        @Test("Serialize alert")
-        func serializeAlert() {
+        @Test
+        func `Serialize alert`() {
             let alert = RFC_8446.Alert.closeNotify
 
             var buffer: [UInt8] = []
@@ -182,16 +182,16 @@ struct RFC8446Tests {
 
     @Suite("Handshake Tests")
     struct HandshakeTests {
-        @Test("Handshake message type values")
-        func messageTypeValues() {
+        @Test
+        func `Handshake message type values`() {
             #expect(RFC_8446.Handshake.MessageType.clientHello.rawValue == 1)
             #expect(RFC_8446.Handshake.MessageType.serverHello.rawValue == 2)
             #expect(RFC_8446.Handshake.MessageType.certificate.rawValue == 11)
             #expect(RFC_8446.Handshake.MessageType.finished.rawValue == 20)
         }
 
-        @Test("Serialize handshake message")
-        func serializeHandshakeMessage() {
+        @Test
+        func `Serialize handshake message`() {
             let message = RFC_8446.Handshake.Message(
                 type: .clientHello,
                 body: [1, 2, 3, 4, 5]
@@ -210,8 +210,8 @@ struct RFC8446Tests {
 
     @Suite("Extension Tests")
     struct ExtensionTests {
-        @Test("Extension type values")
-        func extensionTypeValues() {
+        @Test
+        func `Extension type values`() {
             #expect(RFC_8446.Extension.ExtensionType.serverName.rawValue == 0)
             #expect(RFC_8446.Extension.ExtensionType.supportedGroups.rawValue == 10)
             #expect(RFC_8446.Extension.ExtensionType.signatureAlgorithms.rawValue == 13)
@@ -220,20 +220,20 @@ struct RFC8446Tests {
             #expect(RFC_8446.Extension.ExtensionType.keyShare.rawValue == 51)
         }
 
-        @Test("Named group values")
-        func namedGroupValues() {
+        @Test
+        func `Named group values`() {
             #expect(RFC_8446.Extension.NamedGroup.x25519.rawValue == 0x001D)
             #expect(RFC_8446.Extension.NamedGroup.secp256r1.rawValue == 0x0017)
         }
 
-        @Test("Signature scheme values")
-        func signatureSchemeValues() {
+        @Test
+        func `Signature scheme values`() {
             #expect(RFC_8446.Extension.SignatureScheme.ed25519.rawValue == 0x0807)
             #expect(RFC_8446.Extension.SignatureScheme.rsaPssRsaeSha256.rawValue == 0x0804)
         }
 
-        @Test("Serialize extension")
-        func serializeExtension() {
+        @Test
+        func `Serialize extension`() {
             let ext = RFC_8446.Extension.Data(
                 type: .serverName,
                 data: [0x00, 0x05, 0x68, 0x65, 0x6C, 0x6C, 0x6F] // "hello"
