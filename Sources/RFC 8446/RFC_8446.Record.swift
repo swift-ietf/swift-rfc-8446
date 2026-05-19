@@ -47,8 +47,8 @@ extension RFC_8446 {
         /// Legacy record version (always TLS 1.2 in TLS 1.3)
         public let legacyVersion: ProtocolVersion
 
-        /// Record fragment (plaintext or ciphertext)
-        public let fragment: [UInt8]
+        /// Record fragment (plaintext or ciphertext, opaque byte-domain)
+        public let fragment: [Byte]
 
         /// Creates a TLS record
         ///
@@ -58,7 +58,7 @@ extension RFC_8446 {
         /// - Throws: `Error.fragmentTooLarge` if fragment exceeds maximum size
         public init(
             contentType: ContentType,
-            fragment: [UInt8]
+            fragment: [Byte]
         ) throws(Error) {
             guard fragment.count <= Limits.maxPlaintextLength else {
                 throw Error.fragmentTooLarge(fragment.count)
@@ -68,12 +68,21 @@ extension RFC_8446 {
             self.fragment = fragment
         }
 
+        /// Stdlib-interop forwarder: construction from `[UInt8]` fragment.
+        @_disfavoredOverload
+        public init(
+            contentType: ContentType,
+            fragment: [UInt8]
+        ) throws(Error) {
+            try self.init(contentType: contentType, fragment: [Byte](fragment))
+        }
+
         /// Creates a TLS record WITHOUT validation
         init(
             __unchecked: Void,
             contentType: ContentType,
             legacyVersion: ProtocolVersion,
-            fragment: [UInt8]
+            fragment: [Byte]
         ) {
             self.contentType = contentType
             self.legacyVersion = legacyVersion
@@ -89,19 +98,20 @@ extension RFC_8446.Record: Binary.Serializable {
     public static func serialize<Buffer: RangeReplaceableCollection>(
         _ record: Self,
         into buffer: inout Buffer
-    ) where Buffer.Element == UInt8 {
-        // Content type (1 byte)
-        buffer.append(record.contentType.rawValue)
+    ) where Buffer.Element == Byte {
+        // Content type (ContentType.rawValue stays UInt8 in separate file
+        // scope; bridge via Byte()).
+        buffer.append(Byte(record.contentType.rawValue))
 
-        // Legacy version (2 bytes)
-        buffer.append(UInt8(record.legacyVersion.rawValue >> 8))
-        buffer.append(UInt8(record.legacyVersion.rawValue & 0xFF))
+        // Legacy version (UInt16 stays — assumed; Byte-primary
+        // bytes(endianness:)).
+        buffer.append(contentsOf: record.legacyVersion.rawValue.bytes(endianness: .big))
 
-        // Length (2 bytes)
-        buffer.append(UInt8(record.fragment.count >> 8))
-        buffer.append(UInt8(record.fragment.count & 0xFF))
+        // Length (UInt16 stays — assumed; Byte-primary bytes(endianness:)).
+        let length = UInt16(record.fragment.count)
+        buffer.append(contentsOf: length.bytes(endianness: .big))
 
-        // Fragment
+        // Fragment (opaque byte-domain payload, already [Byte])
         buffer.append(contentsOf: record.fragment)
     }
 
@@ -110,25 +120,31 @@ extension RFC_8446.Record: Binary.Serializable {
     /// - Parameter bytes: At least 5 bytes (header) plus fragment
     /// - Throws: `Error` if bytes are malformed
     public init<Bytes: Collection>(binary bytes: Bytes) throws(Error)
-    where Bytes.Element == UInt8 {
+    where Bytes.Element == Byte {
         guard bytes.count >= Limits.headerSize else {
             throw Error.truncated(bytes.count)
         }
 
         var iterator = bytes.makeIterator()
 
+        // Internal arithmetic-domain UInt8 byte stream; bridge from Byte via
+        // .underlying at the conformance boundary.
+        func next() -> UInt8 {
+            iterator.next()!.underlying
+        }
+
         // Content type
-        let ct = iterator.next()!
+        let ct = next()
         self.contentType = RFC_8446.ContentType(rawValue: ct)
 
         // Legacy version
-        let vHi = iterator.next()!
-        let vLo = iterator.next()!
+        let vHi = next()
+        let vLo = next()
         self.legacyVersion = RFC_8446.ProtocolVersion(rawValue: (UInt16(vHi) << 8) | UInt16(vLo))
 
         // Length
-        let lHi = iterator.next()!
-        let lLo = iterator.next()!
+        let lHi = next()
+        let lLo = next()
         let length = (Int(lHi) << 8) | Int(lLo)
 
         guard length <= Limits.maxCiphertextLength else {
@@ -139,11 +155,11 @@ extension RFC_8446.Record: Binary.Serializable {
             throw Error.truncated(bytes.count)
         }
 
-        // Fragment
-        var fragment: [UInt8] = []
+        // Fragment (opaque byte-domain payload)
+        var fragment: [Byte] = []
         fragment.reserveCapacity(length)
         for _ in 0..<length {
-            fragment.append(iterator.next()!)
+            fragment.append(Byte(next()))
         }
         self.fragment = fragment
     }

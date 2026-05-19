@@ -50,9 +50,11 @@ extension RFC_8446.Alert: Binary.Serializable {
     public static func serialize<Buffer: RangeReplaceableCollection>(
         _ alert: Self,
         into buffer: inout Buffer
-    ) where Buffer.Element == UInt8 {
-        buffer.append(alert.level.rawValue)
-        buffer.append(alert.alertDescription.rawValue)
+    ) where Buffer.Element == Byte {
+        // Level/Description are enum rawValue UInt8 (separate files out of
+        // arc scope); bridge via Byte() at the conformance boundary.
+        buffer.append(Byte(alert.level.rawValue))
+        buffer.append(Byte(alert.alertDescription.rawValue))
     }
 }
 

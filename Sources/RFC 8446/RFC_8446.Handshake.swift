@@ -143,13 +143,19 @@ extension RFC_8446.Handshake {
         /// Message type
         public let type: MessageType
 
-        /// Message body
-        public let body: [UInt8]
+        /// Message body (opaque byte-domain payload)
+        public let body: [Byte]
 
         /// Creates a handshake message
-        public init(type: MessageType, body: [UInt8]) {
+        public init(type: MessageType, body: [Byte]) {
             self.type = type
             self.body = body
+        }
+
+        /// Stdlib-interop forwarder: construction from `[UInt8]` body.
+        @_disfavoredOverload
+        public init(type: MessageType, body: [UInt8]) {
+            self.init(type: type, body: [Byte](body))
         }
     }
 }
@@ -158,17 +164,20 @@ extension RFC_8446.Handshake.Message: Binary.Serializable {
     public static func serialize<Buffer: RangeReplaceableCollection>(
         _ message: Self,
         into buffer: inout Buffer
-    ) where Buffer.Element == UInt8 {
-        // Type (1 byte)
-        buffer.append(message.type.rawValue)
+    ) where Buffer.Element == Byte {
+        // Type (MessageType.rawValue stays UInt8 in separate file scope;
+        // bridge via Byte()).
+        buffer.append(Byte(message.type.rawValue))
 
-        // Length (3 bytes, uint24)
+        // Length (3 bytes, uint24). Manual byte split since BinaryInteger
+        // doesn't have a 3-byte form; arithmetic-domain Int internal, Byte()
+        // bridge at append boundary.
         let length = message.body.count
-        buffer.append(UInt8((length >> 16) & 0xFF))
-        buffer.append(UInt8((length >> 8) & 0xFF))
-        buffer.append(UInt8(length & 0xFF))
+        buffer.append(Byte(UInt8((length >> 16) & 0xFF)))
+        buffer.append(Byte(UInt8((length >> 8) & 0xFF)))
+        buffer.append(Byte(UInt8(length & 0xFF)))
 
-        // Body
+        // Body (opaque byte-domain payload, already [Byte])
         buffer.append(contentsOf: message.body)
     }
 }

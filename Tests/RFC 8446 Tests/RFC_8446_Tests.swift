@@ -77,7 +77,7 @@ struct RFC8446Tests {
                 fragment: [0x01, 0x02, 0x03]
             )
 
-            var buffer: [UInt8] = []
+            var buffer: [Byte] = []
             RFC_8446.Record.serialize(record, into: &buffer)
 
             #expect(buffer.count == 8) // 5 header + 3 data
@@ -90,7 +90,7 @@ struct RFC8446Tests {
 
         @Test
         func `Parse record`() throws {
-            let bytes: [UInt8] = [
+            let bytes: [Byte] = [
                 22,         // handshake
                 0x03, 0x03, // TLS 1.2
                 0x00, 0x04, // length = 4
@@ -171,7 +171,7 @@ struct RFC8446Tests {
         func `Serialize alert`() {
             let alert = RFC_8446.Alert.closeNotify
 
-            var buffer: [UInt8] = []
+            var buffer: [Byte] = []
             RFC_8446.Alert.serialize(alert, into: &buffer)
 
             #expect(buffer.count == 2)
@@ -197,7 +197,7 @@ struct RFC8446Tests {
                 body: [1, 2, 3, 4, 5]
             )
 
-            var buffer: [UInt8] = []
+            var buffer: [Byte] = []
             RFC_8446.Handshake.Message.serialize(message, into: &buffer)
 
             #expect(buffer.count == 9) // 1 type + 3 length + 5 body
@@ -239,7 +239,7 @@ struct RFC8446Tests {
                 data: [0x00, 0x05, 0x68, 0x65, 0x6C, 0x6C, 0x6F] // "hello"
             )
 
-            var buffer: [UInt8] = []
+            var buffer: [Byte] = []
             RFC_8446.Extension.Data.serialize(ext, into: &buffer)
 
             #expect(buffer.count == 11) // 2 type + 2 length + 7 data

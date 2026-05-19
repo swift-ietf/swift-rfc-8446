@@ -23,13 +23,19 @@ extension RFC_8446.Extension {
         /// Extension type
         public let type: ExtensionType
 
-        /// Extension data
-        public let data: [UInt8]
+        /// Extension data (opaque byte-domain payload)
+        public let data: [Byte]
 
         /// Creates an extension
-        public init(type: ExtensionType, data: [UInt8]) {
+        public init(type: ExtensionType, data: [Byte]) {
             self.type = type
             self.data = data
+        }
+
+        /// Stdlib-interop forwarder: construction from `[UInt8]` data.
+        @_disfavoredOverload
+        public init(type: ExtensionType, data: [UInt8]) {
+            self.init(type: type, data: [Byte](data))
         }
     }
 }
@@ -40,16 +46,16 @@ extension RFC_8446.Extension.Data: Binary.Serializable {
     public static func serialize<Buffer: RangeReplaceableCollection>(
         _ ext: Self,
         into buffer: inout Buffer
-    ) where Buffer.Element == UInt8 {
-        // Extension type (2 bytes)
-        buffer.append(UInt8(ext.type.rawValue >> 8))
-        buffer.append(UInt8(ext.type.rawValue & 0xFF))
+    ) where Buffer.Element == Byte {
+        // Extension type (UInt16 stays UInt16 — assumed; serialize via
+        // Byte-primary BinaryInteger.bytes(endianness:)).
+        buffer.append(contentsOf: ext.type.rawValue.bytes(endianness: .big))
 
-        // Extension data length (2 bytes)
-        buffer.append(UInt8(ext.data.count >> 8))
-        buffer.append(UInt8(ext.data.count & 0xFF))
+        // Extension data length (2 bytes UInt16)
+        let length = UInt16(ext.data.count)
+        buffer.append(contentsOf: length.bytes(endianness: .big))
 
-        // Extension data
+        // Extension data (opaque byte-domain payload, already [Byte])
         buffer.append(contentsOf: ext.data)
     }
 }
