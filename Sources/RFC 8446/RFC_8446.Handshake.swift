@@ -152,11 +152,8 @@ extension RFC_8446.Handshake {
             self.body = body
         }
 
-        /// Stdlib-interop forwarder: construction from `[UInt8]` body.
-        @_disfavoredOverload
-        public init(type: MessageType, body: [UInt8]) {
-            self.init(type: type, body: [Byte](body))
-        }
+        // Stdlib-interop UInt8 forwarder lives in `RFC 8446 Standard Library
+        // Integration` per [API-BYTE-007].
     }
 }
 

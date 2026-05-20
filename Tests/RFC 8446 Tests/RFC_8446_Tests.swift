@@ -106,7 +106,7 @@ struct RFC8446Tests {
 
         @Test
         func `Reject oversized fragment`() {
-            let largeFragment = Array(repeating: UInt8(0), count: 16385)
+            let largeFragment: [Byte] = Array(repeating: Byte(0), count: 16385)
 
             #expect(throws: RFC_8446.Record.Error.self) {
                 try RFC_8446.Record(contentType: .applicationData, fragment: largeFragment)

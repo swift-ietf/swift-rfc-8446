@@ -23,12 +23,14 @@ let package = Package(
         .visionOS(.v26)
     ],
     products: [
-        .library(name: "RFC 8446", targets: ["RFC 8446"])
+        .library(name: "RFC 8446", targets: ["RFC 8446"]),
+        .library(name: "RFC 8446 Standard Library Integration", targets: ["RFC 8446 Standard Library Integration"]),
     ],
     dependencies: [
         .package(path: "../../swift-primitives/swift-standard-library-extensions"),
         .package(path: "../../swift-primitives/swift-binary-primitives"),
-        .package(path: "../../swift-primitives/swift-ascii-primitives")
+        .package(path: "../../swift-primitives/swift-ascii-primitives"),
+        .package(path: "../../swift-primitives/swift-byte-primitives"),
     ],
     targets: [
         .target(
@@ -39,10 +41,24 @@ let package = Package(
                 .incits41986
             ]
         ),
+        .target(
+            name: "RFC 8446 Standard Library Integration",
+            dependencies: [
+                "RFC 8446",
+                .product(name: "Byte Primitives Standard Library Integration", package: "swift-byte-primitives"),
+            ]
+        ),
         .testTarget(
             name: "RFC 8446 Tests",
             dependencies: [
                 "RFC 8446",
+            ]
+        ),
+        .testTarget(
+            name: "RFC 8446 Standard Library Integration Tests",
+            dependencies: [
+                "RFC 8446",
+                "RFC 8446 Standard Library Integration",
             ]
         ),
     ],

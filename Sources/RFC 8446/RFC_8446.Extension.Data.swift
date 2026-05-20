@@ -32,11 +32,8 @@ extension RFC_8446.Extension {
             self.data = data
         }
 
-        /// Stdlib-interop forwarder: construction from `[UInt8]` data.
-        @_disfavoredOverload
-        public init(type: ExtensionType, data: [UInt8]) {
-            self.init(type: type, data: [Byte](data))
-        }
+        // Stdlib-interop UInt8 forwarder lives in `RFC 8446 Standard Library
+        // Integration` per [API-BYTE-007].
     }
 }
 

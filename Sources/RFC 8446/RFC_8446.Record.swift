@@ -68,14 +68,8 @@ extension RFC_8446 {
             self.fragment = fragment
         }
 
-        /// Stdlib-interop forwarder: construction from `[UInt8]` fragment.
-        @_disfavoredOverload
-        public init(
-            contentType: ContentType,
-            fragment: [UInt8]
-        ) throws(Error) {
-            try self.init(contentType: contentType, fragment: [Byte](fragment))
-        }
+        // Stdlib-interop UInt8 forwarder lives in `RFC 8446 Standard Library
+        // Integration` per [API-BYTE-007].
 
         /// Creates a TLS record WITHOUT validation
         init(
