@@ -15,6 +15,8 @@
 //
 // RFC 8446 Section 6: Alert Protocol
 
+public import Binary_Serializable_Primitives
+
 extension RFC_8446 {
     /// TLS Alert
     ///

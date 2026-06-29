@@ -15,6 +15,8 @@
 //
 // RFC 8446 Section 4.2: Extensions
 
+public import Binary_Serializable_Primitives
+
 extension RFC_8446.Extension {
     /// Generic TLS Extension
     ///
