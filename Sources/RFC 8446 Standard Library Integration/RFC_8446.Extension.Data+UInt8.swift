@@ -18,8 +18,8 @@
 // file-read frames) via `.lazy.map(Byte.init)`. Per [API-BYTE-007]
 // (byte-discipline skill).
 
-public import RFC_8446
 internal import Byte_Primitives
+public import RFC_8446
 
 extension RFC_8446.Extension.Data {
     /// Stdlib-interop forwarder: construction from `[UInt8]` data.

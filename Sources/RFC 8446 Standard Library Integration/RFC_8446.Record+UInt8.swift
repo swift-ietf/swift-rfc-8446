@@ -17,8 +17,8 @@
 // `[UInt8]` (e.g. record fragments pulled from network buffers, file-read
 // frames) via `.map(Byte.init)`. Per [API-BYTE-007] (byte-discipline skill).
 
-public import RFC_8446
 internal import Byte_Primitives
+public import RFC_8446
 
 extension RFC_8446.Record {
     /// Stdlib-interop forwarder: construction from `[UInt8]` fragment.

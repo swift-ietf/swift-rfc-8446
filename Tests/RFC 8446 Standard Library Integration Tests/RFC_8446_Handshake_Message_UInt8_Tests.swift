@@ -10,9 +10,9 @@
 //
 // ===----------------------------------------------------------------------===//
 
-import Testing
 import RFC_8446
 import RFC_8446_Standard_Library_Integration
+import Testing
 
 @Suite("RFC 8446 Handshake.Message UInt8 forwarder")
 struct RFC_8446_Handshake_Message_UInt8_Tests {
@@ -37,10 +37,10 @@ struct RFC_8446_Handshake_Message_UInt8_Tests {
         var buffer: [Byte] = []
         RFC_8446.Handshake.Message.serialize(message, into: &buffer)
 
-        #expect(buffer.count == 9) // 1 type + 3 length + 5 body
-        #expect(buffer[0] == 1) // client_hello
-        #expect(buffer[1] == 0) // length high
-        #expect(buffer[2] == 0) // length mid
-        #expect(buffer[3] == 5) // length low
+        #expect(buffer.count == 9)  // 1 type + 3 length + 5 body
+        #expect(buffer[0] == 1)  // client_hello
+        #expect(buffer[1] == 0)  // length high
+        #expect(buffer[2] == 0)  // length mid
+        #expect(buffer[3] == 5)  // length low
     }
 }

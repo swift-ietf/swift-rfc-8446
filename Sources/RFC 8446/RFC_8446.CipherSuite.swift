@@ -101,8 +101,8 @@ extension RFC_8446 {
         /// Key length in bytes
         public var keyLength: Int? {
             switch rawValue {
-            case 0x1301, 0x1304, 0x1305: return 16 // 128-bit
-            case 0x1302, 0x1303: return 32 // 256-bit
+            case 0x1301, 0x1304, 0x1305: return 16  // 128-bit
+            case 0x1302, 0x1303: return 32  // 256-bit
             default: return nil
             }
         }

@@ -10,9 +10,9 @@
 //
 // ===----------------------------------------------------------------------===//
 
-import Testing
 import RFC_8446
 import RFC_8446_Standard_Library_Integration
+import Testing
 
 @Suite("RFC 8446 Extension.Data UInt8 forwarder")
 struct RFC_8446_Extension_Data_UInt8_Tests {
@@ -37,8 +37,8 @@ struct RFC_8446_Extension_Data_UInt8_Tests {
         var buffer: [Byte] = []
         RFC_8446.Extension.Data.serialize(ext, into: &buffer)
 
-        #expect(buffer.count == 11) // 2 type + 2 length + 7 data
-        #expect(buffer[0] == 0) // type high
-        #expect(buffer[1] == 0) // type low (server_name = 0)
+        #expect(buffer.count == 11)  // 2 type + 2 length + 7 data
+        #expect(buffer[0] == 0)  // type high
+        #expect(buffer[1] == 0)  // type low (server_name = 0)
     }
 }

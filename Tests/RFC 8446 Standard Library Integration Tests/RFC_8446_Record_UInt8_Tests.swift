@@ -10,9 +10,9 @@
 //
 // ===----------------------------------------------------------------------===//
 
-import Testing
 import RFC_8446
 import RFC_8446_Standard_Library_Integration
+import Testing
 
 @Suite("RFC 8446 Record UInt8 forwarder")
 struct RFC_8446_Record_UInt8_Tests {

@@ -18,8 +18,8 @@
 // file-read frames) via `.map(Byte.init)`. Per [API-BYTE-007]
 // (byte-discipline skill).
 
-public import RFC_8446
 internal import Byte_Primitives
+public import RFC_8446
 
 extension RFC_8446.Handshake.Message {
     /// Stdlib-interop forwarder: construction from `[UInt8]` body.
