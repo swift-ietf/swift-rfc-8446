@@ -15,7 +15,7 @@
 //
 // RFC 8446 Appendix B.4: Cipher Suites
 
-import Radix_Format_Primitives
+import Radix_Formatter_Primitives
 
 extension RFC_8446 {
     /// TLS 1.3 Cipher Suite
@@ -118,7 +118,7 @@ extension RFC_8446.CipherSuite: CustomStringConvertible {
         case 0x1304: return "TLS_AES_128_CCM_SHA256"
         case 0x1305: return "TLS_AES_128_CCM_8_SHA256"
         default:
-            return "CipherSuite(\(rawValue.formatted(Radix.Format.hex.zeroPadded(width: 4).prefix)))"
+            return "CipherSuite(\(rawValue.formatted(Radix.Formatter.hex.zeroPadded(width: 4).prefix)))"
         }
     }
 }

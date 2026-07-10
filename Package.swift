@@ -11,7 +11,7 @@ extension Target.Dependency {
     static var standards: Self { .product(name: "Standard Library Extensions", package: "swift-standard-library-extensions") }
     static var binary: Self { .product(name: "Binary Primitives", package: "swift-binary-primitives") }
     static var incits41986: Self { .product(name: "ASCII Primitives", package: "swift-ascii-primitives") }
-    static var radixFormat: Self { .product(name: "Radix Format Primitives", package: "swift-radix-formatter-primitives") }
+    static var radixFormat: Self { .product(name: "Radix Formatter Primitives", package: "swift-radix-formatter-primitives") }
     static var binarySerializable: Self { .product(name: "Binary Serializable Primitives", package: "swift-binary-serializer-primitives") }
 }
 
