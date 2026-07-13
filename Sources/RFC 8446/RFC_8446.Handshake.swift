@@ -179,4 +179,31 @@ extension RFC_8446.Handshake.Message: Binary.Serializable {
         // Body (opaque byte-domain payload, already [Byte])
         buffer.append(contentsOf: message.body)
     }
+
+    /// Parses a handshake message envelope from wire format.
+    ///
+    /// - Parameter bytes: The 1-byte type, 3-byte `uint24` length, and body.
+    ///   Trailing bytes past the declared length are rejected.
+    public init<Bytes: Collection>(binary bytes: Bytes) throws(Error)
+    where Bytes.Element == Byte {
+        var reader = RFC_8446.Wire.Reader(Array(bytes))
+        let rawType: UInt8
+        let length: Int
+        do {
+            rawType = try reader.byte()
+            length = try reader.uint24()
+        } catch {
+            throw .truncated
+        }
+        guard reader.remaining == length else {
+            throw .lengthMismatch(length, reader.remaining)
+        }
+        let body: [Byte]
+        do {
+            body = try reader.take(length)
+        } catch {
+            throw .truncated
+        }
+        self.init(type: RFC_8446.Handshake.MessageType(rawValue: rawType), body: body)
+    }
 }

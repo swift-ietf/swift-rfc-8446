@@ -57,4 +57,23 @@ extension RFC_8446.Extension.Data: Binary.Serializable {
         // Extension data (opaque byte-domain payload, already [Byte])
         buffer.append(contentsOf: ext.data)
     }
+
+    /// Parses a single `Extension` (type + `uint16`-length data) from the wire.
+    ///
+    /// - Parameter bytes: Exactly one extension envelope; trailing bytes are
+    ///   rejected.
+    public init<Bytes: Collection>(binary bytes: Bytes) throws(Error)
+    where Bytes.Element == Byte {
+        var reader = RFC_8446.Wire.Reader(Array(bytes))
+        let type: UInt16
+        let data: [Byte]
+        do {
+            type = try reader.uint16()
+            data = try reader.vector16()
+        } catch {
+            throw .truncated
+        }
+        guard reader.isAtEnd else { throw .trailingData(reader.remaining) }
+        self.init(type: RFC_8446.Extension.ExtensionType(rawValue: type), data: data)
+    }
 }
