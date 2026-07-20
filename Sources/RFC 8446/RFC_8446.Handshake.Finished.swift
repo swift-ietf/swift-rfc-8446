@@ -77,10 +77,18 @@ extension RFC_8446.Handshake.Finished: Binary.Serializable {
 
     /// Parses a Finished payload body (without the handshake header).
     ///
-    /// The whole input is taken as `verify_data`; its length is `Hash.length`
-    /// for the negotiated cipher suite and can only be validated by the caller,
-    /// so parsing itself has no failure mode (hence non-throwing).
-    public init<Bytes: Collection>(binary bytes: Bytes) where Bytes.Element == Byte {
-        self.init(__unchecked: (), verifyData: Array(bytes))
+    /// The whole input is taken as `verify_data`; its exact length is
+    /// `Hash.length` for the negotiated cipher suite and can only be validated
+    /// by the caller, but the handshake body's `uint24` ceiling is enforced
+    /// here so serialization cannot silently truncate.
+    ///
+    /// - Throws: `Error.verifyDataTooLong` if the input exceeds 2^24-1 bytes.
+    public init<Bytes: Collection>(binary bytes: Bytes) throws(Error)
+    where Bytes.Element == Byte {
+        let verifyData = Array(bytes)
+        guard verifyData.count <= 0xFF_FFFF else {
+            throw Error.verifyDataTooLong(verifyData.count)
+        }
+        self.init(__unchecked: (), verifyData: verifyData)
     }
 }

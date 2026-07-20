@@ -110,9 +110,9 @@ struct RFC_8446_HandshakeRoundTrip_Tests {
     }
 
     @Test
-    func `Finished round-trips`() {
+    func `Finished round-trips`() throws {
         let finished = try! RFC_8446.Handshake.Finished(verifyData: Self.sampleRandom)
-        #expect(RFC_8446.Handshake.Finished(binary: finished.bytes) == finished)
+        #expect(try RFC_8446.Handshake.Finished(binary: finished.bytes) == finished)
     }
 
     @Test

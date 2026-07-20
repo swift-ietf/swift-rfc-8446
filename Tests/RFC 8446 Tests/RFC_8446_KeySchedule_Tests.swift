@@ -170,7 +170,7 @@ struct RFC_8446_KeySchedule_Tests {
 
             // The verify_data equals the parsed Finished payload.
             let message = try RFC_8446.Handshake.Message(binary: RFC8448.serverFinished)
-            let finished = RFC_8446.Handshake.Finished(binary: message.body)
+            let finished = try RFC_8446.Handshake.Finished(binary: message.body)
             #expect(verifyData == finished.verifyData)
         }
 

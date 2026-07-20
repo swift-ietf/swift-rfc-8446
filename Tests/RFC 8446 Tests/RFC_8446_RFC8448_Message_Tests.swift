@@ -157,7 +157,7 @@ struct RFC_8446_RFC8448_Message_Tests {
         let message = try RFC_8446.Handshake.Message(binary: RFC8448.serverFinished)
         #expect(message.type == .finished)
 
-        let finished = RFC_8446.Handshake.Finished(binary: message.body)
+        let finished = try RFC_8446.Handshake.Finished(binary: message.body)
         #expect(finished.verifyData == RFC8448.serverFinishedVerifyData)
 
         #expect(finished.bytes == message.body)

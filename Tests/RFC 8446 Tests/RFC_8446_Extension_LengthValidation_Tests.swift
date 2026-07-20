@@ -227,6 +227,18 @@ extension RFC_8446.Extension.SignatureAlgorithmsCert {
 
 extension RFC_8446.Extension.Padding {
     @Suite struct `Edge Case` {
+        @Test func `binary init rejects oversize input and accepts the uint16 bound`() throws {
+            #expect(throws: RFC_8446.Extension.Padding.Error.invalidPaddingLength(0x1_0000)) {
+                _ = try RFC_8446.Extension.Padding(
+                    binary: [Byte](repeating: Byte(0), count: 0x1_0000)
+                )
+            }
+            let bound = try RFC_8446.Extension.Padding(
+                binary: [Byte](repeating: Byte(0), count: 0xFFFF)
+            )
+            #expect(bound.extensionData.data.count == 0xFFFF)
+        }
+
         @Test func `init rejects negative and oversize padding lengths`() {
             #expect(throws: RFC_8446.Extension.Padding.Error.invalidPaddingLength(-1)) {
                 _ = try RFC_8446.Extension.Padding(length: -1)

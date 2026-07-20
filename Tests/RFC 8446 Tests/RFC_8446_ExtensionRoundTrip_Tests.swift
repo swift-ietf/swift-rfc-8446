@@ -57,9 +57,9 @@ struct RFC_8446_ExtensionRoundTrip_Tests {
     }
 
     @Test
-    func `Padding round-trips`() {
+    func `Padding round-trips`() throws {
         let value = try! RFC_8446.Extension.Padding(length: 8)
-        #expect(RFC_8446.Extension.Padding(binary: value.bytes) == value)
+        #expect(try RFC_8446.Extension.Padding(binary: value.bytes) == value)
         #expect(value.padding == Array(repeating: Byte(0), count: 8))
         #expect(value.extensionData.type == .padding)
     }

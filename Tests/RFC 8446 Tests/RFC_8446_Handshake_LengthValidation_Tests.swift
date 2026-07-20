@@ -198,6 +198,14 @@ extension RFC_8446.Handshake.NewSessionTicket {
 
 extension RFC_8446.Handshake.Finished {
     @Suite struct `Edge Case` {
+        @Test func `binary init rejects verify_data over the uint24 bound`() {
+            #expect(throws: RFC_8446.Handshake.Finished.Error.verifyDataTooLong(0x100_0000)) {
+                _ = try RFC_8446.Handshake.Finished(
+                    binary: [Byte](repeating: Byte(0), count: 0x100_0000)
+                )
+            }
+        }
+
         @Test func `init rejects verify_data over the uint24 bound`() {
             #expect(throws: RFC_8446.Handshake.Finished.Error.verifyDataTooLong(0x100_0000)) {
                 _ = try RFC_8446.Handshake.Finished(
