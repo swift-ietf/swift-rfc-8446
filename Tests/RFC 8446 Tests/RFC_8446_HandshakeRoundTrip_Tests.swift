@@ -23,20 +23,20 @@ struct RFC_8446_HandshakeRoundTrip_Tests {
 
     /// A couple of sample extension envelopes.
     static let sampleExtensions: [RFC_8446.Extension.Data] = [
-        RFC_8446.Extension.Data(type: .supportedVersions, data: [Byte(0x03), Byte(0x04)]),
-        RFC_8446.Extension.Data(type: .cookie, data: [Byte(0xAA), Byte(0xBB), Byte(0xCC)]),
+        try! RFC_8446.Extension.Data(type: .supportedVersions, data: [Byte(0x03), Byte(0x04)]),
+        try! RFC_8446.Extension.Data(type: .cookie, data: [Byte(0xAA), Byte(0xBB), Byte(0xCC)]),
     ]
 
     @Test
     func `Message envelope round-trips`() throws {
-        let message = RFC_8446.Handshake.Message(type: .clientHello, body: [Byte(1), Byte(2), Byte(3)])
+        let message = try! RFC_8446.Handshake.Message(type: .clientHello, body: [Byte(1), Byte(2), Byte(3)])
         let parsed = try RFC_8446.Handshake.Message(binary: message.bytes)
         #expect(parsed == message)
     }
 
     @Test
     func `ClientHello round-trips`() throws {
-        let hello = RFC_8446.Handshake.ClientHello(
+        let hello = try! RFC_8446.Handshake.ClientHello(
             random: Self.sampleRandom,
             legacySessionID: [Byte(0xDE), Byte(0xAD)],
             cipherSuites: [.aes128GcmSha256, .aes256GcmSha384],
@@ -47,7 +47,7 @@ struct RFC_8446_HandshakeRoundTrip_Tests {
 
     @Test
     func `ServerHello round-trips`() throws {
-        let hello = RFC_8446.Handshake.ServerHello(
+        let hello = try! RFC_8446.Handshake.ServerHello(
             random: Self.sampleRandom,
             legacySessionIDEcho: [Byte(0xDE), Byte(0xAD)],
             cipherSuite: .aes128GcmSha256,
@@ -59,10 +59,10 @@ struct RFC_8446_HandshakeRoundTrip_Tests {
 
     @Test
     func `ServerHello with HelloRetryRequest random discriminates`() throws {
-        let hrr = RFC_8446.Handshake.ServerHello(
+        let hrr = try! RFC_8446.Handshake.ServerHello(
             random: RFC_8446.Handshake.ServerHello.helloRetryRequestRandom,
             cipherSuite: .aes128GcmSha256,
-            extensions: [RFC_8446.Extension.Data(type: .supportedVersions, data: [Byte(0x03), Byte(0x04)])]
+            extensions: [try! RFC_8446.Extension.Data(type: .supportedVersions, data: [Byte(0x03), Byte(0x04)])]
         )
         #expect(hrr.isHelloRetryRequest == true)
         let parsed = try RFC_8446.Handshake.ServerHello(binary: hrr.bytes)
@@ -72,20 +72,20 @@ struct RFC_8446_HandshakeRoundTrip_Tests {
 
     @Test
     func `EncryptedExtensions round-trips`() throws {
-        let ee = RFC_8446.Handshake.EncryptedExtensions(extensions: Self.sampleExtensions)
+        let ee = try! RFC_8446.Handshake.EncryptedExtensions(extensions: Self.sampleExtensions)
         #expect(try RFC_8446.Handshake.EncryptedExtensions(binary: ee.bytes) == ee)
     }
 
     @Test
     func `Certificate round-trips`() throws {
-        let certificate = RFC_8446.Handshake.Certificate(
+        let certificate = try! RFC_8446.Handshake.Certificate(
             certificateRequestContext: [Byte(0x01)],
             certificateList: [
-                RFC_8446.Handshake.Certificate.Entry(
+                try! RFC_8446.Handshake.Certificate.Entry(
                     certificateData: [Byte(0xCA), Byte(0xFE)],
-                    extensions: [RFC_8446.Extension.Data(type: .statusRequest, data: [])]
+                    extensions: [try! RFC_8446.Extension.Data(type: .statusRequest, data: [])]
                 ),
-                RFC_8446.Handshake.Certificate.Entry(certificateData: [Byte(0xBE), Byte(0xEF)]),
+                try! RFC_8446.Handshake.Certificate.Entry(certificateData: [Byte(0xBE), Byte(0xEF)]),
             ]
         )
         #expect(try RFC_8446.Handshake.Certificate(binary: certificate.bytes) == certificate)
@@ -93,7 +93,7 @@ struct RFC_8446_HandshakeRoundTrip_Tests {
 
     @Test
     func `CertificateRequest round-trips`() throws {
-        let request = RFC_8446.Handshake.CertificateRequest(
+        let request = try! RFC_8446.Handshake.CertificateRequest(
             certificateRequestContext: [Byte(0x2A)],
             extensions: Self.sampleExtensions
         )
@@ -102,7 +102,7 @@ struct RFC_8446_HandshakeRoundTrip_Tests {
 
     @Test
     func `CertificateVerify round-trips`() throws {
-        let verify = RFC_8446.Handshake.CertificateVerify(
+        let verify = try! RFC_8446.Handshake.CertificateVerify(
             algorithm: .ed25519,
             signature: [Byte(0x01), Byte(0x02), Byte(0x03), Byte(0x04)]
         )
@@ -111,13 +111,13 @@ struct RFC_8446_HandshakeRoundTrip_Tests {
 
     @Test
     func `Finished round-trips`() {
-        let finished = RFC_8446.Handshake.Finished(verifyData: Self.sampleRandom)
+        let finished = try! RFC_8446.Handshake.Finished(verifyData: Self.sampleRandom)
         #expect(RFC_8446.Handshake.Finished(binary: finished.bytes) == finished)
     }
 
     @Test
     func `NewSessionTicket round-trips`() throws {
-        let ticket = RFC_8446.Handshake.NewSessionTicket(
+        let ticket = try! RFC_8446.Handshake.NewSessionTicket(
             ticketLifetime: 7200,
             ticketAgeAdd: 0xDEAD_BEEF,
             ticketNonce: [Byte(0x00), Byte(0x01)],

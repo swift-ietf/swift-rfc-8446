@@ -193,7 +193,7 @@ struct RFC8446Tests {
 
         @Test
         func `Serialize handshake message`() {
-            let message = RFC_8446.Handshake.Message(
+            let message = try! RFC_8446.Handshake.Message(
                 type: .clientHello,
                 body: [1, 2, 3, 4, 5]
             )
@@ -235,7 +235,7 @@ struct RFC8446Tests {
 
         @Test
         func `Serialize extension`() {
-            let ext = RFC_8446.Extension.Data(
+            let ext = try! RFC_8446.Extension.Data(
                 type: .serverName,
                 data: [0x00, 0x05, 0x68, 0x65, 0x6C, 0x6C, 0x6F]  // "hello"
             )
