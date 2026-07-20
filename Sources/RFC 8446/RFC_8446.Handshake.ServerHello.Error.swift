@@ -23,6 +23,15 @@ extension RFC_8446.Handshake.ServerHello {
 
         /// Bytes remained after the extensions block.
         case trailingData(_ remaining: Int)
+
+        /// The random is not exactly 32 bytes.
+        case invalidRandomLength(_ count: Int)
+
+        /// The legacy_session_id_echo exceeds 32 bytes.
+        case invalidSessionIDEchoLength(_ count: Int)
+
+        /// The serialized extensions block exceeds 65535 bytes.
+        case extensionsTooLong(_ byteCount: Int)
     }
 }
 
@@ -33,6 +42,12 @@ extension RFC_8446.Handshake.ServerHello.Error: CustomStringConvertible {
             return "TLS ServerHello truncated"
         case .trailingData(let remaining):
             return "TLS ServerHello has \(remaining) trailing bytes"
+        case .invalidRandomLength(let count):
+            return "TLS ServerHello random length invalid: \(count) bytes (expected 32)"
+        case .invalidSessionIDEchoLength(let count):
+            return "TLS ServerHello legacy_session_id_echo length invalid: \(count) bytes (max 32)"
+        case .extensionsTooLong(let byteCount):
+            return "TLS ServerHello extensions too long: \(byteCount) bytes (max 65535)"
         }
     }
 }

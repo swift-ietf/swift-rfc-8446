@@ -149,7 +149,20 @@ extension RFC_8446.Handshake {
         public let body: [Byte]
 
         /// Creates a handshake message
-        public init(type: MessageType, body: [Byte]) {
+        ///
+        /// - Throws: `Error.bodyTooLong` if `body` exceeds the `uint24`
+        ///   length bound (2^24-1 bytes).
+        public init(type: MessageType, body: [Byte]) throws(Error) {
+            guard body.count <= 0xFF_FFFF else {
+                throw Error.bodyTooLong(body.count)
+            }
+            self.type = type
+            self.body = body
+        }
+
+        /// Creates a handshake message WITHOUT validation (parse path and
+        /// payload wrappers whose own bounds already guarantee the invariant).
+        init(__unchecked: Void, type: MessageType, body: [Byte]) {
             self.type = type
             self.body = body
         }
@@ -204,6 +217,7 @@ extension RFC_8446.Handshake.Message: Binary.Serializable {
         } catch {
             throw .truncated
         }
-        self.init(type: RFC_8446.Handshake.MessageType(rawValue: rawType), body: body)
+        // uint24() bounds body to 2^24-1 by construction.
+        self.init(__unchecked: (), type: RFC_8446.Handshake.MessageType(rawValue: rawType), body: body)
     }
 }

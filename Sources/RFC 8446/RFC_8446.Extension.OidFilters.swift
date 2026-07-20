@@ -32,7 +32,21 @@ extension RFC_8446.Extension {
         public let filters: [Filter]
 
         /// Creates an oid_filters payload.
-        public init(filters: [Filter]) {
+        ///
+        /// - Throws: `Error.filtersTooLong` if the serialized filters block
+        ///   exceeds 65533 bytes.
+        public init(filters: [Filter]) throws(Error) {
+            let blockLength = filters.reduce(0) {
+                $0 + 1 + $1.certificateExtensionOID.count + 2 + $1.certificateExtensionValues.count
+            }
+            guard blockLength <= 0xFFFD else {
+                throw Error.filtersTooLong(blockLength)
+            }
+            self.filters = filters
+        }
+
+        /// Creates an oid_filters payload WITHOUT validation (parse path).
+        init(__unchecked: Void, filters: [Filter]) {
             self.filters = filters
         }
 
@@ -41,7 +55,7 @@ extension RFC_8446.Extension {
 
         /// Wraps this payload in a generic ``RFC_8446/Extension/Data`` envelope.
         public var extensionData: RFC_8446.Extension.Data {
-            RFC_8446.Extension.Data(type: Self.extensionType, data: self.bytes)
+            RFC_8446.Extension.Data(__unchecked: (), type: Self.extensionType, data: self.bytes)
         }
     }
 }
@@ -72,7 +86,7 @@ extension RFC_8446.Extension.OidFilters: Binary.Serializable {
                 filters.append(try sub.oidFilter())
             }
             try reader.expectEnd()
-            self.init(filters: filters)
+            self.init(__unchecked: (), filters: filters)
         } catch {
             switch error {
             case .trailingData(let n): throw .trailingData(n)

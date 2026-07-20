@@ -23,6 +23,9 @@ extension RFC_8446.Extension.SupportedGroups {
 
         /// Bytes remained after the group list.
         case trailingData(_ remaining: Int)
+
+        /// The named_group_list count is outside 1...32766.
+        case invalidGroupCount(_ count: Int)
     }
 }
 
@@ -33,6 +36,8 @@ extension RFC_8446.Extension.SupportedGroups.Error: CustomStringConvertible {
             return "TLS supported_groups truncated"
         case .trailingData(let remaining):
             return "TLS supported_groups has \(remaining) trailing bytes"
+        case .invalidGroupCount(let count):
+            return "TLS supported_groups group count invalid: \(count) (expected 1...32766)"
         }
     }
 }

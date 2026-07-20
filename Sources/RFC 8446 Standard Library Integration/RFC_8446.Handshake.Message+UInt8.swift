@@ -24,7 +24,7 @@ public import RFC_8446
 extension RFC_8446.Handshake.Message {
     /// Stdlib-interop forwarder: construction from `[UInt8]` body.
     @_disfavoredOverload
-    public init(type: RFC_8446.Handshake.MessageType, body: [UInt8]) {
-        self.init(type: type, body: body.map(Byte.init))
+    public init(type: RFC_8446.Handshake.MessageType, body: [UInt8]) throws(Error) {
+        try self.init(type: type, body: body.map(Byte.init))
     }
 }

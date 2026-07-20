@@ -23,6 +23,9 @@ extension RFC_8446.Extension.SignatureAlgorithms {
 
         /// Bytes remained after the scheme list.
         case trailingData(_ remaining: Int)
+
+        /// The supported_signature_algorithms count is outside 1...32766.
+        case invalidAlgorithmCount(_ count: Int)
     }
 }
 
@@ -33,6 +36,8 @@ extension RFC_8446.Extension.SignatureAlgorithms.Error: CustomStringConvertible 
             return "TLS signature_algorithms truncated"
         case .trailingData(let remaining):
             return "TLS signature_algorithms has \(remaining) trailing bytes"
+        case .invalidAlgorithmCount(let count):
+            return "TLS signature_algorithms algorithm count invalid: \(count) (expected 1...32766)"
         }
     }
 }

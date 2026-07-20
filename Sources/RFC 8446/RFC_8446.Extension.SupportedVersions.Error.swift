@@ -23,6 +23,9 @@ extension RFC_8446.Extension.SupportedVersions {
 
         /// Bytes remained after the payload.
         case trailingData(_ remaining: Int)
+
+        /// The versions count is outside 1...127.
+        case invalidVersionCount(_ count: Int)
     }
 }
 
@@ -33,6 +36,8 @@ extension RFC_8446.Extension.SupportedVersions.Error: CustomStringConvertible {
             return "TLS supported_versions truncated"
         case .trailingData(let remaining):
             return "TLS supported_versions has \(remaining) trailing bytes"
+        case .invalidVersionCount(let count):
+            return "TLS supported_versions version count invalid: \(count) (expected 1...127)"
         }
     }
 }

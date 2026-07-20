@@ -45,7 +45,27 @@ extension RFC_8446.Handshake.Certificate {
         public let extensions: [RFC_8446.Extension.Data]
 
         /// Creates a certificate entry.
-        public init(certificateData: [Byte], extensions: [RFC_8446.Extension.Data] = []) {
+        ///
+        /// - Throws: `Error.invalidCertificateDataLength` if `certificateData`
+        ///   is outside 1...2^24-1 bytes; `Error.entryExtensionsTooLong` if
+        ///   the serialized per-entry extensions block exceeds 65535 bytes.
+        public init(
+            certificateData: [Byte],
+            extensions: [RFC_8446.Extension.Data] = []
+        ) throws(RFC_8446.Handshake.Certificate.Error) {
+            guard (1...0xFF_FFFF).contains(certificateData.count) else {
+                throw .invalidCertificateDataLength(certificateData.count)
+            }
+            let blockLength = RFC_8446.Wire.extensionsBlockLength(extensions)
+            guard blockLength <= 0xFFFF else {
+                throw .entryExtensionsTooLong(blockLength)
+            }
+            self.certificateData = certificateData
+            self.extensions = extensions
+        }
+
+        /// Creates a certificate entry WITHOUT validation (parse path).
+        init(__unchecked: Void, certificateData: [Byte], extensions: [RFC_8446.Extension.Data]) {
             self.certificateData = certificateData
             self.extensions = extensions
         }
@@ -72,6 +92,6 @@ extension RFC_8446.Wire.Reader {
     -> RFC_8446.Handshake.Certificate.Entry {
         let data = try vector24()
         let entryExtensions = try extensions()
-        return RFC_8446.Handshake.Certificate.Entry(certificateData: data, extensions: entryExtensions)
+        return RFC_8446.Handshake.Certificate.Entry(__unchecked: (), certificateData: data, extensions: entryExtensions)
     }
 }

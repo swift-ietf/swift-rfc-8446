@@ -59,12 +59,52 @@ extension RFC_8446.Handshake {
         public let extensions: [RFC_8446.Extension.Data]
 
         /// Creates a ClientHello payload.
+        ///
+        /// - Throws: `Error` if any field violates its spec length bounds:
+        ///   32-byte `random`, `legacy_session_id` up to 32 bytes,
+        ///   1...32767 `cipher_suites`, 1...255 bytes of
+        ///   `legacy_compression_methods`, and a serialized extensions block
+        ///   of at most 65535 bytes.
         public init(
             legacyVersion: RFC_8446.ProtocolVersion = .legacy,
             random: [Byte],
             legacySessionID: [Byte] = [],
             cipherSuites: [RFC_8446.CipherSuite],
             legacyCompressionMethods: [Byte] = [Byte(0)],
+            extensions: [RFC_8446.Extension.Data]
+        ) throws(Error) {
+            guard random.count == 32 else {
+                throw Error.invalidRandomLength(random.count)
+            }
+            guard legacySessionID.count <= 32 else {
+                throw Error.invalidSessionIDLength(legacySessionID.count)
+            }
+            guard (1...32767).contains(cipherSuites.count) else {
+                throw Error.invalidCipherSuiteCount(cipherSuites.count)
+            }
+            guard (1...0xFF).contains(legacyCompressionMethods.count) else {
+                throw Error.invalidCompressionMethodsLength(legacyCompressionMethods.count)
+            }
+            let blockLength = RFC_8446.Wire.extensionsBlockLength(extensions)
+            guard blockLength <= 0xFFFF else {
+                throw Error.extensionsTooLong(blockLength)
+            }
+            self.legacyVersion = legacyVersion
+            self.random = random
+            self.legacySessionID = legacySessionID
+            self.cipherSuites = cipherSuites
+            self.legacyCompressionMethods = legacyCompressionMethods
+            self.extensions = extensions
+        }
+
+        /// Creates a ClientHello payload WITHOUT validation (parse path).
+        init(
+            __unchecked: Void,
+            legacyVersion: RFC_8446.ProtocolVersion,
+            random: [Byte],
+            legacySessionID: [Byte],
+            cipherSuites: [RFC_8446.CipherSuite],
+            legacyCompressionMethods: [Byte],
             extensions: [RFC_8446.Extension.Data]
         ) {
             self.legacyVersion = legacyVersion
@@ -80,7 +120,7 @@ extension RFC_8446.Handshake {
 
         /// Wraps this payload in a ``RFC_8446/Handshake/Message`` envelope.
         public var message: RFC_8446.Handshake.Message {
-            RFC_8446.Handshake.Message(type: Self.handshakeType, body: self.bytes)
+            RFC_8446.Handshake.Message(__unchecked: (), type: Self.handshakeType, body: self.bytes)
         }
     }
 }
@@ -113,6 +153,7 @@ extension RFC_8446.Handshake.ClientHello: Binary.Serializable {
             let extensions = try reader.extensions()
             try reader.expectEnd()
             self.init(
+                __unchecked: (),
                 legacyVersion: RFC_8446.ProtocolVersion(rawValue: version),
                 random: random,
                 legacySessionID: sessionID,

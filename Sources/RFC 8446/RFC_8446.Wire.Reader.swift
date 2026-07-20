@@ -135,6 +135,7 @@ extension RFC_8446.Wire {
                 let data = try sub.vector16()
                 result.append(
                     RFC_8446.Extension.Data(
+                __unchecked: (),
                         type: RFC_8446.Extension.ExtensionType(rawValue: type),
                         data: data
                     )

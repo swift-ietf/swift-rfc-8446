@@ -23,6 +23,9 @@ extension RFC_8446.Extension.Cookie {
 
         /// Bytes remained after the cookie.
         case trailingData(_ remaining: Int)
+
+        /// The cookie length is outside 1...65533 (envelope-fitting spec bounds).
+        case invalidCookieLength(_ count: Int)
     }
 }
 
@@ -33,6 +36,8 @@ extension RFC_8446.Extension.Cookie.Error: CustomStringConvertible {
             return "TLS cookie truncated"
         case .trailingData(let remaining):
             return "TLS cookie has \(remaining) trailing bytes"
+        case .invalidCookieLength(let count):
+            return "TLS cookie length invalid: \(count) bytes (expected 1...65533)"
         }
     }
 }

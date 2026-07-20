@@ -31,13 +31,25 @@ extension RFC_8446.Extension.SupportedVersions {
         public let versions: [RFC_8446.ProtocolVersion]
 
         /// Creates a ClientHello supported_versions payload.
-        public init(versions: [RFC_8446.ProtocolVersion]) {
+        ///
+        /// - Throws: `Error.invalidVersionCount` if the version count is
+        ///   outside 1...127 (the `uint8` byte-length bound of 254).
+        public init(versions: [RFC_8446.ProtocolVersion]) throws(RFC_8446.Extension.SupportedVersions.Error) {
+            guard (1...127).contains(versions.count) else {
+                throw .invalidVersionCount(versions.count)
+            }
+            self.versions = versions
+        }
+
+        /// Creates a ClientHello supported_versions payload WITHOUT validation (parse path).
+        init(__unchecked: Void, versions: [RFC_8446.ProtocolVersion]) {
             self.versions = versions
         }
 
         /// Wraps this payload in a generic ``RFC_8446/Extension/Data`` envelope.
         public var extensionData: RFC_8446.Extension.Data {
             RFC_8446.Extension.Data(
+                __unchecked: (),
                 type: RFC_8446.Extension.SupportedVersions.extensionType,
                 data: self.bytes
             )
@@ -71,7 +83,7 @@ extension RFC_8446.Extension.SupportedVersions.ClientHello: Binary.Serializable 
                 versions.append(RFC_8446.ProtocolVersion(rawValue: try sub.uint16()))
             }
             try reader.expectEnd()
-            self.init(versions: versions)
+            self.init(__unchecked: (), versions: versions)
         } catch {
             switch error {
             case .trailingData(let n): throw .trailingData(n)

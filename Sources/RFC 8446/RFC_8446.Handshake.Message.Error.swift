@@ -23,6 +23,9 @@ extension RFC_8446.Handshake.Message {
 
         /// The `uint24` length field did not match the bytes actually present.
         case lengthMismatch(_ declared: Int, _ available: Int)
+
+        /// The body exceeds the `uint24` length bound (2^24-1 bytes).
+        case bodyTooLong(_ count: Int)
     }
 }
 
@@ -33,6 +36,8 @@ extension RFC_8446.Handshake.Message.Error: CustomStringConvertible {
             return "TLS handshake message truncated"
         case .lengthMismatch(let declared, let available):
             return "TLS handshake message length mismatch: declared \(declared), available \(available)"
+        case .bodyTooLong(let count):
+            return "TLS handshake message body too long: \(count) bytes (max 16777215)"
         }
     }
 }

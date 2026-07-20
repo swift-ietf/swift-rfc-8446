@@ -23,6 +23,9 @@ extension RFC_8446.Extension.PskKeyExchangeModes {
 
         /// Bytes remained after the mode list.
         case trailingData(_ remaining: Int)
+
+        /// The ke_modes count is outside 1...255.
+        case invalidModeCount(_ count: Int)
     }
 }
 
@@ -33,6 +36,8 @@ extension RFC_8446.Extension.PskKeyExchangeModes.Error: CustomStringConvertible 
             return "TLS psk_key_exchange_modes truncated"
         case .trailingData(let remaining):
             return "TLS psk_key_exchange_modes has \(remaining) trailing bytes"
+        case .invalidModeCount(let count):
+            return "TLS psk_key_exchange_modes mode count invalid: \(count) (expected 1...255)"
         }
     }
 }

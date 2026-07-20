@@ -23,6 +23,12 @@ extension RFC_8446.Handshake.CertificateRequest {
 
         /// Bytes remained after the extensions block.
         case trailingData(_ remaining: Int)
+
+        /// The certificate_request_context exceeds 255 bytes.
+        case invalidContextLength(_ count: Int)
+
+        /// The serialized extensions block exceeds 65535 bytes.
+        case extensionsTooLong(_ byteCount: Int)
     }
 }
 
@@ -33,6 +39,10 @@ extension RFC_8446.Handshake.CertificateRequest.Error: CustomStringConvertible {
             return "TLS CertificateRequest truncated"
         case .trailingData(let remaining):
             return "TLS CertificateRequest has \(remaining) trailing bytes"
+        case .invalidContextLength(let count):
+            return "TLS CertificateRequest context length invalid: \(count) bytes (max 255)"
+        case .extensionsTooLong(let byteCount):
+            return "TLS CertificateRequest extensions too long: \(byteCount) bytes (max 65535)"
         }
     }
 }

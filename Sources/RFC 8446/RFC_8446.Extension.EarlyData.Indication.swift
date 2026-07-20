@@ -30,6 +30,7 @@ extension RFC_8446.Extension.EarlyData {
         /// Wraps this payload in a generic ``RFC_8446/Extension/Data`` envelope.
         public var extensionData: RFC_8446.Extension.Data {
             RFC_8446.Extension.Data(
+                __unchecked: (),
                 type: RFC_8446.Extension.EarlyData.extensionType,
                 data: []
             )

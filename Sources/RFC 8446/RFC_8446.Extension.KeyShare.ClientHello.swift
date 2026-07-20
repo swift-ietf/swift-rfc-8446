@@ -32,13 +32,27 @@ extension RFC_8446.Extension.KeyShare {
         public let clientShares: [Entry]
 
         /// Creates a ClientHello key_share payload.
-        public init(clientShares: [Entry]) {
+        ///
+        /// - Throws: `Error.clientSharesTooLong` if the serialized
+        ///   `client_shares` block exceeds 65533 bytes (the `uint16` block
+        ///   bound within the `extension_data` ceiling).
+        public init(clientShares: [Entry]) throws(RFC_8446.Extension.KeyShare.Error) {
+            let blockLength = clientShares.reduce(0) { $0 + 4 + $1.keyExchange.count }
+            guard blockLength <= 0xFFFD else {
+                throw .clientSharesTooLong(blockLength)
+            }
+            self.clientShares = clientShares
+        }
+
+        /// Creates a ClientHello key_share payload WITHOUT validation (parse path).
+        init(__unchecked: Void, clientShares: [Entry]) {
             self.clientShares = clientShares
         }
 
         /// Wraps this payload in a generic ``RFC_8446/Extension/Data`` envelope.
         public var extensionData: RFC_8446.Extension.Data {
             RFC_8446.Extension.Data(
+                __unchecked: (),
                 type: RFC_8446.Extension.KeyShare.extensionType,
                 data: self.bytes
             )
@@ -72,7 +86,7 @@ extension RFC_8446.Extension.KeyShare.ClientHello: Binary.Serializable {
                 entries.append(try sub.keyShareEntry())
             }
             try reader.expectEnd()
-            self.init(clientShares: entries)
+            self.init(__unchecked: (), clientShares: entries)
         } catch {
             switch error {
             case .trailingData(let n): throw .trailingData(n)

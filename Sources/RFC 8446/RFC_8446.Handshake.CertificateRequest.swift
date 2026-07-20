@@ -36,10 +36,27 @@ extension RFC_8446.Handshake {
         public let extensions: [RFC_8446.Extension.Data]
 
         /// Creates a CertificateRequest payload.
+        ///
+        /// - Throws: `Error.invalidContextLength` if the context exceeds 255
+        ///   bytes; `Error.extensionsTooLong` if the serialized extensions
+        ///   block exceeds the `uint16` bound (65535 bytes).
         public init(
             certificateRequestContext: [Byte] = [],
             extensions: [RFC_8446.Extension.Data]
-        ) {
+        ) throws(Error) {
+            guard certificateRequestContext.count <= 0xFF else {
+                throw Error.invalidContextLength(certificateRequestContext.count)
+            }
+            let blockLength = RFC_8446.Wire.extensionsBlockLength(extensions)
+            guard blockLength <= 0xFFFF else {
+                throw Error.extensionsTooLong(blockLength)
+            }
+            self.certificateRequestContext = certificateRequestContext
+            self.extensions = extensions
+        }
+
+        /// Creates a CertificateRequest payload WITHOUT validation (parse path).
+        init(__unchecked: Void, certificateRequestContext: [Byte], extensions: [RFC_8446.Extension.Data]) {
             self.certificateRequestContext = certificateRequestContext
             self.extensions = extensions
         }
@@ -49,7 +66,7 @@ extension RFC_8446.Handshake {
 
         /// Wraps this payload in a ``RFC_8446/Handshake/Message`` envelope.
         public var message: RFC_8446.Handshake.Message {
-            RFC_8446.Handshake.Message(type: Self.handshakeType, body: self.bytes)
+            RFC_8446.Handshake.Message(__unchecked: (), type: Self.handshakeType, body: self.bytes)
         }
     }
 }
@@ -73,7 +90,7 @@ extension RFC_8446.Handshake.CertificateRequest: Binary.Serializable {
             let context = try reader.vector8()
             let extensions = try reader.extensions()
             try reader.expectEnd()
-            self.init(certificateRequestContext: context, extensions: extensions)
+            self.init(__unchecked: (), certificateRequestContext: context, extensions: extensions)
         } catch {
             switch error {
             case .trailingData(let n): throw .trailingData(n)

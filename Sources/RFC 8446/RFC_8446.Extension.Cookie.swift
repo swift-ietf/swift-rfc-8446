@@ -32,7 +32,18 @@ extension RFC_8446.Extension {
         public let cookie: [Byte]
 
         /// Creates a cookie payload.
-        public init(cookie: [Byte]) {
+        ///
+        /// - Throws: `Error.invalidCookieLength` if `cookie` is outside
+        ///   1...65533 bytes (spec floor plus the `extension_data` ceiling).
+        public init(cookie: [Byte]) throws(Error) {
+            guard (1...0xFFFD).contains(cookie.count) else {
+                throw Error.invalidCookieLength(cookie.count)
+            }
+            self.cookie = cookie
+        }
+
+        /// Creates a cookie payload WITHOUT validation (parse path).
+        init(__unchecked: Void, cookie: [Byte]) {
             self.cookie = cookie
         }
 
@@ -41,7 +52,7 @@ extension RFC_8446.Extension {
 
         /// Wraps this payload in a generic ``RFC_8446/Extension/Data`` envelope.
         public var extensionData: RFC_8446.Extension.Data {
-            RFC_8446.Extension.Data(type: Self.extensionType, data: self.bytes)
+            RFC_8446.Extension.Data(__unchecked: (), type: Self.extensionType, data: self.bytes)
         }
     }
 }
@@ -63,7 +74,7 @@ extension RFC_8446.Extension.Cookie: Binary.Serializable {
         do {
             let cookie = try reader.vector16()
             try reader.expectEnd()
-            self.init(cookie: cookie)
+            self.init(__unchecked: (), cookie: cookie)
         } catch {
             switch error {
             case .trailingData(let n): throw .trailingData(n)

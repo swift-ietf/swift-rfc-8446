@@ -23,6 +23,9 @@ extension RFC_8446.Handshake.CertificateVerify {
 
         /// Bytes remained after the signature.
         case trailingData(_ remaining: Int)
+
+        /// The signature exceeds the uint16 length bound (65535 bytes).
+        case signatureTooLong(_ count: Int)
     }
 }
 
@@ -33,6 +36,8 @@ extension RFC_8446.Handshake.CertificateVerify.Error: CustomStringConvertible {
             return "TLS CertificateVerify truncated"
         case .trailingData(let remaining):
             return "TLS CertificateVerify has \(remaining) trailing bytes"
+        case .signatureTooLong(let count):
+            return "TLS CertificateVerify signature too long: \(count) bytes (max 65535)"
         }
     }
 }

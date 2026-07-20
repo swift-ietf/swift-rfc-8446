@@ -37,7 +37,27 @@ extension RFC_8446.Handshake {
         public let certificateList: [Entry]
 
         /// Creates a Certificate payload.
-        public init(certificateRequestContext: [Byte] = [], certificateList: [Entry]) {
+        ///
+        /// - Throws: `Error.invalidContextLength` if the context exceeds 255
+        ///   bytes; `Error.certificateListTooLong` if the serialized
+        ///   `certificate_list` block exceeds the `uint24` bound within the
+        ///   handshake body ceiling.
+        public init(certificateRequestContext: [Byte] = [], certificateList: [Entry]) throws(Error) {
+            guard certificateRequestContext.count <= 0xFF else {
+                throw Error.invalidContextLength(certificateRequestContext.count)
+            }
+            let blockLength = certificateList.reduce(0) {
+                $0 + 3 + $1.certificateData.count + 2 + RFC_8446.Wire.extensionsBlockLength($1.extensions)
+            }
+            guard blockLength <= 0xFF_FFFF - 4 - certificateRequestContext.count else {
+                throw Error.certificateListTooLong(blockLength)
+            }
+            self.certificateRequestContext = certificateRequestContext
+            self.certificateList = certificateList
+        }
+
+        /// Creates a Certificate payload WITHOUT validation (parse path).
+        init(__unchecked: Void, certificateRequestContext: [Byte], certificateList: [Entry]) {
             self.certificateRequestContext = certificateRequestContext
             self.certificateList = certificateList
         }
@@ -47,7 +67,7 @@ extension RFC_8446.Handshake {
 
         /// Wraps this payload in a ``RFC_8446/Handshake/Message`` envelope.
         public var message: RFC_8446.Handshake.Message {
-            RFC_8446.Handshake.Message(type: Self.handshakeType, body: self.bytes)
+            RFC_8446.Handshake.Message(__unchecked: (), type: Self.handshakeType, body: self.bytes)
         }
     }
 }
@@ -82,7 +102,7 @@ extension RFC_8446.Handshake.Certificate: Binary.Serializable {
                 entries.append(try sub.certificateEntry())
             }
             try reader.expectEnd()
-            self.init(certificateRequestContext: context, certificateList: entries)
+            self.init(__unchecked: (), certificateRequestContext: context, certificateList: entries)
         } catch {
             switch error {
             case .trailingData(let n): throw .trailingData(n)

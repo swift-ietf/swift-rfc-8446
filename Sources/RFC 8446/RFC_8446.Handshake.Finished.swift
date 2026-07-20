@@ -39,7 +39,19 @@ extension RFC_8446.Handshake {
         public let verifyData: [Byte]
 
         /// Creates a Finished payload.
-        public init(verifyData: [Byte]) {
+        ///
+        /// - Throws: `Error.verifyDataTooLong` if `verify_data` exceeds the
+        ///   handshake body's `uint24` bound (2^24-1 bytes). The exact
+        ///   `Hash.length` is negotiated and can only be checked by the caller.
+        public init(verifyData: [Byte]) throws(Error) {
+            guard verifyData.count <= 0xFF_FFFF else {
+                throw Error.verifyDataTooLong(verifyData.count)
+            }
+            self.verifyData = verifyData
+        }
+
+        /// Creates a Finished payload WITHOUT validation (parse path).
+        init(__unchecked: Void, verifyData: [Byte]) {
             self.verifyData = verifyData
         }
 
@@ -48,7 +60,7 @@ extension RFC_8446.Handshake {
 
         /// Wraps this payload in a ``RFC_8446/Handshake/Message`` envelope.
         public var message: RFC_8446.Handshake.Message {
-            RFC_8446.Handshake.Message(type: Self.handshakeType, body: self.bytes)
+            RFC_8446.Handshake.Message(__unchecked: (), type: Self.handshakeType, body: self.bytes)
         }
     }
 }
@@ -69,6 +81,6 @@ extension RFC_8446.Handshake.Finished: Binary.Serializable {
     /// for the negotiated cipher suite and can only be validated by the caller,
     /// so parsing itself has no failure mode (hence non-throwing).
     public init<Bytes: Collection>(binary bytes: Bytes) where Bytes.Element == Byte {
-        self.init(verifyData: Array(bytes))
+        self.init(__unchecked: (), verifyData: Array(bytes))
     }
 }

@@ -42,7 +42,31 @@ extension RFC_8446.Extension.PreSharedKey {
         public let binders: [[Byte]]
 
         /// Creates an OfferedPsks payload.
-        public init(identities: [Identity], binders: [[Byte]]) {
+        ///
+        /// - Throws: `Error.invalidBinderLength` if any binder is outside
+        ///   32...255 bytes; `Error.offeredPsksTooLong` if the serialized
+        ///   payload exceeds the 65535-byte `extension_data` ceiling.
+        public init(
+            identities: [Identity],
+            binders: [[Byte]]
+        ) throws(RFC_8446.Extension.PreSharedKey.Error) {
+            for binder in binders {
+                guard (32...255).contains(binder.count) else {
+                    throw .invalidBinderLength(binder.count)
+                }
+            }
+            let identitiesBlock = identities.reduce(0) { $0 + 2 + $1.identity.count + 4 }
+            let bindersBlock = binders.reduce(0) { $0 + 1 + $1.count }
+            let total = 2 + identitiesBlock + 2 + bindersBlock
+            guard total <= 0xFFFF else {
+                throw .offeredPsksTooLong(total)
+            }
+            self.identities = identities
+            self.binders = binders
+        }
+
+        /// Creates an OfferedPsks payload WITHOUT validation (parse path).
+        init(__unchecked: Void, identities: [Identity], binders: [[Byte]]) {
             self.identities = identities
             self.binders = binders
         }
@@ -50,6 +74,7 @@ extension RFC_8446.Extension.PreSharedKey {
         /// Wraps this payload in a generic ``RFC_8446/Extension/Data`` envelope.
         public var extensionData: RFC_8446.Extension.Data {
             RFC_8446.Extension.Data(
+                __unchecked: (),
                 type: RFC_8446.Extension.PreSharedKey.extensionType,
                 data: self.bytes
             )
@@ -97,7 +122,7 @@ extension RFC_8446.Extension.PreSharedKey.OfferedPsks: Binary.Serializable {
             }
 
             try reader.expectEnd()
-            self.init(identities: identities, binders: binders)
+            self.init(__unchecked: (), identities: identities, binders: binders)
         } catch {
             switch error {
             case .trailingData(let n): throw .trailingData(n)

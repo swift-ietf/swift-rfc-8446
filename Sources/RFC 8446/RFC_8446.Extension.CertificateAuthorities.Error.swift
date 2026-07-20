@@ -23,6 +23,12 @@ extension RFC_8446.Extension.CertificateAuthorities {
 
         /// Bytes remained after the authorities list.
         case trailingData(_ remaining: Int)
+
+        /// A DistinguishedName length is outside 1...65535.
+        case invalidAuthorityLength(_ count: Int)
+
+        /// The serialized authorities block exceeds its uint16 bound.
+        case authoritiesTooLong(_ byteCount: Int)
     }
 }
 
@@ -33,6 +39,10 @@ extension RFC_8446.Extension.CertificateAuthorities.Error: CustomStringConvertib
             return "TLS certificate_authorities truncated"
         case .trailingData(let remaining):
             return "TLS certificate_authorities has \(remaining) trailing bytes"
+        case .invalidAuthorityLength(let count):
+            return "TLS certificate_authorities authority length invalid: \(count) bytes (expected 1...65535)"
+        case .authoritiesTooLong(let byteCount):
+            return "TLS certificate_authorities too long: \(byteCount) bytes (max 65533)"
         }
     }
 }

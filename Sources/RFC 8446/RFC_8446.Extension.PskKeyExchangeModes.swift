@@ -32,7 +32,18 @@ extension RFC_8446.Extension {
         public let keModes: [PskKeyExchangeMode]
 
         /// Creates a psk_key_exchange_modes payload.
-        public init(keModes: [PskKeyExchangeMode]) {
+        ///
+        /// - Throws: `Error.invalidModeCount` if the mode count is outside
+        ///   1...255.
+        public init(keModes: [PskKeyExchangeMode]) throws(Error) {
+            guard (1...255).contains(keModes.count) else {
+                throw Error.invalidModeCount(keModes.count)
+            }
+            self.keModes = keModes
+        }
+
+        /// Creates a psk_key_exchange_modes payload WITHOUT validation (parse path).
+        init(__unchecked: Void, keModes: [PskKeyExchangeMode]) {
             self.keModes = keModes
         }
 
@@ -41,7 +52,7 @@ extension RFC_8446.Extension {
 
         /// Wraps this payload in a generic ``RFC_8446/Extension/Data`` envelope.
         public var extensionData: RFC_8446.Extension.Data {
-            RFC_8446.Extension.Data(type: Self.extensionType, data: self.bytes)
+            RFC_8446.Extension.Data(__unchecked: (), type: Self.extensionType, data: self.bytes)
         }
     }
 }
@@ -66,6 +77,7 @@ extension RFC_8446.Extension.PskKeyExchangeModes: Binary.Serializable {
             let modeBytes = try reader.vector8()
             try reader.expectEnd()
             self.init(
+                __unchecked: (),
                 keModes: modeBytes.map { RFC_8446.Extension.PskKeyExchangeMode(rawValue: $0.underlying) }
             )
         } catch {

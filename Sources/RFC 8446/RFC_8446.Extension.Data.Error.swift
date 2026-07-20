@@ -23,6 +23,9 @@ extension RFC_8446.Extension.Data {
 
         /// Bytes remained after the declared `extension_data` length.
         case trailingData(_ remaining: Int)
+
+        /// `extension_data` exceeds the `uint16` length bound (2^16-1 bytes).
+        case dataTooLong(_ count: Int)
     }
 }
 
@@ -33,6 +36,8 @@ extension RFC_8446.Extension.Data.Error: CustomStringConvertible {
             return "TLS extension truncated"
         case .trailingData(let remaining):
             return "TLS extension has \(remaining) trailing bytes"
+        case .dataTooLong(let count):
+            return "TLS extension_data too long: \(count) bytes (max 65535)"
         }
     }
 }

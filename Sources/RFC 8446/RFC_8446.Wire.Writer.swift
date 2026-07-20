@@ -30,7 +30,18 @@ extension RFC_8446.Wire {
         buffer.append(Byte(UInt8(value & 0xFF)))
     }
 
+    /// Serialized byte length of an extensions block's contents (4 envelope
+    /// header bytes plus `extension_data` per extension). Used by payload
+    /// constructors to validate `uint16` extensions-block bounds up front so
+    /// the append helpers below stay within their length-prefix domains.
+    static func extensionsBlockLength(_ extensions: [RFC_8446.Extension.Data]) -> Int {
+        extensions.reduce(0) { $0 + 4 + $1.data.count }
+    }
+
     /// Appends a `uint8`-length-prefixed opaque vector.
+    ///
+    /// - Precondition: `bytes.count <= 0xFF`, guaranteed by the validated
+    ///   constructors of every caller (violations trap in `UInt8.init`).
     static func appendVector8<Buffer: RangeReplaceableCollection>(
         _ bytes: [Byte],
         into buffer: inout Buffer
@@ -40,6 +51,9 @@ extension RFC_8446.Wire {
     }
 
     /// Appends a `uint16`-length-prefixed opaque vector.
+    ///
+    /// - Precondition: `bytes.count <= 0xFFFF`, guaranteed by the validated
+    ///   constructors of every caller (violations trap in `UInt16.init`).
     static func appendVector16<Buffer: RangeReplaceableCollection>(
         _ bytes: [Byte],
         into buffer: inout Buffer

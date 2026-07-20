@@ -32,7 +32,19 @@ extension RFC_8446.Extension {
         public let namedGroupList: [NamedGroup]
 
         /// Creates a supported_groups payload.
-        public init(namedGroupList: [NamedGroup]) {
+        ///
+        /// - Throws: `Error.invalidGroupCount` if the group count is outside
+        ///   1...32766 (the `uint16` byte-length bound within the
+        ///   `extension_data` ceiling).
+        public init(namedGroupList: [NamedGroup]) throws(Error) {
+            guard (1...32766).contains(namedGroupList.count) else {
+                throw Error.invalidGroupCount(namedGroupList.count)
+            }
+            self.namedGroupList = namedGroupList
+        }
+
+        /// Creates a supported_groups payload WITHOUT validation (parse path).
+        init(__unchecked: Void, namedGroupList: [NamedGroup]) {
             self.namedGroupList = namedGroupList
         }
 
@@ -41,7 +53,7 @@ extension RFC_8446.Extension {
 
         /// Wraps this payload in a generic ``RFC_8446/Extension/Data`` envelope.
         public var extensionData: RFC_8446.Extension.Data {
-            RFC_8446.Extension.Data(type: Self.extensionType, data: self.bytes)
+            RFC_8446.Extension.Data(__unchecked: (), type: Self.extensionType, data: self.bytes)
         }
     }
 }
@@ -63,7 +75,7 @@ extension RFC_8446.Extension.SupportedGroups: Binary.Serializable {
         do {
             let values = try reader.uint16List()
             try reader.expectEnd()
-            self.init(namedGroupList: values.map(RFC_8446.Extension.NamedGroup.init(rawValue:)))
+            self.init(__unchecked: (), namedGroupList: values.map(RFC_8446.Extension.NamedGroup.init(rawValue:)))
         } catch {
             switch error {
             case .trailingData(let n): throw .trailingData(n)

@@ -34,7 +34,19 @@ extension RFC_8446.Extension {
         public let supportedSignatureAlgorithms: [SignatureScheme]
 
         /// Creates a signature_algorithms payload.
-        public init(supportedSignatureAlgorithms: [SignatureScheme]) {
+        ///
+        /// - Throws: `Error.invalidAlgorithmCount` if the algorithm count is
+        ///   outside 1...32766 (the `uint16` byte-length bound within the
+        ///   `extension_data` ceiling).
+        public init(supportedSignatureAlgorithms: [SignatureScheme]) throws(Error) {
+            guard (1...32766).contains(supportedSignatureAlgorithms.count) else {
+                throw Error.invalidAlgorithmCount(supportedSignatureAlgorithms.count)
+            }
+            self.supportedSignatureAlgorithms = supportedSignatureAlgorithms
+        }
+
+        /// Creates a signature_algorithms payload WITHOUT validation (parse path).
+        init(__unchecked: Void, supportedSignatureAlgorithms: [SignatureScheme]) {
             self.supportedSignatureAlgorithms = supportedSignatureAlgorithms
         }
 
@@ -43,7 +55,7 @@ extension RFC_8446.Extension {
 
         /// Wraps this payload in a generic ``RFC_8446/Extension/Data`` envelope.
         public var extensionData: RFC_8446.Extension.Data {
-            RFC_8446.Extension.Data(type: Self.extensionType, data: self.bytes)
+            RFC_8446.Extension.Data(__unchecked: (), type: Self.extensionType, data: self.bytes)
         }
     }
 }
@@ -66,6 +78,7 @@ extension RFC_8446.Extension.SignatureAlgorithms: Binary.Serializable {
             let values = try reader.uint16List()
             try reader.expectEnd()
             self.init(
+                __unchecked: (),
                 supportedSignatureAlgorithms: values.map(RFC_8446.Extension.SignatureScheme.init(rawValue:))
             )
         } catch {

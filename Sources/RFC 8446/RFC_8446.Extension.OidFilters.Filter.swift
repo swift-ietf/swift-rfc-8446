@@ -36,7 +36,25 @@ extension RFC_8446.Extension.OidFilters {
         public let certificateExtensionValues: [Byte]
 
         /// Creates an OID filter.
-        public init(certificateExtensionOID: [Byte], certificateExtensionValues: [Byte]) {
+        ///
+        /// - Throws: `Error.invalidOIDLength` if the OID is outside 1...255
+        ///   bytes; `Error.valuesTooLong` if the values exceed 65535 bytes.
+        public init(
+            certificateExtensionOID: [Byte],
+            certificateExtensionValues: [Byte]
+        ) throws(RFC_8446.Extension.OidFilters.Error) {
+            guard (1...0xFF).contains(certificateExtensionOID.count) else {
+                throw .invalidOIDLength(certificateExtensionOID.count)
+            }
+            guard certificateExtensionValues.count <= 0xFFFF else {
+                throw .valuesTooLong(certificateExtensionValues.count)
+            }
+            self.certificateExtensionOID = certificateExtensionOID
+            self.certificateExtensionValues = certificateExtensionValues
+        }
+
+        /// Creates an OID filter WITHOUT validation (parse path).
+        init(__unchecked: Void, certificateExtensionOID: [Byte], certificateExtensionValues: [Byte]) {
             self.certificateExtensionOID = certificateExtensionOID
             self.certificateExtensionValues = certificateExtensionValues
         }
@@ -63,6 +81,7 @@ extension RFC_8446.Wire.Reader {
         let oid = try vector8()
         let values = try vector16()
         return RFC_8446.Extension.OidFilters.Filter(
+            __unchecked: (),
             certificateExtensionOID: oid,
             certificateExtensionValues: values
         )

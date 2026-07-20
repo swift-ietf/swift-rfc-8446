@@ -23,6 +23,15 @@ extension RFC_8446.Extension.OidFilters {
 
         /// Bytes remained after the filters list.
         case trailingData(_ remaining: Int)
+
+        /// A certificate_extension_oid length is outside 1...255.
+        case invalidOIDLength(_ count: Int)
+
+        /// A certificate_extension_values length exceeds its uint16 bound.
+        case valuesTooLong(_ count: Int)
+
+        /// The serialized filters block exceeds its uint16 bound.
+        case filtersTooLong(_ byteCount: Int)
     }
 }
 
@@ -33,6 +42,12 @@ extension RFC_8446.Extension.OidFilters.Error: CustomStringConvertible {
             return "TLS oid_filters truncated"
         case .trailingData(let remaining):
             return "TLS oid_filters has \(remaining) trailing bytes"
+        case .invalidOIDLength(let count):
+            return "TLS oid_filters OID length invalid: \(count) bytes (expected 1...255)"
+        case .valuesTooLong(let count):
+            return "TLS oid_filters values too long: \(count) bytes (max 65535)"
+        case .filtersTooLong(let byteCount):
+            return "TLS oid_filters too long: \(byteCount) bytes (max 65533)"
         }
     }
 }

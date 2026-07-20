@@ -36,7 +36,22 @@ extension RFC_8446.Handshake {
         public let signature: [Byte]
 
         /// Creates a CertificateVerify payload.
-        public init(algorithm: RFC_8446.Extension.SignatureScheme, signature: [Byte]) {
+        ///
+        /// - Throws: `Error.signatureTooLong` if `signature` exceeds the
+        ///   `uint16` length bound (65535 bytes).
+        public init(
+            algorithm: RFC_8446.Extension.SignatureScheme,
+            signature: [Byte]
+        ) throws(Error) {
+            guard signature.count <= 0xFFFF else {
+                throw Error.signatureTooLong(signature.count)
+            }
+            self.algorithm = algorithm
+            self.signature = signature
+        }
+
+        /// Creates a CertificateVerify payload WITHOUT validation (parse path).
+        init(__unchecked: Void, algorithm: RFC_8446.Extension.SignatureScheme, signature: [Byte]) {
             self.algorithm = algorithm
             self.signature = signature
         }
@@ -46,7 +61,7 @@ extension RFC_8446.Handshake {
 
         /// Wraps this payload in a ``RFC_8446/Handshake/Message`` envelope.
         public var message: RFC_8446.Handshake.Message {
-            RFC_8446.Handshake.Message(type: Self.handshakeType, body: self.bytes)
+            RFC_8446.Handshake.Message(__unchecked: (), type: Self.handshakeType, body: self.bytes)
         }
     }
 }
@@ -71,6 +86,7 @@ extension RFC_8446.Handshake.CertificateVerify: Binary.Serializable {
             let signature = try reader.vector16()
             try reader.expectEnd()
             self.init(
+                __unchecked: (),
                 algorithm: RFC_8446.Extension.SignatureScheme(rawValue: algorithm),
                 signature: signature
             )

@@ -35,7 +35,25 @@ extension RFC_8446.Extension {
         public let authorities: [[Byte]]
 
         /// Creates a certificate_authorities payload.
-        public init(authorities: [[Byte]]) {
+        ///
+        /// - Throws: `Error.invalidAuthorityLength` if any DistinguishedName
+        ///   is outside 1...65535 bytes; `Error.authoritiesTooLong` if the
+        ///   serialized authorities block exceeds 65533 bytes.
+        public init(authorities: [[Byte]]) throws(Error) {
+            for authority in authorities {
+                guard (1...0xFFFF).contains(authority.count) else {
+                    throw Error.invalidAuthorityLength(authority.count)
+                }
+            }
+            let blockLength = authorities.reduce(0) { $0 + 2 + $1.count }
+            guard blockLength <= 0xFFFD else {
+                throw Error.authoritiesTooLong(blockLength)
+            }
+            self.authorities = authorities
+        }
+
+        /// Creates a certificate_authorities payload WITHOUT validation (parse path).
+        init(__unchecked: Void, authorities: [[Byte]]) {
             self.authorities = authorities
         }
 
@@ -44,7 +62,7 @@ extension RFC_8446.Extension {
 
         /// Wraps this payload in a generic ``RFC_8446/Extension/Data`` envelope.
         public var extensionData: RFC_8446.Extension.Data {
-            RFC_8446.Extension.Data(type: Self.extensionType, data: self.bytes)
+            RFC_8446.Extension.Data(__unchecked: (), type: Self.extensionType, data: self.bytes)
         }
     }
 }
@@ -75,7 +93,7 @@ extension RFC_8446.Extension.CertificateAuthorities: Binary.Serializable {
                 authorities.append(try sub.vector16())
             }
             try reader.expectEnd()
-            self.init(authorities: authorities)
+            self.init(__unchecked: (), authorities: authorities)
         } catch {
             switch error {
             case .trailingData(let n): throw .trailingData(n)

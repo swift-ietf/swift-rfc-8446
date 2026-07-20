@@ -35,7 +35,19 @@ extension RFC_8446.Handshake {
         public let extensions: [RFC_8446.Extension.Data]
 
         /// Creates an EncryptedExtensions payload.
-        public init(extensions: [RFC_8446.Extension.Data]) {
+        ///
+        /// - Throws: `Error.extensionsTooLong` if the serialized extensions
+        ///   block exceeds the `uint16` bound (65535 bytes).
+        public init(extensions: [RFC_8446.Extension.Data]) throws(Error) {
+            let blockLength = RFC_8446.Wire.extensionsBlockLength(extensions)
+            guard blockLength <= 0xFFFF else {
+                throw Error.extensionsTooLong(blockLength)
+            }
+            self.extensions = extensions
+        }
+
+        /// Creates an EncryptedExtensions payload WITHOUT validation (parse path).
+        init(__unchecked: Void, extensions: [RFC_8446.Extension.Data]) {
             self.extensions = extensions
         }
 
@@ -44,7 +56,7 @@ extension RFC_8446.Handshake {
 
         /// Wraps this payload in a ``RFC_8446/Handshake/Message`` envelope.
         public var message: RFC_8446.Handshake.Message {
-            RFC_8446.Handshake.Message(type: Self.handshakeType, body: self.bytes)
+            RFC_8446.Handshake.Message(__unchecked: (), type: Self.handshakeType, body: self.bytes)
         }
     }
 }
@@ -66,7 +78,7 @@ extension RFC_8446.Handshake.EncryptedExtensions: Binary.Serializable {
         do {
             let extensions = try reader.extensions()
             try reader.expectEnd()
-            self.init(extensions: extensions)
+            self.init(__unchecked: (), extensions: extensions)
         } catch {
             switch error {
             case .trailingData(let n): throw .trailingData(n)

@@ -36,7 +36,23 @@ extension RFC_8446.Extension.KeyShare {
         public let keyExchange: [Byte]
 
         /// Creates a key share entry.
-        public init(group: RFC_8446.Extension.NamedGroup, keyExchange: [Byte]) {
+        ///
+        /// - Throws: `Error.invalidKeyExchangeLength` if `keyExchange` is
+        ///   outside 1...65531 bytes (spec floor plus the `extension_data`
+        ///   ceiling of the enclosing envelope forms).
+        public init(
+            group: RFC_8446.Extension.NamedGroup,
+            keyExchange: [Byte]
+        ) throws(RFC_8446.Extension.KeyShare.Error) {
+            guard (1...0xFFFB).contains(keyExchange.count) else {
+                throw .invalidKeyExchangeLength(keyExchange.count)
+            }
+            self.group = group
+            self.keyExchange = keyExchange
+        }
+
+        /// Creates a key share entry WITHOUT validation (parse path).
+        init(__unchecked: Void, group: RFC_8446.Extension.NamedGroup, keyExchange: [Byte]) {
             self.group = group
             self.keyExchange = keyExchange
         }
@@ -63,6 +79,7 @@ extension RFC_8446.Wire.Reader {
         let group = try uint16()
         let keyExchange = try vector16()
         return RFC_8446.Extension.KeyShare.Entry(
+            __unchecked: (),
             group: RFC_8446.Extension.NamedGroup(rawValue: group),
             keyExchange: keyExchange
         )

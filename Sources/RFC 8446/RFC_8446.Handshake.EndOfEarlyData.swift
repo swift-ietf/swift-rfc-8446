@@ -37,7 +37,7 @@ extension RFC_8446.Handshake {
 
         /// Wraps this payload in a ``RFC_8446/Handshake/Message`` envelope.
         public var message: RFC_8446.Handshake.Message {
-            RFC_8446.Handshake.Message(type: Self.handshakeType, body: [])
+            RFC_8446.Handshake.Message(__unchecked: (), type: Self.handshakeType, body: [])
         }
     }
 }

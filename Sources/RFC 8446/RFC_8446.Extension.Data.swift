@@ -29,7 +29,20 @@ extension RFC_8446.Extension {
         public let data: [Byte]
 
         /// Creates an extension
-        public init(type: ExtensionType, data: [Byte]) {
+        ///
+        /// - Throws: `Error.dataTooLong` if `data` exceeds the `uint16`
+        ///   `extension_data` length bound (2^16-1 bytes).
+        public init(type: ExtensionType, data: [Byte]) throws(Error) {
+            guard data.count <= 0xFFFF else {
+                throw Error.dataTooLong(data.count)
+            }
+            self.type = type
+            self.data = data
+        }
+
+        /// Creates an extension WITHOUT validation (parse path and payload
+        /// wrappers whose own bounds already guarantee the length invariant).
+        init(__unchecked: Void, type: ExtensionType, data: [Byte]) {
             self.type = type
             self.data = data
         }
@@ -74,6 +87,7 @@ extension RFC_8446.Extension.Data: Binary.Serializable {
             throw .truncated
         }
         guard reader.isAtEnd else { throw .trailingData(reader.remaining) }
-        self.init(type: RFC_8446.Extension.ExtensionType(rawValue: type), data: data)
+        // vector16() bounds data to 2^16-1 by construction.
+        self.init(__unchecked: (), type: RFC_8446.Extension.ExtensionType(rawValue: type), data: data)
     }
 }

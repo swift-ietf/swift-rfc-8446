@@ -23,6 +23,12 @@ extension RFC_8446.Extension.KeyShare {
 
         /// Bytes remained after the payload.
         case trailingData(_ remaining: Int)
+
+        /// The key_exchange length is outside 1...65531 (envelope-fitting spec bounds).
+        case invalidKeyExchangeLength(_ count: Int)
+
+        /// The serialized client_shares block exceeds its uint16 bound.
+        case clientSharesTooLong(_ byteCount: Int)
     }
 }
 
@@ -33,6 +39,10 @@ extension RFC_8446.Extension.KeyShare.Error: CustomStringConvertible {
             return "TLS key_share truncated"
         case .trailingData(let remaining):
             return "TLS key_share has \(remaining) trailing bytes"
+        case .invalidKeyExchangeLength(let count):
+            return "TLS key_share key_exchange length invalid: \(count) bytes (expected 1...65531)"
+        case .clientSharesTooLong(let byteCount):
+            return "TLS key_share client_shares too long: \(byteCount) bytes (max 65533)"
         }
     }
 }

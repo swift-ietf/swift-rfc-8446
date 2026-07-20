@@ -23,6 +23,15 @@ extension RFC_8446.Extension.PreSharedKey {
 
         /// Bytes remained after the payload.
         case trailingData(_ remaining: Int)
+
+        /// A PskIdentity identity length is outside 1...65535.
+        case invalidIdentityLength(_ count: Int)
+
+        /// A PskBinderEntry length is outside 32...255.
+        case invalidBinderLength(_ count: Int)
+
+        /// The serialized OfferedPsks payload exceeds the extension_data bound.
+        case offeredPsksTooLong(_ byteCount: Int)
     }
 }
 
@@ -33,6 +42,12 @@ extension RFC_8446.Extension.PreSharedKey.Error: CustomStringConvertible {
             return "TLS pre_shared_key truncated"
         case .trailingData(let remaining):
             return "TLS pre_shared_key has \(remaining) trailing bytes"
+        case .invalidIdentityLength(let count):
+            return "TLS pre_shared_key identity length invalid: \(count) bytes (expected 1...65535)"
+        case .invalidBinderLength(let count):
+            return "TLS pre_shared_key binder length invalid: \(count) bytes (expected 32...255)"
+        case .offeredPsksTooLong(let byteCount):
+            return "TLS pre_shared_key OfferedPsks too long: \(byteCount) bytes (max 65535)"
         }
     }
 }

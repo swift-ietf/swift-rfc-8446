@@ -23,6 +23,9 @@ extension RFC_8446.Handshake.EncryptedExtensions {
 
         /// Bytes remained after the extensions block.
         case trailingData(_ remaining: Int)
+
+        /// The serialized extensions block exceeds 65535 bytes.
+        case extensionsTooLong(_ byteCount: Int)
     }
 }
 
@@ -33,6 +36,8 @@ extension RFC_8446.Handshake.EncryptedExtensions.Error: CustomStringConvertible 
             return "TLS EncryptedExtensions truncated"
         case .trailingData(let remaining):
             return "TLS EncryptedExtensions has \(remaining) trailing bytes"
+        case .extensionsTooLong(let byteCount):
+            return "TLS EncryptedExtensions extensions too long: \(byteCount) bytes (max 65535)"
         }
     }
 }

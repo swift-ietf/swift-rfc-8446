@@ -36,7 +36,22 @@ extension RFC_8446.Extension.PreSharedKey {
         public let obfuscatedTicketAge: UInt32
 
         /// Creates a PSK identity.
-        public init(identity: [Byte], obfuscatedTicketAge: UInt32) {
+        ///
+        /// - Throws: `Error.invalidIdentityLength` if `identity` is outside
+        ///   1...65535 bytes.
+        public init(
+            identity: [Byte],
+            obfuscatedTicketAge: UInt32
+        ) throws(RFC_8446.Extension.PreSharedKey.Error) {
+            guard (1...0xFFFF).contains(identity.count) else {
+                throw .invalidIdentityLength(identity.count)
+            }
+            self.identity = identity
+            self.obfuscatedTicketAge = obfuscatedTicketAge
+        }
+
+        /// Creates a PSK identity WITHOUT validation (parse path).
+        init(__unchecked: Void, identity: [Byte], obfuscatedTicketAge: UInt32) {
             self.identity = identity
             self.obfuscatedTicketAge = obfuscatedTicketAge
         }
@@ -63,6 +78,7 @@ extension RFC_8446.Wire.Reader {
         let identity = try vector16()
         let age = try uint32()
         return RFC_8446.Extension.PreSharedKey.Identity(
+            __unchecked: (),
             identity: identity,
             obfuscatedTicketAge: age
         )

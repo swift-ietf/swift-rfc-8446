@@ -28,13 +28,30 @@ extension RFC_8446.Extension {
         public let padding: [Byte]
 
         /// Creates a padding payload from explicit bytes.
-        public init(padding: [Byte]) {
+        ///
+        /// - Throws: `Error.invalidPaddingLength` if `padding` exceeds the
+        ///   65535-byte `extension_data` ceiling.
+        public init(padding: [Byte]) throws(Error) {
+            guard padding.count <= 0xFFFF else {
+                throw Error.invalidPaddingLength(padding.count)
+            }
             self.padding = padding
         }
 
         /// Creates a padding payload of `length` zero bytes.
-        public init(length: Int) {
-            self.padding = Array(repeating: Byte(0), count: Swift.max(0, length))
+        ///
+        /// - Throws: `Error.invalidPaddingLength` if `length` is outside
+        ///   0...65535.
+        public init(length: Int) throws(Error) {
+            guard (0...0xFFFF).contains(length) else {
+                throw Error.invalidPaddingLength(length)
+            }
+            self.padding = Array(repeating: Byte(0), count: length)
+        }
+
+        /// Creates a padding payload WITHOUT validation (parse path).
+        init(__unchecked: Void, padding: [Byte]) {
+            self.padding = padding
         }
 
         /// The extension type for this payload (`padding`).
@@ -42,7 +59,7 @@ extension RFC_8446.Extension {
 
         /// Wraps this payload in a generic ``RFC_8446/Extension/Data`` envelope.
         public var extensionData: RFC_8446.Extension.Data {
-            RFC_8446.Extension.Data(type: Self.extensionType, data: self.bytes)
+            RFC_8446.Extension.Data(__unchecked: (), type: Self.extensionType, data: self.bytes)
         }
     }
 }
@@ -59,6 +76,6 @@ extension RFC_8446.Extension.Padding: Binary.Serializable {
 
     /// Parses a padding `extension_data` body (the entire run of bytes).
     public init<Bytes: Collection>(binary bytes: Bytes) where Bytes.Element == Byte {
-        self.init(padding: Array(bytes))
+        self.init(__unchecked: (), padding: Array(bytes))
     }
 }

@@ -48,12 +48,43 @@ extension RFC_8446.Handshake {
         public let extensions: [RFC_8446.Extension.Data]
 
         /// Creates a NewSessionTicket payload.
+        ///
+        /// - Throws: `Error.invalidNonceLength` if the nonce exceeds 255
+        ///   bytes; `Error.invalidTicketLength` if the ticket is outside
+        ///   1...65535 bytes; `Error.extensionsTooLong` if the serialized
+        ///   extensions block exceeds 65534 bytes.
         public init(
             ticketLifetime: UInt32,
             ticketAgeAdd: UInt32,
             ticketNonce: [Byte],
             ticket: [Byte],
             extensions: [RFC_8446.Extension.Data] = []
+        ) throws(Error) {
+            guard ticketNonce.count <= 0xFF else {
+                throw Error.invalidNonceLength(ticketNonce.count)
+            }
+            guard (1...0xFFFF).contains(ticket.count) else {
+                throw Error.invalidTicketLength(ticket.count)
+            }
+            let blockLength = RFC_8446.Wire.extensionsBlockLength(extensions)
+            guard blockLength <= 0xFFFE else {
+                throw Error.extensionsTooLong(blockLength)
+            }
+            self.ticketLifetime = ticketLifetime
+            self.ticketAgeAdd = ticketAgeAdd
+            self.ticketNonce = ticketNonce
+            self.ticket = ticket
+            self.extensions = extensions
+        }
+
+        /// Creates a NewSessionTicket payload WITHOUT validation (parse path).
+        init(
+            __unchecked: Void,
+            ticketLifetime: UInt32,
+            ticketAgeAdd: UInt32,
+            ticketNonce: [Byte],
+            ticket: [Byte],
+            extensions: [RFC_8446.Extension.Data]
         ) {
             self.ticketLifetime = ticketLifetime
             self.ticketAgeAdd = ticketAgeAdd
@@ -67,7 +98,7 @@ extension RFC_8446.Handshake {
 
         /// Wraps this payload in a ``RFC_8446/Handshake/Message`` envelope.
         public var message: RFC_8446.Handshake.Message {
-            RFC_8446.Handshake.Message(type: Self.handshakeType, body: self.bytes)
+            RFC_8446.Handshake.Message(__unchecked: (), type: Self.handshakeType, body: self.bytes)
         }
     }
 }
@@ -98,6 +129,7 @@ extension RFC_8446.Handshake.NewSessionTicket: Binary.Serializable {
             let extensions = try reader.extensions()
             try reader.expectEnd()
             self.init(
+                __unchecked: (),
                 ticketLifetime: lifetime,
                 ticketAgeAdd: ageAdd,
                 ticketNonce: nonce,
