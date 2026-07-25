@@ -1,0 +1,6 @@
+version: 1
+builder:
+  configs:
+  - documentation_targets:
+    - RFC 8446
+    - RFC 8446 Standard Library Integration
