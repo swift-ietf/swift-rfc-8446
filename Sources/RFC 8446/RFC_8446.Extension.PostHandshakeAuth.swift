@@ -52,7 +52,7 @@ extension RFC_8446.Extension.PostHandshakeAuth: Binary.Serializable {
     }
 
     /// Parses a post_handshake_auth `extension_data` body (which MUST be empty).
-    public init<Bytes: Collection>(binary bytes: Bytes) throws(Error)
+    public init<Bytes: Swift.Collection>(binary bytes: Bytes) throws(Error)
     where Bytes.Element == Byte {
         guard bytes.isEmpty else { throw .trailingData(bytes.count) }
         self.init()

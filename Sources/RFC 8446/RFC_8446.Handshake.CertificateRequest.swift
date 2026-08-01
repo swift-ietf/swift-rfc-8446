@@ -83,7 +83,7 @@ extension RFC_8446.Handshake.CertificateRequest: Binary.Serializable {
     }
 
     /// Parses a CertificateRequest payload body (without the handshake header).
-    public init<Bytes: Collection>(binary bytes: Bytes) throws(Error)
+    public init<Bytes: Swift.Collection>(binary bytes: Bytes) throws(Error)
     where Bytes.Element == Byte {
         var reader = RFC_8446.Wire.Reader(Array(bytes))
         do {

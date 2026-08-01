@@ -55,7 +55,7 @@ extension RFC_8446.Extension.SupportedVersions.ServerHello: Binary.Serializable 
     }
 
     /// Parses a ServerHello supported_versions `extension_data` body.
-    public init<Bytes: Collection>(binary bytes: Bytes) throws(RFC_8446.Extension.SupportedVersions.Error)
+    public init<Bytes: Swift.Collection>(binary bytes: Bytes) throws(RFC_8446.Extension.SupportedVersions.Error)
     where Bytes.Element == Byte {
         var reader = RFC_8446.Wire.Reader(Array(bytes))
         do {

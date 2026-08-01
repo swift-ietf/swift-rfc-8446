@@ -75,7 +75,7 @@ extension RFC_8446.Extension.Data: Binary.Serializable {
     ///
     /// - Parameter bytes: Exactly one extension envelope; trailing bytes are
     ///   rejected.
-    public init<Bytes: Collection>(binary bytes: Bytes) throws(Error)
+    public init<Bytes: Swift.Collection>(binary bytes: Bytes) throws(Error)
     where Bytes.Element == Byte {
         var reader = RFC_8446.Wire.Reader(Array(bytes))
         let type: UInt16

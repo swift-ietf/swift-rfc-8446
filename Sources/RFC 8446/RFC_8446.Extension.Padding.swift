@@ -78,7 +78,7 @@ extension RFC_8446.Extension.Padding: Binary.Serializable {
     ///
     /// - Throws: `Error.invalidPaddingLength` if the input exceeds the
     ///   65535-byte `extension_data` ceiling.
-    public init<Bytes: Collection>(binary bytes: Bytes) throws(Error)
+    public init<Bytes: Swift.Collection>(binary bytes: Bytes) throws(Error)
     where Bytes.Element == Byte {
         let padding = Array(bytes)
         guard padding.count <= 0xFFFF else {

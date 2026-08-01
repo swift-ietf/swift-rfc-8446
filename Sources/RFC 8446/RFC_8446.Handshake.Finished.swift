@@ -83,7 +83,7 @@ extension RFC_8446.Handshake.Finished: Binary.Serializable {
     /// here so serialization cannot silently truncate.
     ///
     /// - Throws: `Error.verifyDataTooLong` if the input exceeds 2^24-1 bytes.
-    public init<Bytes: Collection>(binary bytes: Bytes) throws(Error)
+    public init<Bytes: Swift.Collection>(binary bytes: Bytes) throws(Error)
     where Bytes.Element == Byte {
         let verifyData = Array(bytes)
         guard verifyData.count <= 0xFF_FFFF else {

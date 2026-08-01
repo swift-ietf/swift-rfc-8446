@@ -115,7 +115,7 @@ extension RFC_8446.Record: Binary.Serializable {
     ///
     /// - Parameter bytes: At least 5 bytes (header) plus fragment
     /// - Throws: `Error` if bytes are malformed
-    public init<Bytes: Collection>(binary bytes: Bytes) throws(Error)
+    public init<Bytes: Swift.Collection>(binary bytes: Bytes) throws(Error)
     where Bytes.Element == Byte {
         guard bytes.count >= Limits.headerSize else {
             throw Error.truncated(bytes.count)

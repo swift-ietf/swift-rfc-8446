@@ -73,7 +73,7 @@ extension RFC_8446.Extension.SignatureAlgorithmsCert: Binary.Serializable {
     }
 
     /// Parses a signature_algorithms_cert `extension_data` body.
-    public init<Bytes: Collection>(binary bytes: Bytes) throws(Error)
+    public init<Bytes: Swift.Collection>(binary bytes: Bytes) throws(Error)
     where Bytes.Element == Byte {
         var reader = RFC_8446.Wire.Reader(Array(bytes))
         do {

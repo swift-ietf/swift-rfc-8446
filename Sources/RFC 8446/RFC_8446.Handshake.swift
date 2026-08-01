@@ -197,7 +197,7 @@ extension RFC_8446.Handshake.Message: Binary.Serializable {
     ///
     /// - Parameter bytes: The 1-byte type, 3-byte `uint24` length, and body.
     ///   Trailing bytes past the declared length are rejected.
-    public init<Bytes: Collection>(binary bytes: Bytes) throws(Error)
+    public init<Bytes: Swift.Collection>(binary bytes: Bytes) throws(Error)
     where Bytes.Element == Byte {
         var reader = RFC_8446.Wire.Reader(Array(bytes))
         let rawType: UInt8
