@@ -34,8 +34,10 @@ extension RFC_8446.Extension.Cookie.Error: CustomStringConvertible {
         switch self {
         case .truncated:
             return "TLS cookie truncated"
+
         case .trailingData(let remaining):
             return "TLS cookie has \(remaining) trailing bytes"
+
         case .invalidCookieLength(let count):
             return "TLS cookie length invalid: \(count) bytes (expected 1...65533)"
         }

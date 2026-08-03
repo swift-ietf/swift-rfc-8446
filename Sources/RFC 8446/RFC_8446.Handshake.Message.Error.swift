@@ -34,8 +34,10 @@ extension RFC_8446.Handshake.Message.Error: CustomStringConvertible {
         switch self {
         case .truncated:
             return "TLS handshake message truncated"
+
         case .lengthMismatch(let declared, let available):
             return "TLS handshake message length mismatch: declared \(declared), available \(available)"
+
         case .bodyTooLong(let count):
             return "TLS handshake message body too long: \(count) bytes (max 16777215)"
         }

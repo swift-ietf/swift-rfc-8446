@@ -37,10 +37,13 @@ extension RFC_8446.Handshake.CertificateRequest.Error: CustomStringConvertible {
         switch self {
         case .truncated:
             return "TLS CertificateRequest truncated"
+
         case .trailingData(let remaining):
             return "TLS CertificateRequest has \(remaining) trailing bytes"
+
         case .invalidContextLength(let count):
             return "TLS CertificateRequest context length invalid: \(count) bytes (max 255)"
+
         case .extensionsTooLong(let byteCount):
             return "TLS CertificateRequest extensions too long: \(byteCount) bytes (max 65535)"
         }

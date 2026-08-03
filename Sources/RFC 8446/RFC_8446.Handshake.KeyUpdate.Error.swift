@@ -31,6 +31,7 @@ extension RFC_8446.Handshake.KeyUpdate.Error: CustomStringConvertible {
         switch self {
         case .truncated:
             return "TLS KeyUpdate truncated"
+
         case .trailingData(let remaining):
             return "TLS KeyUpdate has \(remaining) trailing bytes"
         }

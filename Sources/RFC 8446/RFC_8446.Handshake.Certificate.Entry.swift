@@ -89,7 +89,8 @@ extension RFC_8446.Handshake.Certificate.Entry: Binary.Serializable {
 extension RFC_8446.Wire.Reader {
     /// Reads one ``RFC_8446/Handshake/Certificate/Entry`` from the cursor.
     mutating func certificateEntry() throws(RFC_8446.Wire.Error)
-    -> RFC_8446.Handshake.Certificate.Entry {
+        -> RFC_8446.Handshake.Certificate.Entry
+    {
         let data = try vector24()
         let entryExtensions = try extensions()
         return RFC_8446.Handshake.Certificate.Entry(__unchecked: (), certificateData: data, extensions: entryExtensions)

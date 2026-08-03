@@ -31,6 +31,7 @@ extension RFC_8446.Extension.EarlyData.Error: CustomStringConvertible {
         switch self {
         case .truncated:
             return "TLS early_data truncated"
+
         case .trailingData(let remaining):
             return "TLS early_data has \(remaining) trailing bytes"
         }

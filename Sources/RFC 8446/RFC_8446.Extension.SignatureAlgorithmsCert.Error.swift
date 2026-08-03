@@ -34,8 +34,10 @@ extension RFC_8446.Extension.SignatureAlgorithmsCert.Error: CustomStringConverti
         switch self {
         case .truncated:
             return "TLS signature_algorithms_cert truncated"
+
         case .trailingData(let remaining):
             return "TLS signature_algorithms_cert has \(remaining) trailing bytes"
+
         case .invalidAlgorithmCount(let count):
             return "TLS signature_algorithms_cert algorithm count invalid: \(count) (expected 1...32766)"
         }
