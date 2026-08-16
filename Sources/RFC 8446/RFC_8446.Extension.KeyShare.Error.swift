@@ -37,10 +37,13 @@ extension RFC_8446.Extension.KeyShare.Error: CustomStringConvertible {
         switch self {
         case .truncated:
             return "TLS key_share truncated"
+
         case .trailingData(let remaining):
             return "TLS key_share has \(remaining) trailing bytes"
+
         case .invalidKeyExchangeLength(let count):
             return "TLS key_share key_exchange length invalid: \(count) bytes (expected 1...65531)"
+
         case .clientSharesTooLong(let byteCount):
             return "TLS key_share client_shares too long: \(byteCount) bytes (max 65533)"
         }

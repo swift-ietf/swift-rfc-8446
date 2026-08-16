@@ -56,7 +56,11 @@ extension RFC_8446.Handshake {
         }
 
         /// Creates a CertificateRequest payload WITHOUT validation (parse path).
-        init(__unchecked: Void, certificateRequestContext: [Byte], extensions: [RFC_8446.Extension.Data]) {
+        init(
+            __unchecked: Void,
+            certificateRequestContext: [Byte],
+            extensions: [RFC_8446.Extension.Data]
+        ) {
             self.certificateRequestContext = certificateRequestContext
             self.extensions = extensions
         }

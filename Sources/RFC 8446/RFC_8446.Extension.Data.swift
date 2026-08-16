@@ -88,6 +88,10 @@ extension RFC_8446.Extension.Data: Binary.Serializable {
         }
         guard reader.isAtEnd else { throw .trailingData(reader.remaining) }
         // vector16() bounds data to 2^16-1 by construction.
-        self.init(__unchecked: (), type: RFC_8446.Extension.ExtensionType(rawValue: type), data: data)
+        self.init(
+            __unchecked: (),
+            type: RFC_8446.Extension.ExtensionType(rawValue: type),
+            data: data
+        )
     }
 }

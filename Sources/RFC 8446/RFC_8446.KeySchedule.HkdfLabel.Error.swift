@@ -31,6 +31,7 @@ extension RFC_8446.KeySchedule.HkdfLabel.Error: CustomStringConvertible {
         switch self {
         case .truncated:
             return "TLS HkdfLabel truncated"
+
         case .trailingData(let remaining):
             return "TLS HkdfLabel has \(remaining) trailing bytes"
         }

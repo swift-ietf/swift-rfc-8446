@@ -64,15 +64,19 @@ extension RFC_8446 {
 
         // MARK: - Known Versions
 
+        // swift-format-ignore: AlwaysUseLowerCamelCase
         /// TLS 1.0 (0x0301)
         public static let tls1_0 = Self(__unchecked: (), rawValue: 0x0301)
 
+        // swift-format-ignore: AlwaysUseLowerCamelCase
         /// TLS 1.1 (0x0302)
         public static let tls1_1 = Self(__unchecked: (), rawValue: 0x0302)
 
+        // swift-format-ignore: AlwaysUseLowerCamelCase
         /// TLS 1.2 (0x0303)
         public static let tls1_2 = Self(__unchecked: (), rawValue: 0x0303)
 
+        // swift-format-ignore: AlwaysUseLowerCamelCase
         /// TLS 1.3 (0x0304)
         public static let tls1_3 = Self(__unchecked: (), rawValue: 0x0304)
 

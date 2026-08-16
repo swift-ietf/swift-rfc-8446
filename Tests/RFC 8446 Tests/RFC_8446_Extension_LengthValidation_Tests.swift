@@ -28,7 +28,8 @@ extension RFC_8446.Extension.Data {
             }
         }
 
-        @Test func `init accepts extension_data at the uint16 bound and serializes totally`() throws {
+        @Test func `init accepts extension_data at the uint16 bound and serializes totally`() throws
+        {
             let ext = try RFC_8446.Extension.Data(
                 type: .serverName,
                 data: [Byte](repeating: Byte(0xAB), count: 0xFFFF)
@@ -81,11 +82,17 @@ extension RFC_8446.Extension.KeyShare.ClientHello {
 extension RFC_8446.Extension.CertificateAuthorities {
     @Suite struct `Edge Case` {
         @Test func `init rejects empty authorities and oversize blocks`() {
-            #expect(throws: RFC_8446.Extension.CertificateAuthorities.Error.invalidAuthorityLength(0)) {
+            #expect(
+                throws: RFC_8446.Extension.CertificateAuthorities.Error.invalidAuthorityLength(0)
+            ) {
                 _ = try RFC_8446.Extension.CertificateAuthorities(authorities: [[]])
             }
             let big = [Byte](repeating: Byte(0), count: 40_000)
-            #expect(throws: RFC_8446.Extension.CertificateAuthorities.Error.authoritiesTooLong(2 * 40_002)) {
+            #expect(
+                throws: RFC_8446.Extension.CertificateAuthorities.Error.authoritiesTooLong(
+                    2 * 40_002
+                )
+            ) {
                 _ = try RFC_8446.Extension.CertificateAuthorities(authorities: [big, big])
             }
         }
@@ -125,7 +132,10 @@ extension RFC_8446.Extension.PreSharedKey.OfferedPsks {
     @Suite struct `Edge Case` {
         @Test func `identity init rejects empty identity`() {
             #expect(throws: RFC_8446.Extension.PreSharedKey.Error.invalidIdentityLength(0)) {
-                _ = try RFC_8446.Extension.PreSharedKey.Identity(identity: [], obfuscatedTicketAge: 0)
+                _ = try RFC_8446.Extension.PreSharedKey.Identity(
+                    identity: [],
+                    obfuscatedTicketAge: 0
+                )
             }
         }
 
@@ -206,7 +216,9 @@ extension RFC_8446.Extension.SignatureAlgorithms {
             #expect(throws: RFC_8446.Extension.SignatureAlgorithms.Error.invalidAlgorithmCount(0)) {
                 _ = try RFC_8446.Extension.SignatureAlgorithms(supportedSignatureAlgorithms: [])
             }
-            #expect(throws: RFC_8446.Extension.SignatureAlgorithms.Error.invalidAlgorithmCount(32767)) {
+            #expect(
+                throws: RFC_8446.Extension.SignatureAlgorithms.Error.invalidAlgorithmCount(32767)
+            ) {
                 _ = try RFC_8446.Extension.SignatureAlgorithms(
                     supportedSignatureAlgorithms: Array(repeating: .ed25519, count: 32767)
                 )
@@ -218,7 +230,9 @@ extension RFC_8446.Extension.SignatureAlgorithms {
 extension RFC_8446.Extension.SignatureAlgorithmsCert {
     @Suite struct `Edge Case` {
         @Test func `init rejects empty and oversize algorithm lists`() {
-            #expect(throws: RFC_8446.Extension.SignatureAlgorithmsCert.Error.invalidAlgorithmCount(0)) {
+            #expect(
+                throws: RFC_8446.Extension.SignatureAlgorithmsCert.Error.invalidAlgorithmCount(0)
+            ) {
                 _ = try RFC_8446.Extension.SignatureAlgorithmsCert(supportedSignatureAlgorithms: [])
             }
         }

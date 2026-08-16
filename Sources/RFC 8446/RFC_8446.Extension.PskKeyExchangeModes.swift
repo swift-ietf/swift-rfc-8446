@@ -78,7 +78,9 @@ extension RFC_8446.Extension.PskKeyExchangeModes: Binary.Serializable {
             try reader.expectEnd()
             self.init(
                 __unchecked: (),
-                keModes: modeBytes.map { RFC_8446.Extension.PskKeyExchangeMode(rawValue: $0.underlying) }
+                keModes: modeBytes.map {
+                    RFC_8446.Extension.PskKeyExchangeMode(rawValue: $0.underlying)
+                }
             )
         } catch {
             switch error {

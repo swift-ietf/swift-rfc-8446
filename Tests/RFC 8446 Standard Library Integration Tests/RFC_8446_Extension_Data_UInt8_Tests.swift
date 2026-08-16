@@ -17,22 +17,22 @@ import Testing
 @Suite("RFC 8446 Extension.Data UInt8 forwarder")
 struct RFC_8446_Extension_Data_UInt8_Tests {
     @Test
-    func `forwarder agrees with primary byte-domain construction`() {
+    func `forwarder agrees with primary byte-domain construction`() throws {
         let uint8Data: [UInt8] = [0x00, 0x05, 0x68, 0x65, 0x6C, 0x6C, 0x6F]
-        let ext = try! RFC_8446.Extension.Data(type: .serverName, data: uint8Data)
+        let ext = try RFC_8446.Extension.Data(type: .serverName, data: uint8Data)
         #expect(ext.type == .serverName)
         #expect(ext.data.count == 7)
 
         // Round-trip equality with [Byte] primary path
         let byteData: [Byte] = uint8Data.map(Byte.init)
-        let primaryExt = try! RFC_8446.Extension.Data(type: .serverName, data: byteData)
+        let primaryExt = try RFC_8446.Extension.Data(type: .serverName, data: byteData)
         #expect(ext == primaryExt)
     }
 
     @Test
-    func `forwarder serializes identically to byte-domain primary`() {
+    func `forwarder serializes identically to byte-domain primary`() throws {
         let uint8Data: [UInt8] = [0x00, 0x05, 0x68, 0x65, 0x6C, 0x6C, 0x6F]
-        let ext = try! RFC_8446.Extension.Data(type: .serverName, data: uint8Data)
+        let ext = try RFC_8446.Extension.Data(type: .serverName, data: uint8Data)
 
         var buffer: [Byte] = []
         RFC_8446.Extension.Data.serialize(ext, into: &buffer)

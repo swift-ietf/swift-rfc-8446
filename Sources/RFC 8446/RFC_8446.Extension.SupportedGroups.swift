@@ -75,7 +75,10 @@ extension RFC_8446.Extension.SupportedGroups: Binary.Serializable {
         do {
             let values = try reader.uint16List()
             try reader.expectEnd()
-            self.init(__unchecked: (), namedGroupList: values.map(RFC_8446.Extension.NamedGroup.init(rawValue:)))
+            self.init(
+                __unchecked: (),
+                namedGroupList: values.map(RFC_8446.Extension.NamedGroup.init(rawValue:))
+            )
         } catch {
             switch error {
             case .trailingData(let n): throw .trailingData(n)

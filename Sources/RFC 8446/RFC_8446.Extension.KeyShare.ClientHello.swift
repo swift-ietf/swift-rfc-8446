@@ -75,7 +75,9 @@ extension RFC_8446.Extension.KeyShare.ClientHello: Binary.Serializable {
     }
 
     /// Parses a ClientHello key_share `extension_data` body.
-    public init<Bytes: Swift.Collection>(binary bytes: Bytes) throws(RFC_8446.Extension.KeyShare.Error)
+    public init<Bytes: Swift.Collection>(
+        binary bytes: Bytes
+    ) throws(RFC_8446.Extension.KeyShare.Error)
     where Bytes.Element == Byte {
         var reader = RFC_8446.Wire.Reader(Array(bytes))
         do {

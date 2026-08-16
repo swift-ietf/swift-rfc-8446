@@ -218,6 +218,10 @@ extension RFC_8446.Handshake.Message: Binary.Serializable {
             throw .truncated
         }
         // uint24() bounds body to 2^24-1 by construction.
-        self.init(__unchecked: (), type: RFC_8446.Handshake.MessageType(rawValue: rawType), body: body)
+        self.init(
+            __unchecked: (),
+            type: RFC_8446.Handshake.MessageType(rawValue: rawType),
+            body: body
+        )
     }
 }

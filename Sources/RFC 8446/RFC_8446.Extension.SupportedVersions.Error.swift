@@ -34,8 +34,10 @@ extension RFC_8446.Extension.SupportedVersions.Error: CustomStringConvertible {
         switch self {
         case .truncated:
             return "TLS supported_versions truncated"
+
         case .trailingData(let remaining):
             return "TLS supported_versions has \(remaining) trailing bytes"
+
         case .invalidVersionCount(let count):
             return "TLS supported_versions version count invalid: \(count) (expected 1...127)"
         }

@@ -103,7 +103,9 @@ extension RFC_8446.Extension.PreSharedKey.OfferedPsks: Binary.Serializable {
     }
 
     /// Parses a ClientHello pre_shared_key `extension_data` body.
-    public init<Bytes: Swift.Collection>(binary bytes: Bytes) throws(RFC_8446.Extension.PreSharedKey.Error)
+    public init<Bytes: Swift.Collection>(
+        binary bytes: Bytes
+    ) throws(RFC_8446.Extension.PreSharedKey.Error)
     where Bytes.Element == Byte {
         var reader = RFC_8446.Wire.Reader(Array(bytes))
         do {

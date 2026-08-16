@@ -34,8 +34,10 @@ extension RFC_8446.Handshake.EncryptedExtensions.Error: CustomStringConvertible 
         switch self {
         case .truncated:
             return "TLS EncryptedExtensions truncated"
+
         case .trailingData(let remaining):
             return "TLS EncryptedExtensions has \(remaining) trailing bytes"
+
         case .extensionsTooLong(let byteCount):
             return "TLS EncryptedExtensions extensions too long: \(byteCount) bytes (max 65535)"
         }

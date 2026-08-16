@@ -67,7 +67,10 @@ extension RFC_8446.Extension.SignatureAlgorithms: Binary.Serializable {
         _ value: Self,
         into buffer: inout Buffer
     ) where Buffer.Element == Byte {
-        RFC_8446.Wire.appendUInt16List(value.supportedSignatureAlgorithms.map(\.rawValue), into: &buffer)
+        RFC_8446.Wire.appendUInt16List(
+            value.supportedSignatureAlgorithms.map(\.rawValue),
+            into: &buffer
+        )
     }
 
     /// Parses a signature_algorithms `extension_data` body.
@@ -79,7 +82,9 @@ extension RFC_8446.Extension.SignatureAlgorithms: Binary.Serializable {
             try reader.expectEnd()
             self.init(
                 __unchecked: (),
-                supportedSignatureAlgorithms: values.map(RFC_8446.Extension.SignatureScheme.init(rawValue:))
+                supportedSignatureAlgorithms: values.map(
+                    RFC_8446.Extension.SignatureScheme.init(rawValue:)
+                )
             )
         } catch {
             switch error {

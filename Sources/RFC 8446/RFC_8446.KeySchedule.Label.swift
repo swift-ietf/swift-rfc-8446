@@ -48,11 +48,17 @@ extension RFC_8446.KeySchedule {
         /// `"s ap traffic"` — server_application_traffic_secret_0.
         public static let serverApplicationTraffic = "s ap traffic"
 
+        // `master secret` is RFC 8446's normative vocabulary for these values;
+        // renaming them would break correspondence with the specification.
+        // swiftlint:disable inclusive_language
+
         /// `"exp master"` — exporter_master_secret.
         public static let exporterMaster = "exp master"
 
         /// `"res master"` — resumption_master_secret.
         public static let resumptionMaster = "res master"
+
+        // swiftlint:enable inclusive_language
 
         /// `"finished"` — the finished_key expansion.
         public static let finished = "finished"
