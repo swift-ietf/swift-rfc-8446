@@ -34,7 +34,9 @@ extension RFC_8446.Extension.SupportedVersions {
         ///
         /// - Throws: `Error.invalidVersionCount` if the version count is
         ///   outside 1...127 (the `uint8` byte-length bound of 254).
-        public init(versions: [RFC_8446.ProtocolVersion]) throws(RFC_8446.Extension.SupportedVersions.Error) {
+        public init(
+            versions: [RFC_8446.ProtocolVersion]
+        ) throws(RFC_8446.Extension.SupportedVersions.Error) {
             guard (1...127).contains(versions.count) else {
                 throw .invalidVersionCount(versions.count)
             }
@@ -72,7 +74,9 @@ extension RFC_8446.Extension.SupportedVersions.ClientHello: Binary.Serializable 
     }
 
     /// Parses a ClientHello supported_versions `extension_data` body.
-    public init<Bytes: Swift.Collection>(binary bytes: Bytes) throws(RFC_8446.Extension.SupportedVersions.Error)
+    public init<Bytes: Swift.Collection>(
+        binary bytes: Bytes
+    ) throws(RFC_8446.Extension.SupportedVersions.Error)
     where Bytes.Element == Byte {
         var reader = RFC_8446.Wire.Reader(Array(bytes))
         do {

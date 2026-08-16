@@ -54,7 +54,9 @@ extension RFC_8446.Extension.EarlyData.Ticket: Binary.Serializable {
     }
 
     /// Parses an early_data ticket `extension_data` body.
-    public init<Bytes: Swift.Collection>(binary bytes: Bytes) throws(RFC_8446.Extension.EarlyData.Error)
+    public init<Bytes: Swift.Collection>(
+        binary bytes: Bytes
+    ) throws(RFC_8446.Extension.EarlyData.Error)
     where Bytes.Element == Byte {
         var reader = RFC_8446.Wire.Reader(Array(bytes))
         do {

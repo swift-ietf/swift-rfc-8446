@@ -68,7 +68,8 @@ extension RFC_8446.Handshake.ClientHello {
                     extensions: []
                 )
             }
-            #expect(throws: RFC_8446.Handshake.ClientHello.Error.invalidCompressionMethodsLength(0)) {
+            #expect(throws: RFC_8446.Handshake.ClientHello.Error.invalidCompressionMethodsLength(0))
+            {
                 _ = try RFC_8446.Handshake.ClientHello(
                     random: Self.random32,
                     cipherSuites: [.aes128GcmSha256],
@@ -166,7 +167,9 @@ extension RFC_8446.Handshake.EncryptedExtensions {
                 type: .serverName,
                 data: [Byte](repeating: Byte(0), count: 0xFFFF)
             )
-            #expect(throws: RFC_8446.Handshake.EncryptedExtensions.Error.extensionsTooLong(4 + 0xFFFF)) {
+            #expect(
+                throws: RFC_8446.Handshake.EncryptedExtensions.Error.extensionsTooLong(4 + 0xFFFF)
+            ) {
                 _ = try RFC_8446.Handshake.EncryptedExtensions(extensions: [fat])
             }
         }

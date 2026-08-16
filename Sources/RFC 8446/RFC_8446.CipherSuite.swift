@@ -91,8 +91,10 @@ extension RFC_8446 {
             switch rawValue {
             case 0x1301, 0x1303, 0x1304, 0x1305:
                 return "SHA-256"
+
             case 0x1302:
                 return "SHA-384"
+
             default:
                 return nil
             }
@@ -117,8 +119,10 @@ extension RFC_8446.CipherSuite: CustomStringConvertible {
         case 0x1303: return "TLS_CHACHA20_POLY1305_SHA256"
         case 0x1304: return "TLS_AES_128_CCM_SHA256"
         case 0x1305: return "TLS_AES_128_CCM_8_SHA256"
+
         default:
-            return "CipherSuite(\(rawValue.formatted(Radix.Formatter.hex.zeroPadded(width: 4).prefix)))"
+            return
+                "CipherSuite(\(rawValue.formatted(Radix.Formatter.hex.zeroPadded(width: 4).prefix)))"
         }
     }
 }

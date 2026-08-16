@@ -29,12 +29,19 @@ struct RFC_8446_RFC8448_Message_Tests {
 
         // Fields.
         #expect(hello.legacyVersion == .tls1_2)
-        #expect(hello.random == hex("""
-            cb 34 ec b1 e7 81 63 ba 1c 38 c6 da cb 19 6a 6d ff a2 1a 8d 99 12
-            ec 18 a2 ef 62 83 02 4d ec e7
-            """))
+        #expect(
+            hello.random
+                == hex(
+                    """
+                    cb 34 ec b1 e7 81 63 ba 1c 38 c6 da cb 19 6a 6d ff a2 1a 8d 99 12
+                    ec 18 a2 ef 62 83 02 4d ec e7
+                    """
+                )
+        )
         #expect(hello.legacySessionID == [])
-        #expect(hello.cipherSuites == [.aes128GcmSha256, .chacha20Poly1305Sha256, .aes256GcmSha384])
+        #expect(
+            hello.cipherSuites == [.aes128GcmSha256, .chacha20Poly1305Sha256, .aes256GcmSha384]
+        )
         #expect(hello.legacyCompressionMethods == [Byte(0)])
 
         // Re-serialization is byte-identical.
@@ -52,10 +59,15 @@ struct RFC_8446_RFC8448_Message_Tests {
 
         #expect(keyShare.clientShares.count == 1)
         #expect(keyShare.clientShares[0].group == .x25519)
-        #expect(keyShare.clientShares[0].keyExchange == hex("""
-            99 38 1d e5 60 e4 bd 43 d2 3d 8e 43 5a 7d ba fe b3 c0 6e 51 c1 3c
-            ae 4d 54 13 69 1e 52 9a af 2c
-            """))
+        #expect(
+            keyShare.clientShares[0].keyExchange
+                == hex(
+                    """
+                    99 38 1d e5 60 e4 bd 43 d2 3d 8e 43 5a 7d ba fe b3 c0 6e 51 c1 3c
+                    ae 4d 54 13 69 1e 52 9a af 2c
+                    """
+                )
+        )
         #expect(keyShare.bytes == keyShareExt.data)
     }
 

@@ -40,12 +40,16 @@ extension RFC_8446.Extension.OidFilters.Error: CustomStringConvertible {
         switch self {
         case .truncated:
             return "TLS oid_filters truncated"
+
         case .trailingData(let remaining):
             return "TLS oid_filters has \(remaining) trailing bytes"
+
         case .invalidOIDLength(let count):
             return "TLS oid_filters OID length invalid: \(count) bytes (expected 1...255)"
+
         case .valuesTooLong(let count):
             return "TLS oid_filters values too long: \(count) bytes (max 65535)"
+
         case .filtersTooLong(let byteCount):
             return "TLS oid_filters too long: \(byteCount) bytes (max 65533)"
         }

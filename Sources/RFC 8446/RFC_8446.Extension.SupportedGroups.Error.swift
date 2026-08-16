@@ -34,8 +34,10 @@ extension RFC_8446.Extension.SupportedGroups.Error: CustomStringConvertible {
         switch self {
         case .truncated:
             return "TLS supported_groups truncated"
+
         case .trailingData(let remaining):
             return "TLS supported_groups has \(remaining) trailing bytes"
+
         case .invalidGroupCount(let count):
             return "TLS supported_groups group count invalid: \(count) (expected 1...32766)"
         }

@@ -34,8 +34,10 @@ extension RFC_8446.Extension.Data.Error: CustomStringConvertible {
         switch self {
         case .truncated:
             return "TLS extension truncated"
+
         case .trailingData(let remaining):
             return "TLS extension has \(remaining) trailing bytes"
+
         case .dataTooLong(let count):
             return "TLS extension_data too long: \(count) bytes (max 65535)"
         }

@@ -40,12 +40,16 @@ extension RFC_8446.Extension.PreSharedKey.Error: CustomStringConvertible {
         switch self {
         case .truncated:
             return "TLS pre_shared_key truncated"
+
         case .trailingData(let remaining):
             return "TLS pre_shared_key has \(remaining) trailing bytes"
+
         case .invalidIdentityLength(let count):
             return "TLS pre_shared_key identity length invalid: \(count) bytes (expected 1...65535)"
+
         case .invalidBinderLength(let count):
             return "TLS pre_shared_key binder length invalid: \(count) bytes (expected 32...255)"
+
         case .offeredPsksTooLong(let byteCount):
             return "TLS pre_shared_key OfferedPsks too long: \(byteCount) bytes (max 65535)"
         }

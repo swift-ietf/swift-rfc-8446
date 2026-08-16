@@ -54,7 +54,8 @@ extension RFC_8446.Extension.OidFilters {
         }
 
         /// Creates an OID filter WITHOUT validation (parse path).
-        init(__unchecked: Void, certificateExtensionOID: [Byte], certificateExtensionValues: [Byte]) {
+        init(__unchecked: Void, certificateExtensionOID: [Byte], certificateExtensionValues: [Byte])
+        {
             self.certificateExtensionOID = certificateExtensionOID
             self.certificateExtensionValues = certificateExtensionValues
         }

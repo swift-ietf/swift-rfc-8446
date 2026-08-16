@@ -74,7 +74,9 @@ extension RFC_8446.Extension.PreSharedKey.Identity: Binary.Serializable {
 
 extension RFC_8446.Wire.Reader {
     /// Reads one ``RFC_8446/Extension/PreSharedKey/Identity`` from the cursor.
-    mutating func pskIdentity() throws(RFC_8446.Wire.Error) -> RFC_8446.Extension.PreSharedKey.Identity {
+    mutating func pskIdentity() throws(RFC_8446.Wire.Error)
+        -> RFC_8446.Extension.PreSharedKey.Identity
+    {
         let identity = try vector16()
         let age = try uint32()
         return RFC_8446.Extension.PreSharedKey.Identity(

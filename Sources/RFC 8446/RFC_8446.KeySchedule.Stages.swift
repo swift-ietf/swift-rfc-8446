@@ -48,7 +48,12 @@ extension RFC_8446.KeySchedule {
         earlySecret: [Byte],
         clientHello: [Byte]
     ) -> [Byte] {
-        deriveSecret(witness, secret: earlySecret, label: Label.clientEarlyTraffic, messages: clientHello)
+        deriveSecret(
+            witness,
+            secret: earlySecret,
+            label: Label.clientEarlyTraffic,
+            messages: clientHello
+        )
     }
 
     /// `early_exporter_master_secret = Derive-Secret(Early Secret, "e exp master", ClientHello)`.
@@ -57,14 +62,24 @@ extension RFC_8446.KeySchedule {
         earlySecret: [Byte],
         clientHello: [Byte]
     ) -> [Byte] {
-        deriveSecret(witness, secret: earlySecret, label: Label.earlyExporterMaster, messages: clientHello)
+        deriveSecret(
+            witness,
+            secret: earlySecret,
+            label: Label.earlyExporterMaster,
+            messages: clientHello
+        )
     }
 
     // MARK: - Derive-Secret "derived" bridge
 
     /// `Derive-Secret(Secret, "derived", "")` — the bridge between Extract stages.
     public static func derivedSecret(_ witness: Witness, secret: [Byte]) -> [Byte] {
-        deriveSecret(witness, secret: secret, label: Label.derived, transcriptHash: witness.hash([]))
+        deriveSecret(
+            witness,
+            secret: secret,
+            label: Label.derived,
+            transcriptHash: witness.hash([])
+        )
     }
 
     // MARK: - Handshake Secret stage
@@ -84,7 +99,12 @@ extension RFC_8446.KeySchedule {
         handshakeSecret: [Byte],
         transcriptHash: [Byte]
     ) -> [Byte] {
-        deriveSecret(witness, secret: handshakeSecret, label: Label.clientHandshakeTraffic, transcriptHash: transcriptHash)
+        deriveSecret(
+            witness,
+            secret: handshakeSecret,
+            label: Label.clientHandshakeTraffic,
+            transcriptHash: transcriptHash
+        )
     }
 
     /// `server_handshake_traffic_secret = Derive-Secret(Handshake Secret, "s hs traffic", CH...SH)`.
@@ -93,7 +113,12 @@ extension RFC_8446.KeySchedule {
         handshakeSecret: [Byte],
         transcriptHash: [Byte]
     ) -> [Byte] {
-        deriveSecret(witness, secret: handshakeSecret, label: Label.serverHandshakeTraffic, transcriptHash: transcriptHash)
+        deriveSecret(
+            witness,
+            secret: handshakeSecret,
+            label: Label.serverHandshakeTraffic,
+            transcriptHash: transcriptHash
+        )
     }
 
     // MARK: - Master Secret stage
@@ -109,7 +134,12 @@ extension RFC_8446.KeySchedule {
         masterSecret: [Byte],
         transcriptHash: [Byte]
     ) -> [Byte] {
-        deriveSecret(witness, secret: masterSecret, label: Label.clientApplicationTraffic, transcriptHash: transcriptHash)
+        deriveSecret(
+            witness,
+            secret: masterSecret,
+            label: Label.clientApplicationTraffic,
+            transcriptHash: transcriptHash
+        )
     }
 
     /// `server_application_traffic_secret_0 = Derive-Secret(Master Secret, "s ap traffic", CH...server Finished)`.
@@ -118,7 +148,12 @@ extension RFC_8446.KeySchedule {
         masterSecret: [Byte],
         transcriptHash: [Byte]
     ) -> [Byte] {
-        deriveSecret(witness, secret: masterSecret, label: Label.serverApplicationTraffic, transcriptHash: transcriptHash)
+        deriveSecret(
+            witness,
+            secret: masterSecret,
+            label: Label.serverApplicationTraffic,
+            transcriptHash: transcriptHash
+        )
     }
 
     /// `exporter_master_secret = Derive-Secret(Master Secret, "exp master", CH...server Finished)`.
@@ -127,7 +162,12 @@ extension RFC_8446.KeySchedule {
         masterSecret: [Byte],
         transcriptHash: [Byte]
     ) -> [Byte] {
-        deriveSecret(witness, secret: masterSecret, label: Label.exporterMaster, transcriptHash: transcriptHash)
+        deriveSecret(
+            witness,
+            secret: masterSecret,
+            label: Label.exporterMaster,
+            transcriptHash: transcriptHash
+        )
     }
 
     /// `resumption_master_secret = Derive-Secret(Master Secret, "res master", CH...client Finished)`.
@@ -136,14 +176,25 @@ extension RFC_8446.KeySchedule {
         masterSecret: [Byte],
         transcriptHash: [Byte]
     ) -> [Byte] {
-        deriveSecret(witness, secret: masterSecret, label: Label.resumptionMaster, transcriptHash: transcriptHash)
+        deriveSecret(
+            witness,
+            secret: masterSecret,
+            label: Label.resumptionMaster,
+            transcriptHash: transcriptHash
+        )
     }
 
     // MARK: - Finished / traffic key expansions (Section 7.3, 4.4.4)
 
     /// `finished_key = HKDF-Expand-Label(BaseKey, "finished", "", Hash.length)`.
     public static func finishedKey(_ witness: Witness, baseKey: [Byte]) -> [Byte] {
-        expandLabel(witness, secret: baseKey, label: Label.finished, context: [], length: witness.hashLength)
+        expandLabel(
+            witness,
+            secret: baseKey,
+            label: Label.finished,
+            context: [],
+            length: witness.hashLength
+        )
     }
 
     /// `verify_data = HMAC(finished_key, transcriptHash)`.
@@ -173,7 +224,13 @@ extension RFC_8446.KeySchedule {
 
     /// `application_traffic_secret_N+1 = HKDF-Expand-Label(secret_N, "traffic upd", "", Hash.length)`.
     public static func nextApplicationTrafficSecret(_ witness: Witness, secret: [Byte]) -> [Byte] {
-        expandLabel(witness, secret: secret, label: Label.trafficUpdate, context: [], length: witness.hashLength)
+        expandLabel(
+            witness,
+            secret: secret,
+            label: Label.trafficUpdate,
+            context: [],
+            length: witness.hashLength
+        )
     }
 
     /// Per-ticket PSK: `HKDF-Expand-Label(resumption_master_secret, "resumption", ticket_nonce, Hash.length)`.
@@ -182,6 +239,12 @@ extension RFC_8446.KeySchedule {
         resumptionMasterSecret: [Byte],
         ticketNonce: [Byte]
     ) -> [Byte] {
-        expandLabel(witness, secret: resumptionMasterSecret, label: Label.resumption, context: ticketNonce, length: witness.hashLength)
+        expandLabel(
+            witness,
+            secret: resumptionMasterSecret,
+            label: Label.resumption,
+            context: ticketNonce,
+            length: witness.hashLength
+        )
     }
 }

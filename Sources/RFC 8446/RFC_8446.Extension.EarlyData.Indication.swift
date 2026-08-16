@@ -49,7 +49,9 @@ extension RFC_8446.Extension.EarlyData.Indication: Binary.Serializable {
     }
 
     /// Parses an early_data indication `extension_data` body (which MUST be empty).
-    public init<Bytes: Swift.Collection>(binary bytes: Bytes) throws(RFC_8446.Extension.EarlyData.Error)
+    public init<Bytes: Swift.Collection>(
+        binary bytes: Bytes
+    ) throws(RFC_8446.Extension.EarlyData.Error)
     where Bytes.Element == Byte {
         guard bytes.isEmpty else { throw .trailingData(bytes.count) }
         self.init()

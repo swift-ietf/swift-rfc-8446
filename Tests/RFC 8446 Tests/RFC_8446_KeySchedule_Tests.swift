@@ -26,7 +26,11 @@ struct RFC_8446_KeySchedule_Tests {
     struct HkdfLabelShapes {
         @Test
         func `derived label matches logged info`() {
-            let label = KS.HkdfLabel(length: 32, label: KS.Label.derived, context: RFC8448.emptyHash)
+            let label = KS.HkdfLabel(
+                length: 32,
+                label: KS.Label.derived,
+                context: RFC8448.emptyHash
+            )
             #expect(label.bytes == RFC8448.derivedInfo)
             #expect(label.label == KS.HkdfLabel.prefix + hex("64 65 72 69 76 65 64"))  // "derived"
         }
@@ -86,6 +90,9 @@ struct RFC_8446_KeySchedule_Tests {
         }
 
         @Test
+        // `master secret` is RFC 8446's normative vocabulary for this value;
+        // renaming it would break correspondence with the specification.
+        // swiftlint:disable:next inclusive_language
         func `early handshake and master secrets`() {
             let early = KS.earlySecret(witness)
             #expect(early == RFC8448.earlySecret)
@@ -103,6 +110,9 @@ struct RFC_8446_KeySchedule_Tests {
             let derived2 = KS.derivedSecret(witness, secret: handshake)
             #expect(derived2 == RFC8448.derivedForMaster)
 
+            // `master secret` is RFC 8446's normative vocabulary for this value;
+            // renaming it would break correspondence with the specification.
+            // swiftlint:disable:next inclusive_language
             let master = KS.masterSecret(witness, previousDerived: derived2)
             #expect(master == RFC8448.masterSecret)
         }
@@ -122,14 +132,28 @@ struct RFC_8446_KeySchedule_Tests {
             transcript.append(RFC8448.serverHello)
             let hash = transcript.hash(using: witness)
 
-            let clientHS = KS.clientHandshakeTrafficSecret(witness, handshakeSecret: handshake, transcriptHash: hash)
+            let clientHS = KS.clientHandshakeTrafficSecret(
+                witness,
+                handshakeSecret: handshake,
+                transcriptHash: hash
+            )
             #expect(clientHS == RFC8448.clientHandshakeTraffic)
 
-            let serverHS = KS.serverHandshakeTrafficSecret(witness, handshakeSecret: handshake, transcriptHash: hash)
+            let serverHS = KS.serverHandshakeTrafficSecret(
+                witness,
+                handshakeSecret: handshake,
+                transcriptHash: hash
+            )
             #expect(serverHS == RFC8448.serverHandshakeTraffic)
 
-            #expect(KS.writeKey(witness, secret: serverHS, keyLength: 16) == RFC8448.serverHandshakeWriteKey)
-            #expect(KS.writeIV(witness, secret: serverHS, ivLength: 12) == RFC8448.serverHandshakeWriteIV)
+            #expect(
+                KS.writeKey(witness, secret: serverHS, keyLength: 16)
+                    == RFC8448.serverHandshakeWriteKey
+            )
+            #expect(
+                KS.writeIV(witness, secret: serverHS, ivLength: 12)
+                    == RFC8448.serverHandshakeWriteIV
+            )
         }
 
         @Test
@@ -184,6 +208,9 @@ struct RFC_8446_KeySchedule_Tests {
                 sharedSecret: RFC8448.ecdheSharedSecret
             )
             let derived2 = KS.derivedSecret(witness, secret: handshake)
+            // `master secret` is RFC 8446's normative vocabulary for this value;
+            // renaming it would break correspondence with the specification.
+            // swiftlint:disable:next inclusive_language
             let master = KS.masterSecret(witness, previousDerived: derived2)
 
             // Transcript through server Finished.
@@ -196,20 +223,41 @@ struct RFC_8446_KeySchedule_Tests {
             transcript.append(RFC8448.serverFinished)
             let hash = transcript.hash(using: witness)
 
-            let clientAP = KS.clientApplicationTrafficSecret0(witness, masterSecret: master, transcriptHash: hash)
+            let clientAP = KS.clientApplicationTrafficSecret0(
+                witness,
+                masterSecret: master,
+                transcriptHash: hash
+            )
             #expect(clientAP == RFC8448.clientApplicationTraffic)
 
-            let serverAP = KS.serverApplicationTrafficSecret0(witness, masterSecret: master, transcriptHash: hash)
+            let serverAP = KS.serverApplicationTrafficSecret0(
+                witness,
+                masterSecret: master,
+                transcriptHash: hash
+            )
             #expect(serverAP == RFC8448.serverApplicationTraffic)
 
-            let exporter = KS.exporterMasterSecret(witness, masterSecret: master, transcriptHash: hash)
+            let exporter = KS.exporterMasterSecret(
+                witness,
+                masterSecret: master,
+                transcriptHash: hash
+            )
             #expect(exporter == RFC8448.exporterMaster)
 
-            #expect(KS.writeKey(witness, secret: serverAP, keyLength: 16) == RFC8448.serverApplicationWriteKey)
-            #expect(KS.writeIV(witness, secret: serverAP, ivLength: 12) == RFC8448.serverApplicationWriteIV)
+            #expect(
+                KS.writeKey(witness, secret: serverAP, keyLength: 16)
+                    == RFC8448.serverApplicationWriteKey
+            )
+            #expect(
+                KS.writeIV(witness, secret: serverAP, ivLength: 12)
+                    == RFC8448.serverApplicationWriteIV
+            )
         }
 
         @Test
+        // `master secret` is RFC 8446's normative vocabulary for this value;
+        // renaming it would break correspondence with the specification.
+        // swiftlint:disable:next inclusive_language
         func `client Finished and resumption master secret`() {
             let early = KS.earlySecret(witness)
             let derived1 = KS.derivedSecret(witness, secret: early)
@@ -219,6 +267,9 @@ struct RFC_8446_KeySchedule_Tests {
                 sharedSecret: RFC8448.ecdheSharedSecret
             )
             let derived2 = KS.derivedSecret(witness, secret: handshake)
+            // `master secret` is RFC 8446's normative vocabulary for this value;
+            // renaming it would break correspondence with the specification.
+            // swiftlint:disable:next inclusive_language
             let master = KS.masterSecret(witness, previousDerived: derived2)
 
             var chSH = KS.Transcript()
