@@ -1,21 +1,5 @@
-// ===----------------------------------------------------------------------===//
-//
-// Copyright (c) 2025 Coen ten Thije Boonkkamp
-// Licensed under Apache License v2.0
-//
-// See LICENSE.txt for license information
-// See CONTRIBUTORS.txt for the list of project contributors
-//
-// SPDX-License-Identifier: Apache-2.0
-//
-// ===----------------------------------------------------------------------===//
-//
-// Byte-exact test vectors transcribed from RFC 8448 Section 3 (Simple 1-RTT
-// Handshake). https://www.rfc-editor.org/rfc/rfc8448.txt
-
 @testable import RFC_8446
 
-/// Decodes a whitespace-tolerant hex string into a byte-domain `[Byte]`.
 func hex(_ string: String) -> [Byte] {
     var nibbles: [UInt8] = []
     for scalar in string.unicodeScalars {
@@ -23,7 +7,7 @@ func hex(_ string: String) -> [Byte] {
         case "0"..."9": nibbles.append(UInt8(scalar.value - 0x30))
         case "a"..."f": nibbles.append(UInt8(scalar.value - 0x61 + 10))
         case "A"..."F": nibbles.append(UInt8(scalar.value - 0x41 + 10))
-        default: continue  // skip whitespace and separators
+        default: continue
         }
     }
     var result: [Byte] = []
@@ -36,10 +20,7 @@ func hex(_ string: String) -> [Byte] {
     return result
 }
 
-/// RFC 8448 Section 3 vectors.
 enum RFC8448 {
-
-    // MARK: - Full handshake messages (type + uint24 length + body)
 
     static let clientHello = hex(
         """
@@ -135,9 +116,6 @@ enum RFC8448 {
         """
     )
 
-    // MARK: - Key schedule secrets
-
-    /// (EC)DHE shared secret (documented input to the Handshake Secret Extract).
     static let ecdheSharedSecret = hex(
         """
         8b d4 05 4f b5 5b 9d 63 fd fb ac f9 f0 4b 9f 0d 35 e6 d6 3f 53 75 63
@@ -180,9 +158,6 @@ enum RFC8448 {
         """
     )
 
-    // `master secret` is RFC 8446's normative vocabulary for this value;
-    // renaming it would break correspondence with the specification.
-    // swiftlint:disable:next inclusive_language
     static let derivedForMaster = hex(
         """
         43 de 77 e0 c7 77 13 85 9a 94 4d b9 db 25 90 b5 31 90 a6 5b 3e e2 e4
@@ -228,9 +203,6 @@ enum RFC8448 {
         """
     )
 
-    // `master secret` is RFC 8446's normative vocabulary for this value;
-    // renaming it would break correspondence with the specification.
-    // swiftlint:disable:next inclusive_language
     static let exporterMaster = hex(
         """
         fe 22 f8 81 17 6e da 18 eb 8f 44 52 9e 67 92 c5 0c 9a 3f 89 45 2f 68
@@ -255,9 +227,6 @@ enum RFC8448 {
         """
     )
 
-    // `master secret` is RFC 8446's normative vocabulary for this value;
-    // renaming it would break correspondence with the specification.
-    // swiftlint:disable:next inclusive_language
     static let resumptionMaster = hex(
         """
         7d f2 35 f2 03 1d 2a 05 12 87 d0 2b 02 41 b0 bf da f8 6c c8 56 23 1f
@@ -265,9 +234,6 @@ enum RFC8448 {
         """
     )
 
-    // MARK: - HkdfLabel inputs (logged "info" values)
-
-    /// SHA-256 of the empty string (transcript hash for "derived" / "finished").
     static let emptyHash = hex(
         """
         e3 b0 c4 42 98 fc 1c 14 9a fb f4 c8 99 6f b9 24 27 ae 41 e4 64 9b 93
@@ -275,7 +241,6 @@ enum RFC8448 {
         """
     )
 
-    /// Transcript hash of ClientHello...ServerHello.
     static let handshakeTranscriptHash = hex(
         """
         86 0c 06 ed c0 78 58 ee 8e 78 f0 e7 42 8c 58 ed d6 b4 3f 2c a3 e6 e9

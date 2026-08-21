@@ -26,10 +26,7 @@ extension Target.Dependency {
             package: "swift-binary-serializer-primitives"
         )
     }
-    // TEST-TARGET-ONLY: blessed apple/swift-crypto backs the RFC 8448
-    // full-chain key-schedule witness. The core "RFC 8446" target never
-    // depends on this — the test target adapts swift-crypto INTO the
-    // KeySchedule.Witness closures.
+
     static var crypto: Self { .product(name: "Crypto", package: "swift-crypto") }
 }
 
@@ -74,9 +71,7 @@ let package = Package(
             url: "https://github.com/swift-primitives/swift-binary-serializer-primitives.git",
             branch: "main"
         ),
-        // TEST-TARGET-ONLY dependency (see the `crypto` Target.Dependency
-        // helper). Consumed exclusively by "RFC 8446 Tests"; no core target
-        // depends on it.
+
         .package(url: "https://github.com/apple/swift-crypto.git", "3.0.0"..<"5.0.0"),
     ],
     targets: [

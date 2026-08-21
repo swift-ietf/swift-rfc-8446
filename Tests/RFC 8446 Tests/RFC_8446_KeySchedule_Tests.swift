@@ -1,15 +1,3 @@
-// ===----------------------------------------------------------------------===//
-//
-// Copyright (c) 2025 Coen ten Thije Boonkkamp
-// Licensed under Apache License v2.0
-//
-// See LICENSE.txt for license information
-// See CONTRIBUTORS.txt for the list of project contributors
-//
-// SPDX-License-Identifier: Apache-2.0
-//
-// ===----------------------------------------------------------------------===//
-
 import Binary_Serializable_Primitives
 import Testing
 
@@ -19,8 +7,6 @@ import Testing
 struct RFC_8446_KeySchedule_Tests {
 
     typealias KS = RFC_8446.KeySchedule
-
-    // MARK: - HkdfLabel byte-exact shapes (RFC 8448 logged "info" values)
 
     @Suite("HkdfLabel byte-exact shapes")
     struct HkdfLabelShapes {
@@ -32,7 +18,7 @@ struct RFC_8446_KeySchedule_Tests {
                 context: RFC8448.emptyHash
             )
             #expect(label.bytes == RFC8448.derivedInfo)
-            #expect(label.label == KS.HkdfLabel.prefix + hex("64 65 72 69 76 65 64"))  // "derived"
+            #expect(label.label == KS.HkdfLabel.prefix + hex("64 65 72 69 76 65 64"))
         }
 
         @Test
@@ -72,15 +58,11 @@ struct RFC_8446_KeySchedule_Tests {
         }
     }
 
-    // MARK: - Full-chain key schedule (live SHA-256/HKDF witness over swift-crypto)
-
     @Suite("RFC 8448 full-chain derivation")
     struct FullChain {
-        /// Fresh witness per access — the suite holds no non-`Sendable` state.
+
         var witness: RFC_8446.KeySchedule.Witness { RFC_8446.KeySchedule.Witness.sha256 }
 
-        /// Transcript hash of ClientHello...ServerHello via the witness matches
-        /// the value logged in RFC 8448.
         @Test
         func `transcript hash of ClientHello and ServerHello`() {
             var transcript = KS.Transcript()
@@ -90,9 +72,7 @@ struct RFC_8446_KeySchedule_Tests {
         }
 
         @Test
-        // `master secret` is RFC 8446's normative vocabulary for this value;
-        // renaming it would break correspondence with the specification.
-        // swiftlint:disable:next inclusive_language
+
         func `early handshake and master secrets`() {
             let early = KS.earlySecret(witness)
             #expect(early == RFC8448.earlySecret)
@@ -110,9 +90,6 @@ struct RFC_8446_KeySchedule_Tests {
             let derived2 = KS.derivedSecret(witness, secret: handshake)
             #expect(derived2 == RFC8448.derivedForMaster)
 
-            // `master secret` is RFC 8446's normative vocabulary for this value;
-            // renaming it would break correspondence with the specification.
-            // swiftlint:disable:next inclusive_language
             let master = KS.masterSecret(witness, previousDerived: derived2)
             #expect(master == RFC8448.masterSecret)
         }
@@ -177,7 +154,6 @@ struct RFC_8446_KeySchedule_Tests {
             let finishedKey = KS.finishedKey(witness, baseKey: serverHS)
             #expect(finishedKey == RFC8448.serverFinishedKey)
 
-            // Transcript through CertificateVerify.
             var transcript = KS.Transcript()
             transcript.append(RFC8448.clientHello)
             transcript.append(RFC8448.serverHello)
@@ -192,7 +168,6 @@ struct RFC_8446_KeySchedule_Tests {
             )
             #expect(verifyData == RFC8448.serverFinishedVerifyData)
 
-            // The verify_data equals the parsed Finished payload.
             let message = try RFC_8446.Handshake.Message(binary: RFC8448.serverFinished)
             let finished = try RFC_8446.Handshake.Finished(binary: message.body)
             #expect(verifyData == finished.verifyData)
@@ -208,12 +183,9 @@ struct RFC_8446_KeySchedule_Tests {
                 sharedSecret: RFC8448.ecdheSharedSecret
             )
             let derived2 = KS.derivedSecret(witness, secret: handshake)
-            // `master secret` is RFC 8446's normative vocabulary for this value;
-            // renaming it would break correspondence with the specification.
-            // swiftlint:disable:next inclusive_language
+
             let master = KS.masterSecret(witness, previousDerived: derived2)
 
-            // Transcript through server Finished.
             var transcript = KS.Transcript()
             transcript.append(RFC8448.clientHello)
             transcript.append(RFC8448.serverHello)
@@ -255,9 +227,7 @@ struct RFC_8446_KeySchedule_Tests {
         }
 
         @Test
-        // `master secret` is RFC 8446's normative vocabulary for this value;
-        // renaming it would break correspondence with the specification.
-        // swiftlint:disable:next inclusive_language
+
         func `client Finished and resumption master secret`() {
             let early = KS.earlySecret(witness)
             let derived1 = KS.derivedSecret(witness, secret: early)
@@ -267,9 +237,7 @@ struct RFC_8446_KeySchedule_Tests {
                 sharedSecret: RFC8448.ecdheSharedSecret
             )
             let derived2 = KS.derivedSecret(witness, secret: handshake)
-            // `master secret` is RFC 8446's normative vocabulary for this value;
-            // renaming it would break correspondence with the specification.
-            // swiftlint:disable:next inclusive_language
+
             let master = KS.masterSecret(witness, previousDerived: derived2)
 
             var chSH = KS.Transcript()
@@ -281,8 +249,6 @@ struct RFC_8446_KeySchedule_Tests {
                 transcriptHash: chSH.hash(using: witness)
             )
 
-            // Client Finished is computed over the transcript through the
-            // server Finished.
             var throughServerFinished = KS.Transcript()
             throughServerFinished.append(RFC8448.clientHello)
             throughServerFinished.append(RFC8448.serverHello)
@@ -302,8 +268,6 @@ struct RFC_8446_KeySchedule_Tests {
             )
             #expect(clientVerify == RFC8448.clientFinishedVerifyData)
 
-            // Resumption master secret is over the transcript through the
-            // client Finished.
             var throughClientFinished = throughServerFinished
             throughClientFinished.append(RFC8448.clientFinished)
             let resumption = KS.resumptionMasterSecret(

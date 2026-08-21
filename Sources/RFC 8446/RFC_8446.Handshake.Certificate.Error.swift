@@ -1,39 +1,17 @@
-// ===----------------------------------------------------------------------===//
-//
-// Copyright (c) 2025 Coen ten Thije Boonkkamp
-// Licensed under Apache License v2.0
-//
-// See LICENSE.txt for license information
-// See CONTRIBUTORS.txt for the list of project contributors
-//
-// SPDX-License-Identifier: Apache-2.0
-//
-// ===----------------------------------------------------------------------===//
-
-// RFC_8446.Handshake.Certificate.Error.swift
-// swift-rfc-8446
-//
-// RFC 8446 Section 4.4.2: Certificate
-
 extension RFC_8446.Handshake.Certificate {
-    /// Errors raised when parsing a Certificate payload.
+
     public enum Error: Swift.Error, Sendable, Equatable {
-        /// The input ended before a field or entry was complete.
+
         case truncated
 
-        /// Bytes remained after the certificate list.
         case trailingData(_ remaining: Int)
 
-        /// The certificate_request_context exceeds 255 bytes.
         case invalidContextLength(_ count: Int)
 
-        /// A cert_data blob is outside 1...2^24-1 bytes.
         case invalidCertificateDataLength(_ count: Int)
 
-        /// A per-entry serialized extensions block exceeds 65535 bytes.
         case entryExtensionsTooLong(_ byteCount: Int)
 
-        /// The serialized certificate_list exceeds the uint24 body bound.
         case certificateListTooLong(_ byteCount: Int)
     }
 }

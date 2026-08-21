@@ -1,15 +1,3 @@
-// ===----------------------------------------------------------------------===//
-//
-// Copyright (c) 2025 Coen ten Thije Boonkkamp
-// Licensed under Apache License v2.0
-//
-// See LICENSE.txt for license information
-// See CONTRIBUTORS.txt for the list of project contributors
-//
-// SPDX-License-Identifier: Apache-2.0
-//
-// ===----------------------------------------------------------------------===//
-
 import RFC_8446
 import RFC_8446_Standard_Library_Integration
 import Testing
@@ -25,7 +13,6 @@ struct RFC_8446_Record_UInt8_Tests {
         #expect(record.legacyVersion == .legacy)
         #expect(record.fragment.count == 4)
 
-        // Round-trip equality with [Byte] primary path
         let byteFragment: [Byte] = uint8Fragment.map(Byte.init)
         let primaryRecord = try RFC_8446.Record(contentType: .handshake, fragment: byteFragment)
         #expect(record == primaryRecord)

@@ -1,70 +1,21 @@
-// ===----------------------------------------------------------------------===//
-//
-// Copyright (c) 2025 Coen ten Thije Boonkkamp
-// Licensed under Apache License v2.0
-//
-// See LICENSE.txt for license information
-// See CONTRIBUTORS.txt for the list of project contributors
-//
-// SPDX-License-Identifier: Apache-2.0
-//
-// ===----------------------------------------------------------------------===//
-
-// RFC_8446.Handshake.ClientHello.swift
-// swift-rfc-8446
-//
-// RFC 8446 Section 4.1.2: Client Hello
-
 public import Binary_Serializable_Primitives
 
 extension RFC_8446.Handshake {
-    /// Client Hello handshake payload.
-    ///
-    /// ## Wire Format
-    ///
-    /// ```
-    /// uint16 ProtocolVersion;
-    /// opaque Random[32];
-    /// uint8 CipherSuite[2];
-    ///
-    /// struct {
-    ///     ProtocolVersion legacy_version = 0x0303;    /* TLS v1.2 */
-    ///     Random random;
-    ///     opaque legacy_session_id<0..32>;
-    ///     CipherSuite cipher_suites<2..2^16-2>;
-    ///     opaque legacy_compression_methods<1..2^8-1>;
-    ///     Extension extensions<8..2^16-1>;
-    /// } ClientHello;
-    /// ```
-    ///
-    /// In TLS 1.3 `legacy_version` is frozen at 0x0303 and the true version
-    /// preference travels in the `supported_versions` extension.
+
     public struct ClientHello: Sendable, Hashable {
-        /// `legacy_version`, frozen at 0x0303 (TLS 1.2) in TLS 1.3.
+
         public let legacyVersion: RFC_8446.ProtocolVersion
 
-        /// 32-byte `random` value (opaque byte-domain).
         public let random: [Byte]
 
-        /// `legacy_session_id` (opaque byte-domain; 0...32 bytes).
         public let legacySessionID: [Byte]
 
-        /// `cipher_suites` in descending order of client preference.
         public let cipherSuites: [RFC_8446.CipherSuite]
 
-        /// `legacy_compression_methods` (exactly `[0]` for TLS 1.3).
         public let legacyCompressionMethods: [Byte]
 
-        /// `extensions` in the order sent.
         public let extensions: [RFC_8446.Extension.Data]
 
-        /// Creates a ClientHello payload.
-        ///
-        /// - Throws: `Error` if any field violates its spec length bounds:
-        ///   32-byte `random`, `legacy_session_id` up to 32 bytes,
-        ///   1...32767 `cipher_suites`, 1...255 bytes of
-        ///   `legacy_compression_methods`, and a serialized extensions block
-        ///   of at most 65535 bytes.
         public init(
             legacyVersion: RFC_8446.ProtocolVersion = .legacy,
             random: [Byte],
@@ -97,7 +48,6 @@ extension RFC_8446.Handshake {
             self.extensions = extensions
         }
 
-        /// Creates a ClientHello payload WITHOUT validation (parse path).
         init(
             __unchecked: Void,
             legacyVersion: RFC_8446.ProtocolVersion,
@@ -115,17 +65,13 @@ extension RFC_8446.Handshake {
             self.extensions = extensions
         }
 
-        /// The handshake message type for this payload (`client_hello`).
         public static let handshakeType: RFC_8446.Handshake.MessageType = .clientHello
 
-        /// Wraps this payload in a ``RFC_8446/Handshake/Message`` envelope.
         public var message: RFC_8446.Handshake.Message {
             RFC_8446.Handshake.Message(__unchecked: (), type: Self.handshakeType, body: self.bytes)
         }
     }
 }
-
-// MARK: - Binary.Serializable
 
 extension RFC_8446.Handshake.ClientHello: Binary.Serializable {
     public static func serialize<Buffer: RangeReplaceableCollection>(
@@ -140,7 +86,6 @@ extension RFC_8446.Handshake.ClientHello: Binary.Serializable {
         RFC_8446.Wire.appendExtensions(hello.extensions, into: &buffer)
     }
 
-    /// Parses a ClientHello payload body (without the handshake header).
     public init<Bytes: Swift.Collection>(binary bytes: Bytes) throws(Error)
     where Bytes.Element == Byte {
         var reader = RFC_8446.Wire.Reader(Array(bytes))

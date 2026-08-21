@@ -1,15 +1,3 @@
-// ===----------------------------------------------------------------------===//
-//
-// Copyright (c) 2025 Coen ten Thije Boonkkamp
-// Licensed under Apache License v2.0
-//
-// See LICENSE.txt for license information
-// See CONTRIBUTORS.txt for the list of project contributors
-//
-// SPDX-License-Identifier: Apache-2.0
-//
-// ===----------------------------------------------------------------------===//
-
 import Testing
 
 @testable import RFC_8446
@@ -81,21 +69,21 @@ struct RFC8446Tests {
             var buffer: [Byte] = []
             RFC_8446.Record.serialize(record, into: &buffer)
 
-            #expect(buffer.count == 8)  // 5 header + 3 data
-            #expect(buffer[0] == 23)  // application_data
-            #expect(buffer[1] == 0x03)  // TLS 1.2 high byte
-            #expect(buffer[2] == 0x03)  // TLS 1.2 low byte
-            #expect(buffer[3] == 0x00)  // length high byte
-            #expect(buffer[4] == 0x03)  // length low byte
+            #expect(buffer.count == 8)
+            #expect(buffer[0] == 23)
+            #expect(buffer[1] == 0x03)
+            #expect(buffer[2] == 0x03)
+            #expect(buffer[3] == 0x00)
+            #expect(buffer[4] == 0x03)
         }
 
         @Test
         func `Parse record`() throws {
             let bytes: [Byte] = [
-                22,  // handshake
-                0x03, 0x03,  // TLS 1.2
-                0x00, 0x04,  // length = 4
-                1, 2, 3, 4,  // data
+                22,
+                0x03, 0x03,
+                0x00, 0x04,
+                1, 2, 3, 4,
             ]
 
             let record = try RFC_8446.Record(binary: bytes)
@@ -176,8 +164,8 @@ struct RFC8446Tests {
             RFC_8446.Alert.serialize(alert, into: &buffer)
 
             #expect(buffer.count == 2)
-            #expect(buffer[0] == 1)  // warning
-            #expect(buffer[1] == 0)  // close_notify
+            #expect(buffer[0] == 1)
+            #expect(buffer[1] == 0)
         }
     }
 
@@ -201,11 +189,11 @@ struct RFC8446Tests {
             var buffer: [Byte] = []
             RFC_8446.Handshake.Message.serialize(message, into: &buffer)
 
-            #expect(buffer.count == 9)  // 1 type + 3 length + 5 body
-            #expect(buffer[0] == 1)  // client_hello
-            #expect(buffer[1] == 0)  // length high
-            #expect(buffer[2] == 0)  // length mid
-            #expect(buffer[3] == 5)  // length low
+            #expect(buffer.count == 9)
+            #expect(buffer[0] == 1)
+            #expect(buffer[1] == 0)
+            #expect(buffer[2] == 0)
+            #expect(buffer[3] == 5)
         }
     }
 
@@ -237,15 +225,15 @@ struct RFC8446Tests {
         func `Serialize extension`() throws {
             let ext = try RFC_8446.Extension.Data(
                 type: .serverName,
-                data: [0x00, 0x05, 0x68, 0x65, 0x6C, 0x6C, 0x6F]  // "hello"
+                data: [0x00, 0x05, 0x68, 0x65, 0x6C, 0x6C, 0x6F]
             )
 
             var buffer: [Byte] = []
             RFC_8446.Extension.Data.serialize(ext, into: &buffer)
 
-            #expect(buffer.count == 11)  // 2 type + 2 length + 7 data
-            #expect(buffer[0] == 0)  // type high
-            #expect(buffer[1] == 0)  // type low (server_name = 0)
+            #expect(buffer.count == 11)
+            #expect(buffer[0] == 0)
+            #expect(buffer[1] == 0)
         }
     }
 }

@@ -1,15 +1,3 @@
-// ===----------------------------------------------------------------------===//
-//
-// Copyright (c) 2025 Coen ten Thije Boonkkamp
-// Licensed under Apache License v2.0
-//
-// See LICENSE.txt for license information
-// See CONTRIBUTORS.txt for the list of project contributors
-//
-// SPDX-License-Identifier: Apache-2.0
-//
-// ===----------------------------------------------------------------------===//
-
 import RFC_8446
 import RFC_8446_Standard_Library_Integration
 import Testing
@@ -23,7 +11,6 @@ struct RFC_8446_Extension_Data_UInt8_Tests {
         #expect(ext.type == .serverName)
         #expect(ext.data.count == 7)
 
-        // Round-trip equality with [Byte] primary path
         let byteData: [Byte] = uint8Data.map(Byte.init)
         let primaryExt = try RFC_8446.Extension.Data(type: .serverName, data: byteData)
         #expect(ext == primaryExt)
@@ -37,8 +24,8 @@ struct RFC_8446_Extension_Data_UInt8_Tests {
         var buffer: [Byte] = []
         RFC_8446.Extension.Data.serialize(ext, into: &buffer)
 
-        #expect(buffer.count == 11)  // 2 type + 2 length + 7 data
-        #expect(buffer[0] == 0)  // type high
-        #expect(buffer[1] == 0)  // type low (server_name = 0)
+        #expect(buffer.count == 11)
+        #expect(buffer[0] == 0)
+        #expect(buffer[1] == 0)
     }
 }

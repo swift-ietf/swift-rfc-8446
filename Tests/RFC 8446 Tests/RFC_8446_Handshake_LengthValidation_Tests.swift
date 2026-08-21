@@ -1,18 +1,3 @@
-// ===----------------------------------------------------------------------===//
-//
-// Copyright (c) 2025 Coen ten Thije Boonkkamp
-// Licensed under Apache License v2.0
-//
-// See LICENSE.txt for license information
-// See CONTRIBUTORS.txt for the list of project contributors
-//
-// SPDX-License-Identifier: Apache-2.0
-//
-// ===----------------------------------------------------------------------===//
-
-// Fable-448 F-001 regression tests: handshake payload constructors validate
-// spec length bounds so serialization is total and non-trapping.
-
 import Binary_Serializable_Primitives
 import RFC_8446
 import Testing

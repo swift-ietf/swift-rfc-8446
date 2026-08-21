@@ -1,15 +1,3 @@
-// ===----------------------------------------------------------------------===//
-//
-// Copyright (c) 2025 Coen ten Thije Boonkkamp
-// Licensed under Apache License v2.0
-//
-// See LICENSE.txt for license information
-// See CONTRIBUTORS.txt for the list of project contributors
-//
-// SPDX-License-Identifier: Apache-2.0
-//
-// ===----------------------------------------------------------------------===//
-
 import Binary_Serializable_Primitives
 import Testing
 
@@ -18,8 +6,6 @@ import Testing
 @Suite("RFC 8448 Section 3 byte-exact message parsing")
 struct RFC_8446_RFC8448_Message_Tests {
 
-    // MARK: - ClientHello
-
     @Test
     func `ClientHello parses byte-exactly and re-serializes`() throws {
         let message = try RFC_8446.Handshake.Message(binary: RFC8448.clientHello)
@@ -27,7 +13,6 @@ struct RFC_8446_RFC8448_Message_Tests {
 
         let hello = try RFC_8446.Handshake.ClientHello(binary: message.body)
 
-        // Fields.
         #expect(hello.legacyVersion == .tls1_2)
         #expect(
             hello.random
@@ -44,7 +29,6 @@ struct RFC_8446_RFC8448_Message_Tests {
         )
         #expect(hello.legacyCompressionMethods == [Byte(0)])
 
-        // Re-serialization is byte-identical.
         #expect(hello.bytes == message.body)
         #expect(hello.message.bytes == RFC8448.clientHello)
     }
@@ -82,8 +66,6 @@ struct RFC_8446_RFC8448_Message_Tests {
         #expect(versions.bytes == ext.data)
     }
 
-    // MARK: - ServerHello
-
     @Test
     func `ServerHello parses byte-exactly and re-serializes`() throws {
         let message = try RFC_8446.Handshake.Message(binary: RFC8448.serverHello)
@@ -115,8 +97,6 @@ struct RFC_8446_RFC8448_Message_Tests {
         #expect(version.bytes == versionExt.data)
     }
 
-    // MARK: - EncryptedExtensions
-
     @Test
     func `EncryptedExtensions parses byte-exactly and re-serializes`() throws {
         let message = try RFC_8446.Handshake.Message(binary: RFC8448.encryptedExtensions)
@@ -129,8 +109,6 @@ struct RFC_8446_RFC8448_Message_Tests {
         #expect(ee.bytes == message.body)
         #expect(ee.message.bytes == RFC8448.encryptedExtensions)
     }
-
-    // MARK: - Certificate
 
     @Test
     func `Certificate parses byte-exactly and re-serializes`() throws {
@@ -147,8 +125,6 @@ struct RFC_8446_RFC8448_Message_Tests {
         #expect(certificate.message.bytes == RFC8448.certificate)
     }
 
-    // MARK: - CertificateVerify
-
     @Test
     func `CertificateVerify parses byte-exactly and re-serializes`() throws {
         let message = try RFC_8446.Handshake.Message(binary: RFC8448.certificateVerify)
@@ -162,8 +138,6 @@ struct RFC_8446_RFC8448_Message_Tests {
         #expect(verify.message.bytes == RFC8448.certificateVerify)
     }
 
-    // MARK: - Finished
-
     @Test
     func `Server Finished parses byte-exactly and re-serializes`() throws {
         let message = try RFC_8446.Handshake.Message(binary: RFC8448.serverFinished)
@@ -176,8 +150,6 @@ struct RFC_8446_RFC8448_Message_Tests {
         #expect(finished.message.bytes == RFC8448.serverFinished)
     }
 
-    // MARK: - NewSessionTicket
-
     @Test
     func `NewSessionTicket parses byte-exactly and re-serializes`() throws {
         let message = try RFC_8446.Handshake.Message(binary: RFC8448.newSessionTicket)
@@ -187,7 +159,6 @@ struct RFC_8446_RFC8448_Message_Tests {
         #expect(ticket.ticketLifetime == 30)
         #expect(ticket.ticketNonce == [Byte(0), Byte(0)])
 
-        // Its sole extension is early_data with max_early_data_size = 1024.
         let earlyExt = try #require(ticket.extensions.first { $0.type == .earlyData })
         let early = try RFC_8446.Extension.EarlyData.Ticket(binary: earlyExt.data)
         #expect(early.maxEarlyDataSize == 1024)

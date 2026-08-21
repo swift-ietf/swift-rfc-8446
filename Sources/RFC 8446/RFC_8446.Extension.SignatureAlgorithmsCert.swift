@@ -1,45 +1,11 @@
-// ===----------------------------------------------------------------------===//
-//
-// Copyright (c) 2025 Coen ten Thije Boonkkamp
-// Licensed under Apache License v2.0
-//
-// See LICENSE.txt for license information
-// See CONTRIBUTORS.txt for the list of project contributors
-//
-// SPDX-License-Identifier: Apache-2.0
-//
-// ===----------------------------------------------------------------------===//
-
-// RFC_8446.Extension.SignatureAlgorithmsCert.swift
-// swift-rfc-8446
-//
-// RFC 8446 Section 4.2.3: Signature Algorithms
-
 public import Binary_Serializable_Primitives
 
 extension RFC_8446.Extension {
-    /// `signature_algorithms_cert` extension payload (`extension_data` body).
-    ///
-    /// Applies to signatures in certificates. Shares the `SignatureSchemeList`
-    /// wire shape with `signature_algorithms` but is a distinct extension type
-    /// so implementations can advertise different sets for certificates.
-    ///
-    /// ## Wire Format
-    ///
-    /// ```
-    /// struct {
-    ///     SignatureScheme supported_signature_algorithms<2..2^16-2>;
-    /// } SignatureSchemeList;
-    /// ```
+
     public struct SignatureAlgorithmsCert: Sendable, Hashable {
-        /// The signature schemes, most preferred first.
+
         public let supportedSignatureAlgorithms: [SignatureScheme]
 
-        /// Creates a signature_algorithms_cert payload.
-        ///
-        /// - Throws: `Error.invalidAlgorithmCount` if the algorithm count is
-        ///   outside 1...32766 (the `uint16` byte-length bound within the
-        ///   `extension_data` ceiling).
         public init(supportedSignatureAlgorithms: [SignatureScheme]) throws(Error) {
             guard (1...32766).contains(supportedSignatureAlgorithms.count) else {
                 throw Error.invalidAlgorithmCount(supportedSignatureAlgorithms.count)
@@ -47,22 +13,17 @@ extension RFC_8446.Extension {
             self.supportedSignatureAlgorithms = supportedSignatureAlgorithms
         }
 
-        /// Creates a signature_algorithms_cert payload WITHOUT validation (parse path).
         init(__unchecked: Void, supportedSignatureAlgorithms: [SignatureScheme]) {
             self.supportedSignatureAlgorithms = supportedSignatureAlgorithms
         }
 
-        /// The extension type for this payload (`signature_algorithms_cert`).
         public static let extensionType: RFC_8446.Extension.ExtensionType = .signatureAlgorithmsCert
 
-        /// Wraps this payload in a generic ``RFC_8446/Extension/Data`` envelope.
         public var extensionData: RFC_8446.Extension.Data {
             RFC_8446.Extension.Data(__unchecked: (), type: Self.extensionType, data: self.bytes)
         }
     }
 }
-
-// MARK: - Binary.Serializable
 
 extension RFC_8446.Extension.SignatureAlgorithmsCert: Binary.Serializable {
     public static func serialize<Buffer: RangeReplaceableCollection>(
@@ -75,7 +36,6 @@ extension RFC_8446.Extension.SignatureAlgorithmsCert: Binary.Serializable {
         )
     }
 
-    /// Parses a signature_algorithms_cert `extension_data` body.
     public init<Bytes: Swift.Collection>(binary bytes: Bytes) throws(Error)
     where Bytes.Element == Byte {
         var reader = RFC_8446.Wire.Reader(Array(bytes))

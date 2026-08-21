@@ -1,15 +1,3 @@
-// ===----------------------------------------------------------------------===//
-//
-// Copyright (c) 2025 Coen ten Thije Boonkkamp
-// Licensed under Apache License v2.0
-//
-// See LICENSE.txt for license information
-// See CONTRIBUTORS.txt for the list of project contributors
-//
-// SPDX-License-Identifier: Apache-2.0
-//
-// ===----------------------------------------------------------------------===//
-
 import Binary_Serializable_Primitives
 import Testing
 
@@ -18,18 +6,12 @@ import Testing
 @Suite("RFC 8446 handshake payload round-trips")
 struct RFC_8446_HandshakeRoundTrip_Tests {
 
-    /// A 32-byte sample random.
     static let sampleRandom: [Byte] = (0..<32).map { Byte(UInt8($0)) }
 
-    /// A couple of sample extension envelopes.
     static let sampleExtensions: [RFC_8446.Extension.Data] = [
-        // A stored property initializer cannot propagate the failure; the
-        // fixture is a compile-time constant of the specification.
-        // swiftlint:disable:next force_try
+
         try! RFC_8446.Extension.Data(type: .supportedVersions, data: [Byte(0x03), Byte(0x04)]),
-        // A stored property initializer cannot propagate the failure; the
-        // fixture is a compile-time constant of the specification.
-        // swiftlint:disable:next force_try
+
         try! RFC_8446.Extension.Data(type: .cookie, data: [Byte(0xAA), Byte(0xBB), Byte(0xCC)]),
     ]
 
