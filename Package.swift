@@ -12,18 +12,18 @@ extension Target.Dependency {
         .product(name: "Standard Library Extensions", package: "swift-standard-library-extensions")
     }
     static var binary: Self {
-        .product(name: "Binary Primitives", package: "swift-binary-primitives")
+        .product(name: "Binary", package: "swift-binary")
     }
     static var incits41986: Self {
-        .product(name: "ASCII Primitives", package: "swift-ascii-primitives")
+        .product(name: "ASCII", package: "swift-ascii")
     }
     static var radixFormat: Self {
-        .product(name: "Radix Formatter Primitives", package: "swift-radix-formatter-primitives")
+        .product(name: "Radix Formatter", package: "swift-radix-formatter")
     }
     static var binarySerializable: Self {
         .product(
-            name: "Binary Serializable Primitives",
-            package: "swift-binary-serializer-primitives"
+            name: "Binary Serializable",
+            package: "swift-binary-serializer"
         )
     }
 
@@ -48,27 +48,27 @@ let package = Package(
     ],
     dependencies: [
         .package(
-            url: "https://github.com/swift-primitives/swift-standard-library-extensions.git",
+            url: "https://github.com/swift-molecules/swift-standard-library-extensions.git",
             branch: "main"
         ),
         .package(
-            url: "https://github.com/swift-primitives/swift-binary-primitives.git",
+            url: "https://github.com/swift-molecules/swift-binary.git",
             branch: "main"
         ),
         .package(
-            url: "https://github.com/swift-primitives/swift-ascii-primitives.git",
+            url: "https://github.com/swift-molecules/swift-ascii.git",
             branch: "main"
         ),
         .package(
-            url: "https://github.com/swift-primitives/swift-byte-primitives.git",
+            url: "https://github.com/swift-molecules/swift-byte.git",
             branch: "main"
         ),
         .package(
-            url: "https://github.com/swift-primitives/swift-radix-formatter-primitives.git",
+            url: "https://github.com/swift-molecules/swift-radix-formatter.git",
             branch: "main"
         ),
         .package(
-            url: "https://github.com/swift-primitives/swift-binary-serializer-primitives.git",
+            url: "https://github.com/swift-molecules/swift-binary-serializer.git",
             branch: "main"
         ),
 
@@ -90,8 +90,8 @@ let package = Package(
             dependencies: [
                 "RFC 8446",
                 .product(
-                    name: "Byte Primitives Standard Library Integration",
-                    package: "swift-byte-primitives"
+                    name: "Byte Standard Library Integration",
+                    package: "swift-byte"
                 ),
             ]
         ),

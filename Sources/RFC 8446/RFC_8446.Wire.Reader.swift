@@ -1,4 +1,4 @@
-internal import Binary_Serializable_Primitives
+internal import Binary_Serializable
 
 extension RFC_8446.Wire {
 

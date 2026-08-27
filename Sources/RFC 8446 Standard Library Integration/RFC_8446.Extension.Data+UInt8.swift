@@ -1,4 +1,4 @@
-internal import Byte_Primitives
+internal import Byte
 public import RFC_8446
 
 extension RFC_8446.Extension.Data {
