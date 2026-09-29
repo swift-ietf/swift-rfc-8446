@@ -24,27 +24,19 @@ let package = Package(
             branch: "main"
         ),
         .package(
-            url: "https://github.com/swift-molecules/swift-binary.git",
+            url: "https://github.com/swift-atoms/swift-binary.git",
+            branch: "main", traits: ["Serializer"]),
+        .package(
+            url: "https://github.com/swift-atoms/swift-ascii.git",
             branch: "main"
         ),
         .package(
-            url: "https://github.com/swift-molecules/swift-ascii.git",
-            branch: "main"
-        ),
-        .package(
-            url: "https://github.com/swift-molecules/swift-byte.git",
-            branch: "main"
-        ),
-        .package(
-            url: "https://github.com/swift-molecules/swift-radix-formatter.git",
-            branch: "main"
-        ),
-        .package(
-            url: "https://github.com/swift-molecules/swift-binary-serializer.git",
+            url: "https://github.com/swift-atoms/swift-byte.git",
             branch: "main"
         ),
 
         .package(url: "https://github.com/apple/swift-crypto.git", "3.0.0"..<"5.0.0"),
+        .package(url: "https://github.com/swift-atoms/swift-formatter.git", branch: "main", traits: ["Radix"]),
     ],
     targets: [
         .target(
@@ -53,8 +45,7 @@ let package = Package(
                 .product(name: "Standard Library Extensions", package: "swift-standard-library-extensions"),
                 .product(name: "Binary", package: "swift-binary"),
                 .product(name: "ASCII", package: "swift-ascii"),
-                .product(name: "Radix Formatter", package: "swift-radix-formatter"),
-                .product(name: "Binary Serializable", package: "swift-binary-serializer"),
+                .product(name: "Formatter", package: "swift-formatter"),
             ]
         ),
         .target(
@@ -62,7 +53,7 @@ let package = Package(
             dependencies: [
                 .target(name: "RFC 8446"),
                 .product(
-                    name: "Byte Standard Library Integration",
+                    name: "Byte",
                     package: "swift-byte"
                 ),
             ]
@@ -72,6 +63,7 @@ let package = Package(
             dependencies: [
                 .target(name: "RFC 8446"),
                 .product(name: "Crypto", package: "swift-crypto"),
+                .product(name: "Binary", package: "swift-binary"),
             ]
         ),
         .testTarget(
