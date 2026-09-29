@@ -51,30 +51,30 @@ struct RFC8446Tests {
         func `Create TLS record`() throws {
             let record = try RFC_8446.Record(
                 contentType: .handshake,
-                fragment: [1, 2, 3, 4]
+                fragment: [1, 2, 3, 4].map(Byte.init(bitPattern:))
             )
 
             #expect(record.contentType == .handshake)
             #expect(record.legacyVersion == .legacy)
-            #expect(record.fragment == [1, 2, 3, 4])
+            #expect(record.fragment == [1, 2, 3, 4].map(Byte.init(bitPattern:)))
         }
 
         @Test
         func `Serialize record`() throws {
             let record = try RFC_8446.Record(
                 contentType: .applicationData,
-                fragment: [0x01, 0x02, 0x03]
+                fragment: [0x01, 0x02, 0x03].map(Byte.init(bitPattern:))
             )
 
             var buffer: [Byte] = []
             RFC_8446.Record.serialize(record, into: &buffer)
 
             #expect(buffer.count == 8)
-            #expect(buffer[0] == 23)
-            #expect(buffer[1] == 0x03)
-            #expect(buffer[2] == 0x03)
-            #expect(buffer[3] == 0x00)
-            #expect(buffer[4] == 0x03)
+            #expect(buffer[0] == Byte(bitPattern: 23))
+            #expect(buffer[1] == Byte(bitPattern: 0x03))
+            #expect(buffer[2] == Byte(bitPattern: 0x03))
+            #expect(buffer[3] == Byte(bitPattern: 0x00))
+            #expect(buffer[4] == Byte(bitPattern: 0x03))
         }
 
         @Test
@@ -84,13 +84,13 @@ struct RFC8446Tests {
                 0x03, 0x03,
                 0x00, 0x04,
                 1, 2, 3, 4,
-            ]
+            ].map(Byte.init(bitPattern:))
 
             let record = try RFC_8446.Record(binary: bytes)
 
             #expect(record.contentType == .handshake)
             #expect(record.legacyVersion == .tls1_2)
-            #expect(record.fragment == [1, 2, 3, 4])
+            #expect(record.fragment == [1, 2, 3, 4].map(Byte.init(bitPattern:)))
         }
 
         @Test
@@ -164,8 +164,8 @@ struct RFC8446Tests {
             RFC_8446.Alert.serialize(alert, into: &buffer)
 
             #expect(buffer.count == 2)
-            #expect(buffer[0] == 1)
-            #expect(buffer[1] == 0)
+            #expect(buffer[0] == Byte(bitPattern: 1))
+            #expect(buffer[1] == Byte(bitPattern: 0))
         }
     }
 
@@ -183,17 +183,17 @@ struct RFC8446Tests {
         func `Serialize handshake message`() throws {
             let message = try RFC_8446.Handshake.Message(
                 type: .clientHello,
-                body: [1, 2, 3, 4, 5]
+                body: [1, 2, 3, 4, 5].map(Byte.init(bitPattern:))
             )
 
             var buffer: [Byte] = []
             RFC_8446.Handshake.Message.serialize(message, into: &buffer)
 
             #expect(buffer.count == 9)
-            #expect(buffer[0] == 1)
-            #expect(buffer[1] == 0)
-            #expect(buffer[2] == 0)
-            #expect(buffer[3] == 5)
+            #expect(buffer[0] == Byte(bitPattern: 1))
+            #expect(buffer[1] == Byte(bitPattern: 0))
+            #expect(buffer[2] == Byte(bitPattern: 0))
+            #expect(buffer[3] == Byte(bitPattern: 5))
         }
     }
 
@@ -225,15 +225,15 @@ struct RFC8446Tests {
         func `Serialize extension`() throws {
             let ext = try RFC_8446.Extension.Data(
                 type: .serverName,
-                data: [0x00, 0x05, 0x68, 0x65, 0x6C, 0x6C, 0x6F]
+                data: [0x00, 0x05, 0x68, 0x65, 0x6C, 0x6C, 0x6F].map(Byte.init(bitPattern:))
             )
 
             var buffer: [Byte] = []
             RFC_8446.Extension.Data.serialize(ext, into: &buffer)
 
             #expect(buffer.count == 11)
-            #expect(buffer[0] == 0)
-            #expect(buffer[1] == 0)
+            #expect(buffer[0] == Byte(bitPattern: 0))
+            #expect(buffer[1] == Byte(bitPattern: 0))
         }
     }
 }

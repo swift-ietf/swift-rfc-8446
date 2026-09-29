@@ -13,7 +13,7 @@ struct RFC_8446_Record_UInt8_Tests {
         #expect(record.legacyVersion == .legacy)
         #expect(record.fragment.count == 4)
 
-        let byteFragment: [Byte] = uint8Fragment.map(Byte.init)
+        let byteFragment: [Byte] = uint8Fragment.map(Byte.init(bitPattern:))
         let primaryRecord = try RFC_8446.Record(contentType: .handshake, fragment: byteFragment)
         #expect(record == primaryRecord)
     }

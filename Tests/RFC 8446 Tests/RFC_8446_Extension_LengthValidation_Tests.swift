@@ -22,7 +22,7 @@ extension RFC_8446.Extension.Data {
             var buffer: [Byte] = []
             RFC_8446.Extension.Data.serialize(ext, into: &buffer)
             #expect(buffer.count == 4 + 0xFFFF)
-            #expect(buffer[2] == 0xFF && buffer[3] == 0xFF)
+            #expect(buffer[2] == Byte(bitPattern: 0xFF) && buffer[3] == Byte(bitPattern: 0xFF))
         }
     }
 }

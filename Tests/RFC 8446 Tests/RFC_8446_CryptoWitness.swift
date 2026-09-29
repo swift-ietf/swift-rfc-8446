@@ -10,7 +10,7 @@ extension RFC_8446.KeySchedule.Witness {
             hashLength: 32,
             hash: { message in
                 let digest = SHA256.hash(data: Data(message.map(\.underlying)))
-                return digest.map(Byte.init)
+                return digest.map(Byte.init(bitPattern:))
             },
             extract: { salt, ikm in
 
@@ -19,7 +19,7 @@ extension RFC_8446.KeySchedule.Witness {
                     for: Data(ikm.map(\.underlying)),
                     using: key
                 )
-                return Array(mac).map(Byte.init)
+                return Array(mac).map(Byte.init(bitPattern:))
             },
             expand: { prk, info, length in
 
@@ -37,7 +37,7 @@ extension RFC_8446.KeySchedule.Witness {
                     okm.append(contentsOf: previousBlock)
                     counter &+= 1
                 }
-                return okm.prefix(length).map(Byte.init)
+                return okm.prefix(length).map(Byte.init(bitPattern:))
             }
         )
     }

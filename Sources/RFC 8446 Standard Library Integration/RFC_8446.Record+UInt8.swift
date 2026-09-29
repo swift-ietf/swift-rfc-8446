@@ -8,6 +8,6 @@ extension RFC_8446.Record {
         contentType: RFC_8446.ContentType,
         fragment: [UInt8]
     ) throws(RFC_8446.Record.Error) {
-        try self.init(contentType: contentType, fragment: fragment.map(Byte.init))
+        try self.init(contentType: contentType, fragment: fragment.map(Byte.init(bitPattern:)))
     }
 }

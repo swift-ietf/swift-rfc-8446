@@ -21,7 +21,7 @@ extension RFC_8446.Handshake.Message {
             var buffer: [Byte] = []
             RFC_8446.Handshake.Message.serialize(message, into: &buffer)
             #expect(buffer.count == 4 + 0xFF_FFFF)
-            #expect(buffer[1] == 0xFF && buffer[2] == 0xFF && buffer[3] == 0xFF)
+            #expect(buffer[1] == Byte(bitPattern: 0xFF) && buffer[2] == Byte(bitPattern: 0xFF) && buffer[3] == Byte(bitPattern: 0xFF))
         }
     }
 }

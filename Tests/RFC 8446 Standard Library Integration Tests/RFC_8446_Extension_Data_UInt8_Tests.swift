@@ -11,7 +11,7 @@ struct RFC_8446_Extension_Data_UInt8_Tests {
         #expect(ext.type == .serverName)
         #expect(ext.data.count == 7)
 
-        let byteData: [Byte] = uint8Data.map(Byte.init)
+        let byteData: [Byte] = uint8Data.map(Byte.init(bitPattern:))
         let primaryExt = try RFC_8446.Extension.Data(type: .serverName, data: byteData)
         #expect(ext == primaryExt)
     }
@@ -25,7 +25,7 @@ struct RFC_8446_Extension_Data_UInt8_Tests {
         RFC_8446.Extension.Data.serialize(ext, into: &buffer)
 
         #expect(buffer.count == 11)
-        #expect(buffer[0] == 0)
-        #expect(buffer[1] == 0)
+        #expect(buffer[0] == Byte(bitPattern: 0))
+        #expect(buffer[1] == Byte(bitPattern: 0))
     }
 }

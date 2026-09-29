@@ -18,11 +18,11 @@ extension RFC_8446.KeySchedule {
 
         public init(length: UInt16, label: some StringProtocol, context: [Byte]) {
             var full = Self.prefix
-            full.append(contentsOf: label.utf8.map(Byte.init))
+            full.append(contentsOf: label.utf8.map(Byte.init(bitPattern:)))
             self.init(length: length, label: full, context: context)
         }
 
-        public static let prefix: [Byte] = Array("tls13 ".utf8).map(Byte.init)
+        public static let prefix: [Byte] = Array("tls13 ".utf8).map(Byte.init(bitPattern:))
     }
 }
 

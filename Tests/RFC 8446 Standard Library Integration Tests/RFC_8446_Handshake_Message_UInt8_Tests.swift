@@ -11,7 +11,7 @@ struct RFC_8446_Handshake_Message_UInt8_Tests {
         #expect(message.type == .clientHello)
         #expect(message.body.count == 5)
 
-        let byteBody: [Byte] = uint8Body.map(Byte.init)
+        let byteBody: [Byte] = uint8Body.map(Byte.init(bitPattern:))
         let primaryMessage = try RFC_8446.Handshake.Message(type: .clientHello, body: byteBody)
         #expect(message == primaryMessage)
     }
@@ -25,9 +25,9 @@ struct RFC_8446_Handshake_Message_UInt8_Tests {
         RFC_8446.Handshake.Message.serialize(message, into: &buffer)
 
         #expect(buffer.count == 9)
-        #expect(buffer[0] == 1)
-        #expect(buffer[1] == 0)
-        #expect(buffer[2] == 0)
-        #expect(buffer[3] == 5)
+        #expect(buffer[0] == Byte(bitPattern: 1))
+        #expect(buffer[1] == Byte(bitPattern: 0))
+        #expect(buffer[2] == Byte(bitPattern: 0))
+        #expect(buffer[3] == Byte(bitPattern: 5))
     }
 }
