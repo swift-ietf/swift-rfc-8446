@@ -89,28 +89,33 @@ extension RFC_8446.Handshake.ClientHello: Binary.Serializable {
     public init<Bytes: Swift.Collection>(binary bytes: Bytes) throws(Error)
     where Bytes.Element == Byte {
         var reader = RFC_8446.Wire.Reader(Array(bytes))
+        let version: UInt16
+        let random: [Byte]
+        let sessionID: [Byte]
+        let suites: [UInt16]
+        let compression: [Byte]
+        let extensions: [RFC_8446.Extension.Data]
         do {
-            let version = try reader.uint16()
-            let random = try reader.take(32)
-            let sessionID = try reader.vector8()
-            let suites = try reader.uint16List()
-            let compression = try reader.vector8()
-            let extensions = try reader.extensions()
+            version = try reader.uint16()
+            random = try reader.take(32)
+            sessionID = try reader.vector8()
+            suites = try reader.uint16List()
+            compression = try reader.vector8()
+            extensions = try reader.extensions()
             try reader.expectEnd()
-            self.init(
-                __unchecked: (),
-                legacyVersion: RFC_8446.ProtocolVersion(rawValue: version),
-                random: random,
-                legacySessionID: sessionID,
-                cipherSuites: suites.map(RFC_8446.CipherSuite.init(rawValue:)),
-                legacyCompressionMethods: compression,
-                extensions: extensions
-            )
         } catch {
             switch error {
             case .trailingData(let n): throw .trailingData(n)
             case .truncated, .lengthOverflow: throw .truncated
             }
         }
+        try self.init(
+            legacyVersion: RFC_8446.ProtocolVersion(rawValue: version),
+            random: random,
+            legacySessionID: sessionID,
+            cipherSuites: suites.map(RFC_8446.CipherSuite.init(rawValue:)),
+            legacyCompressionMethods: compression,
+            extensions: extensions
+        )
     }
 }
