@@ -117,5 +117,6 @@ extension RFC_8446.Handshake.ServerHello: Binary.Serializable {
             case .truncated, .lengthOverflow: throw .truncated
             }
         }
+        self = try Self(legacyVersion: legacyVersion, random: random, legacySessionIDEcho: legacySessionIDEcho, cipherSuite: cipherSuite, legacyCompressionMethod: legacyCompressionMethod, extensions: extensions)
     }
 }

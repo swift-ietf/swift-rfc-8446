@@ -61,5 +61,6 @@ extension RFC_8446.Extension.CertificateAuthorities: Binary.Serializable {
             case .truncated, .lengthOverflow: throw .truncated
             }
         }
+        self = try Self(authorities: authorities)
     }
 }

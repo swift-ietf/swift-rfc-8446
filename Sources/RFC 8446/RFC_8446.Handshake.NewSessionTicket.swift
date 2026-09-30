@@ -97,5 +97,6 @@ extension RFC_8446.Handshake.NewSessionTicket: Binary.Serializable {
             case .truncated, .lengthOverflow: throw .truncated
             }
         }
+        self = try Self(ticketLifetime: ticketLifetime, ticketAgeAdd: ticketAgeAdd, ticketNonce: ticketNonce, ticket: ticket, extensions: extensions)
     }
 }
