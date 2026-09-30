@@ -46,5 +46,6 @@ extension RFC_8446.Extension.Cookie: Binary.Serializable {
             case .truncated, .lengthOverflow: throw .truncated
             }
         }
+        self = try Self(cookie: cookie)
     }
 }

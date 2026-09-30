@@ -53,5 +53,6 @@ extension RFC_8446.Extension.PskKeyExchangeModes: Binary.Serializable {
             case .truncated, .lengthOverflow: throw .truncated
             }
         }
+        self = try Self(keModes: keModes)
     }
 }

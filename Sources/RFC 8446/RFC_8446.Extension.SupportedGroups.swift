@@ -49,5 +49,6 @@ extension RFC_8446.Extension.SupportedGroups: Binary.Serializable {
             case .truncated, .lengthOverflow: throw .truncated
             }
         }
+        self = try Self(namedGroupList: namedGroupList)
     }
 }

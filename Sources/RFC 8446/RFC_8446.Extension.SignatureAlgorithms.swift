@@ -54,5 +54,6 @@ extension RFC_8446.Extension.SignatureAlgorithms: Binary.Serializable {
             case .truncated, .lengthOverflow: throw .truncated
             }
         }
+        self = try Self(supportedSignatureAlgorithms: supportedSignatureAlgorithms)
     }
 }
