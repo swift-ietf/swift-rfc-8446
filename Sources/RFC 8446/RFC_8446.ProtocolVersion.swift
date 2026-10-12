@@ -15,14 +15,6 @@ extension RFC_8446 {
             self.rawValue = rawValue
         }
 
-        public var major: UInt8 {
-            UInt8(rawValue >> 8)
-        }
-
-        public var minor: UInt8 {
-            UInt8(rawValue & 0xFF)
-        }
-
         public static let tls1_0 = Self(__unchecked: (), rawValue: 0x0301)
 
         public static let tls1_1 = Self(__unchecked: (), rawValue: 0x0302)
@@ -30,12 +22,22 @@ extension RFC_8446 {
         public static let tls1_2 = Self(__unchecked: (), rawValue: 0x0303)
 
         public static let tls1_3 = Self(__unchecked: (), rawValue: 0x0304)
+    }
+}
 
-        public static let legacy = Self.tls1_2
+extension RFC_8446.ProtocolVersion {
+    public var major: UInt8 {
+        UInt8(rawValue >> 8)
+    }
 
-        public static func < (lhs: Self, rhs: Self) -> Bool {
-            lhs.rawValue < rhs.rawValue
-        }
+    public var minor: UInt8 {
+        UInt8(rawValue & 0xFF)
+    }
+
+    public static let legacy = Self.tls1_2
+
+    public static func < (lhs: Self, rhs: Self) -> Bool {
+        lhs.rawValue < rhs.rawValue
     }
 }
 

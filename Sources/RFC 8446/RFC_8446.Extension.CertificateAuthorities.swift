@@ -23,12 +23,14 @@ extension RFC_8446.Extension {
             self.authorities = authorities
         }
 
-        public static let extensionType: RFC_8446.Extension.ExtensionType = .certificateAuthorities
-
         public var extensionData: RFC_8446.Extension.Data {
             RFC_8446.Extension.Data(__unchecked: (), type: Self.extensionType, data: self.bytes)
         }
     }
+}
+
+extension RFC_8446.Extension.CertificateAuthorities {
+    public static let extensionType: RFC_8446.Extension.ExtensionType = .certificateAuthorities
 }
 
 extension RFC_8446.Extension.CertificateAuthorities: Binary.Serializable {
@@ -43,7 +45,7 @@ extension RFC_8446.Extension.CertificateAuthorities: Binary.Serializable {
         RFC_8446.Wire.appendVector16(block, into: &buffer)
     }
 
-    public init<Bytes: Swift.Collection>(binary bytes: Bytes) throws(Error)
+    public init<Bytes: Swift::Collection>(binary bytes: Bytes) throws(Error)
     where Bytes.Element == Byte {
         var reader = RFC_8446.Wire.Reader(Array(bytes))
         do {

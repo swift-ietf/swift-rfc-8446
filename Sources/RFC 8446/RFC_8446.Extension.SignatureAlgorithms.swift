@@ -17,12 +17,14 @@ extension RFC_8446.Extension {
             self.supportedSignatureAlgorithms = supportedSignatureAlgorithms
         }
 
-        public static let extensionType: RFC_8446.Extension.ExtensionType = .signatureAlgorithms
-
         public var extensionData: RFC_8446.Extension.Data {
             RFC_8446.Extension.Data(__unchecked: (), type: Self.extensionType, data: self.bytes)
         }
     }
+}
+
+extension RFC_8446.Extension.SignatureAlgorithms {
+    public static let extensionType: RFC_8446.Extension.ExtensionType = .signatureAlgorithms
 }
 
 extension RFC_8446.Extension.SignatureAlgorithms: Binary.Serializable {
@@ -36,7 +38,7 @@ extension RFC_8446.Extension.SignatureAlgorithms: Binary.Serializable {
         )
     }
 
-    public init<Bytes: Swift.Collection>(binary bytes: Bytes) throws(Error)
+    public init<Bytes: Swift::Collection>(binary bytes: Bytes) throws(Error)
     where Bytes.Element == Byte {
         var reader = RFC_8446.Wire.Reader(Array(bytes))
         do {

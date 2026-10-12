@@ -1,6 +1,6 @@
 extension RFC_8446.Wire {
 
-    enum Error: Swift.Error, Sendable, Equatable {
+    enum Error: Swift::Error, Sendable, Equatable {
 
         case truncated
 

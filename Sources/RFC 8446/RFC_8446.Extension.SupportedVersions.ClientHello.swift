@@ -41,7 +41,7 @@ extension RFC_8446.Extension.SupportedVersions.ClientHello: Binary.Serializable 
         RFC_8446.Wire.appendVector8(block, into: &buffer)
     }
 
-    public init<Bytes: Swift.Collection>(
+    public init<Bytes: Swift::Collection>(
         binary bytes: Bytes
     ) throws(RFC_8446.Extension.SupportedVersions.Error)
     where Bytes.Element == Byte {

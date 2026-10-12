@@ -28,7 +28,7 @@ extension RFC_8446.Extension.KeyShare.ServerHello: Binary.Serializable {
         RFC_8446.Extension.KeyShare.Entry.serialize(value.serverShare, into: &buffer)
     }
 
-    public init<Bytes: Swift.Collection>(
+    public init<Bytes: Swift::Collection>(
         binary bytes: Bytes
     ) throws(RFC_8446.Extension.KeyShare.Error)
     where Bytes.Element == Byte {

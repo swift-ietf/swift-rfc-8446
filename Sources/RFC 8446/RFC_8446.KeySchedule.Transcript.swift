@@ -13,17 +13,19 @@ extension RFC_8446.KeySchedule {
         public init(messages: [Byte]) {
             self.messages = messages
         }
+    }
+}
 
-        public mutating func append(_ bytes: [Byte]) {
-            messages.append(contentsOf: bytes)
-        }
+extension RFC_8446.KeySchedule.Transcript {
+    public mutating func append(_ bytes: [Byte]) {
+        messages.append(contentsOf: bytes)
+    }
 
-        public mutating func append(_ message: RFC_8446.Handshake.Message) {
-            messages.append(contentsOf: message.bytes)
-        }
+    public mutating func append(_ message: RFC_8446.Handshake.Message) {
+        messages.append(contentsOf: message.bytes)
+    }
 
-        public func hash(using witness: RFC_8446.KeySchedule.Witness) -> [Byte] {
-            witness.hash(messages)
-        }
+    public func hash(using witness: RFC_8446.KeySchedule.Witness) -> [Byte] {
+        witness.hash(messages)
     }
 }

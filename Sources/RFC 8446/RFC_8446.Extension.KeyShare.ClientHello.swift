@@ -40,7 +40,7 @@ extension RFC_8446.Extension.KeyShare.ClientHello: Binary.Serializable {
         RFC_8446.Wire.appendVector16(block, into: &buffer)
     }
 
-    public init<Bytes: Swift.Collection>(
+    public init<Bytes: Swift::Collection>(
         binary bytes: Bytes
     ) throws(RFC_8446.Extension.KeyShare.Error)
     where Bytes.Element == Byte {

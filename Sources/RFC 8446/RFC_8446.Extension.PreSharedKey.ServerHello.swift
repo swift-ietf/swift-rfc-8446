@@ -28,7 +28,7 @@ extension RFC_8446.Extension.PreSharedKey.ServerHello: Binary.Serializable {
         buffer.append(contentsOf: value.selectedIdentity.bytes(endianness: .big))
     }
 
-    public init<Bytes: Swift.Collection>(
+    public init<Bytes: Swift::Collection>(
         binary bytes: Bytes
     ) throws(RFC_8446.Extension.PreSharedKey.Error)
     where Bytes.Element == Byte {

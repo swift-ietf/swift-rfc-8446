@@ -28,7 +28,7 @@ extension RFC_8446.Extension.KeyShare.HelloRetryRequest: Binary.Serializable {
         buffer.append(contentsOf: value.selectedGroup.rawValue.bytes(endianness: .big))
     }
 
-    public init<Bytes: Swift.Collection>(
+    public init<Bytes: Swift::Collection>(
         binary bytes: Bytes
     ) throws(RFC_8446.Extension.KeyShare.Error)
     where Bytes.Element == Byte {

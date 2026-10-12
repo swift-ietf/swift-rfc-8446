@@ -65,12 +65,14 @@ extension RFC_8446.Handshake {
             self.extensions = extensions
         }
 
-        public static let handshakeType: RFC_8446.Handshake.MessageType = .clientHello
-
         public var message: RFC_8446.Handshake.Message {
             RFC_8446.Handshake.Message(__unchecked: (), type: Self.handshakeType, body: self.bytes)
         }
     }
+}
+
+extension RFC_8446.Handshake.ClientHello {
+    public static let handshakeType: RFC_8446.Handshake.MessageType = .clientHello
 }
 
 extension RFC_8446.Handshake.ClientHello: Binary.Serializable {
@@ -86,7 +88,7 @@ extension RFC_8446.Handshake.ClientHello: Binary.Serializable {
         RFC_8446.Wire.appendExtensions(hello.extensions, into: &buffer)
     }
 
-    public init<Bytes: Swift.Collection>(binary bytes: Bytes) throws(Error)
+    public init<Bytes: Swift::Collection>(binary bytes: Bytes) throws(Error)
     where Bytes.Element == Byte {
         var reader = RFC_8446.Wire.Reader(Array(bytes))
         let version: UInt16

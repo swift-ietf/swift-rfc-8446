@@ -1,6 +1,6 @@
 extension RFC_8446.Handshake.KeyUpdate {
 
-    public enum Error: Swift.Error, Sendable, Equatable {
+    public enum Error: Swift::Error, Sendable, Equatable {
 
         case truncated
 

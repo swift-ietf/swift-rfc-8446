@@ -1,6 +1,6 @@
 extension RFC_8446.Extension.Data {
 
-    public enum Error: Swift.Error, Sendable, Equatable {
+    public enum Error: Swift::Error, Sendable, Equatable {
 
         case truncated
 

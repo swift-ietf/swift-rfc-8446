@@ -1,6 +1,6 @@
 extension RFC_8446.Record {
 
-    public enum Error: Swift.Error, Sendable, Equatable {
+    public enum Error: Swift::Error, Sendable, Equatable {
 
         case fragmentTooLarge(_ size: Int)
 

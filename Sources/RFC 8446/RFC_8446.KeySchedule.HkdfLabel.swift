@@ -21,9 +21,11 @@ extension RFC_8446.KeySchedule {
             full.append(contentsOf: label.utf8.map(Byte.init(bitPattern:)))
             self.init(length: length, label: full, context: context)
         }
-
-        public static let prefix: [Byte] = Array("tls13 ".utf8).map(Byte.init(bitPattern:))
     }
+}
+
+extension RFC_8446.KeySchedule.HkdfLabel {
+    public static let prefix: [Byte] = Array("tls13 ".utf8).map(Byte.init(bitPattern:))
 }
 
 extension RFC_8446.KeySchedule.HkdfLabel: Binary.Serializable {
@@ -36,7 +38,7 @@ extension RFC_8446.KeySchedule.HkdfLabel: Binary.Serializable {
         RFC_8446.Wire.appendVector8(value.context, into: &buffer)
     }
 
-    public init<Bytes: Swift.Collection>(binary bytes: Bytes) throws(Error)
+    public init<Bytes: Swift::Collection>(binary bytes: Bytes) throws(Error)
     where Bytes.Element == Byte {
         var reader = RFC_8446.Wire.Reader(Array(bytes))
         do {

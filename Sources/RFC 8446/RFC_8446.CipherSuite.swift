@@ -22,41 +22,43 @@ extension RFC_8446 {
         public static let aes128CcmSha256 = Self(__unchecked: (), rawValue: 0x1304)
 
         public static let aes128Ccm8Sha256 = Self(__unchecked: (), rawValue: 0x1305)
+    }
+}
 
-        public var isTLS13: Bool {
-            rawValue >= 0x1301 && rawValue <= 0x1305
+extension RFC_8446.CipherSuite {
+    public var isTLS13: Bool {
+        rawValue >= 0x1301 && rawValue <= 0x1305
+    }
+
+    public var aeadAlgorithm: String? {
+        switch rawValue {
+        case 0x1301: return "AES-128-GCM"
+        case 0x1302: return "AES-256-GCM"
+        case 0x1303: return "ChaCha20-Poly1305"
+        case 0x1304: return "AES-128-CCM"
+        case 0x1305: return "AES-128-CCM-8"
+        default: return nil
         }
+    }
 
-        public var aeadAlgorithm: String? {
-            switch rawValue {
-            case 0x1301: return "AES-128-GCM"
-            case 0x1302: return "AES-256-GCM"
-            case 0x1303: return "ChaCha20-Poly1305"
-            case 0x1304: return "AES-128-CCM"
-            case 0x1305: return "AES-128-CCM-8"
-            default: return nil
-            }
+    public var hashAlgorithm: String? {
+        switch rawValue {
+        case 0x1301, 0x1303, 0x1304, 0x1305:
+            return "SHA-256"
+
+        case 0x1302:
+            return "SHA-384"
+
+        default:
+            return nil
         }
+    }
 
-        public var hashAlgorithm: String? {
-            switch rawValue {
-            case 0x1301, 0x1303, 0x1304, 0x1305:
-                return "SHA-256"
-
-            case 0x1302:
-                return "SHA-384"
-
-            default:
-                return nil
-            }
-        }
-
-        public var keyLength: Int? {
-            switch rawValue {
-            case 0x1301, 0x1304, 0x1305: return 16
-            case 0x1302, 0x1303: return 32
-            default: return nil
-            }
+    public var keyLength: Int? {
+        switch rawValue {
+        case 0x1301, 0x1304, 0x1305: return 16
+        case 0x1302, 0x1303: return 32
+        default: return nil
         }
     }
 }

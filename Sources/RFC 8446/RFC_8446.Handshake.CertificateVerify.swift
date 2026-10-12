@@ -24,12 +24,14 @@ extension RFC_8446.Handshake {
             self.signature = signature
         }
 
-        public static let handshakeType: RFC_8446.Handshake.MessageType = .certificateVerify
-
         public var message: RFC_8446.Handshake.Message {
             RFC_8446.Handshake.Message(__unchecked: (), type: Self.handshakeType, body: self.bytes)
         }
     }
+}
+
+extension RFC_8446.Handshake.CertificateVerify {
+    public static let handshakeType: RFC_8446.Handshake.MessageType = .certificateVerify
 }
 
 extension RFC_8446.Handshake.CertificateVerify: Binary.Serializable {
@@ -41,7 +43,7 @@ extension RFC_8446.Handshake.CertificateVerify: Binary.Serializable {
         RFC_8446.Wire.appendVector16(verify.signature, into: &buffer)
     }
 
-    public init<Bytes: Swift.Collection>(binary bytes: Bytes) throws(Error)
+    public init<Bytes: Swift::Collection>(binary bytes: Bytes) throws(Error)
     where Bytes.Element == Byte {
         var reader = RFC_8446.Wire.Reader(Array(bytes))
         do {

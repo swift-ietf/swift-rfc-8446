@@ -1,6 +1,6 @@
 extension RFC_8446.Handshake.EndOfEarlyData {
 
-    public enum Error: Swift.Error, Sendable, Equatable {
+    public enum Error: Swift::Error, Sendable, Equatable {
 
         case trailingData(_ remaining: Int)
     }

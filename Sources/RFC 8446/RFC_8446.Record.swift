@@ -52,7 +52,7 @@ extension RFC_8446.Record: Binary.Serializable {
         buffer.append(contentsOf: record.fragment)
     }
 
-    public init<Bytes: Swift.Collection>(binary bytes: Bytes) throws(Error)
+    public init<Bytes: Swift::Collection>(binary bytes: Bytes) throws(Error)
     where Bytes.Element == Byte {
         guard bytes.count >= Limits.headerSize else {
             throw Error.truncated(bytes.count)

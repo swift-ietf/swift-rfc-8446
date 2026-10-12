@@ -17,12 +17,14 @@ extension RFC_8446.Extension {
             self.keModes = keModes
         }
 
-        public static let extensionType: RFC_8446.Extension.ExtensionType = .pskKeyExchangeModes
-
         public var extensionData: RFC_8446.Extension.Data {
             RFC_8446.Extension.Data(__unchecked: (), type: Self.extensionType, data: self.bytes)
         }
     }
+}
+
+extension RFC_8446.Extension.PskKeyExchangeModes {
+    public static let extensionType: RFC_8446.Extension.ExtensionType = .pskKeyExchangeModes
 }
 
 extension RFC_8446.Extension.PskKeyExchangeModes: Binary.Serializable {
@@ -35,7 +37,7 @@ extension RFC_8446.Extension.PskKeyExchangeModes: Binary.Serializable {
         RFC_8446.Wire.appendVector8(modeBytes, into: &buffer)
     }
 
-    public init<Bytes: Swift.Collection>(binary bytes: Bytes) throws(Error)
+    public init<Bytes: Swift::Collection>(binary bytes: Bytes) throws(Error)
     where Bytes.Element == Byte {
         var reader = RFC_8446.Wire.Reader(Array(bytes))
         do {

@@ -20,8 +20,9 @@ func hex(_ string: String) -> [Byte] {
     return result
 }
 
-enum RFC8448 {
+enum RFC8448 {}
 
+extension RFC8448 {
     static let clientHello = hex(
         """
         01 00 00 c0 03 03 cb 34 ec b1 e7 81 63 ba 1c 38 c6 da cb 19 6a 6d ff
@@ -173,6 +174,7 @@ enum RFC8448 {
     )
 
     static let serverHandshakeWriteKey = hex("3f ce 51 60 09 c2 17 27 d0 f2 e4 e8 6e e4 03 bc")
+
     static let serverHandshakeWriteIV = hex("5d 31 3e b2 67 12 76 ee 13 00 0b 30")
 
     static let serverFinishedKey = hex(
@@ -211,6 +213,7 @@ enum RFC8448 {
     )
 
     static let serverApplicationWriteKey = hex("9f 02 28 3b 6c 9c 07 ef c2 6b b9 f2 ac 92 e3 56")
+
     static let serverApplicationWriteIV = hex("cf 78 2b 88 dd 83 54 9a ad f1 e9 84")
 
     static let clientFinishedKey = hex(
@@ -265,6 +268,8 @@ enum RFC8448 {
     )
 
     static let keyInfo = hex("00 10 09 74 6c 73 31 33 20 6b 65 79 00")
+
     static let ivInfo = hex("00 0c 08 74 6c 73 31 33 20 69 76 00")
+
     static let finishedInfo = hex("00 20 0e 74 6c 73 31 33 20 66 69 6e 69 73 68 65 64 00")
 }

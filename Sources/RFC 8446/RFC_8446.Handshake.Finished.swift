@@ -17,12 +17,14 @@ extension RFC_8446.Handshake {
             self.verifyData = verifyData
         }
 
-        public static let handshakeType: RFC_8446.Handshake.MessageType = .finished
-
         public var message: RFC_8446.Handshake.Message {
             RFC_8446.Handshake.Message(__unchecked: (), type: Self.handshakeType, body: self.bytes)
         }
     }
+}
+
+extension RFC_8446.Handshake.Finished {
+    public static let handshakeType: RFC_8446.Handshake.MessageType = .finished
 }
 
 extension RFC_8446.Handshake.Finished: Binary.Serializable {
@@ -33,7 +35,7 @@ extension RFC_8446.Handshake.Finished: Binary.Serializable {
         buffer.append(contentsOf: finished.verifyData)
     }
 
-    public init<Bytes: Swift.Collection>(binary bytes: Bytes) throws(Error)
+    public init<Bytes: Swift::Collection>(binary bytes: Bytes) throws(Error)
     where Bytes.Element == Byte {
         let verifyData = Array(bytes)
         guard verifyData.count <= 0xFF_FFFF else {

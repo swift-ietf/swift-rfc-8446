@@ -24,7 +24,7 @@ extension RFC_8446.Extension.EarlyData.Indication: Binary.Serializable {
 
     }
 
-    public init<Bytes: Swift.Collection>(
+    public init<Bytes: Swift::Collection>(
         binary bytes: Bytes
     ) throws(RFC_8446.Extension.EarlyData.Error)
     where Bytes.Element == Byte {

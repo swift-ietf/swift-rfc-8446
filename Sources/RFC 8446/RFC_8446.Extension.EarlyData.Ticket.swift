@@ -28,7 +28,7 @@ extension RFC_8446.Extension.EarlyData.Ticket: Binary.Serializable {
         buffer.append(contentsOf: value.maxEarlyDataSize.bytes(endianness: .big))
     }
 
-    public init<Bytes: Swift.Collection>(
+    public init<Bytes: Swift::Collection>(
         binary bytes: Bytes
     ) throws(RFC_8446.Extension.EarlyData.Error)
     where Bytes.Element == Byte {

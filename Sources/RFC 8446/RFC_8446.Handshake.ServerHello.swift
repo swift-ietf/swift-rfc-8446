@@ -59,23 +59,25 @@ extension RFC_8446.Handshake {
             self.extensions = extensions
         }
 
-        public static let helloRetryRequestRandom: [Byte] = [
-            0xCF, 0x21, 0xAD, 0x74, 0xE5, 0x9A, 0x61, 0x11,
-            0xBE, 0x1D, 0x8C, 0x02, 0x1E, 0x65, 0xB8, 0x91,
-            0xC2, 0xA2, 0x11, 0x16, 0x7A, 0xBB, 0x8C, 0x5E,
-            0x07, 0x9E, 0x09, 0xE2, 0xC8, 0xA8, 0x33, 0x9C,
-        ].map(Byte.init(bitPattern:))
-
-        public var isHelloRetryRequest: Bool {
-            random == Self.helloRetryRequestRandom
-        }
-
-        public static let handshakeType: RFC_8446.Handshake.MessageType = .serverHello
-
         public var message: RFC_8446.Handshake.Message {
             RFC_8446.Handshake.Message(__unchecked: (), type: Self.handshakeType, body: self.bytes)
         }
     }
+}
+
+extension RFC_8446.Handshake.ServerHello {
+    public static let helloRetryRequestRandom: [Byte] = [
+        0xCF, 0x21, 0xAD, 0x74, 0xE5, 0x9A, 0x61, 0x11,
+        0xBE, 0x1D, 0x8C, 0x02, 0x1E, 0x65, 0xB8, 0x91,
+        0xC2, 0xA2, 0x11, 0x16, 0x7A, 0xBB, 0x8C, 0x5E,
+        0x07, 0x9E, 0x09, 0xE2, 0xC8, 0xA8, 0x33, 0x9C,
+    ].map(Byte.init(bitPattern:))
+
+    public var isHelloRetryRequest: Bool {
+        random == Self.helloRetryRequestRandom
+    }
+
+    public static let handshakeType: RFC_8446.Handshake.MessageType = .serverHello
 }
 
 extension RFC_8446.Handshake.ServerHello: Binary.Serializable {
@@ -91,7 +93,7 @@ extension RFC_8446.Handshake.ServerHello: Binary.Serializable {
         RFC_8446.Wire.appendExtensions(hello.extensions, into: &buffer)
     }
 
-    public init<Bytes: Swift.Collection>(binary bytes: Bytes) throws(Error)
+    public init<Bytes: Swift::Collection>(binary bytes: Bytes) throws(Error)
     where Bytes.Element == Byte {
         var reader = RFC_8446.Wire.Reader(Array(bytes))
         do {

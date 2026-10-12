@@ -60,7 +60,7 @@ extension RFC_8446.Extension.PreSharedKey.OfferedPsks: Binary.Serializable {
         RFC_8446.Wire.appendVector16(bindersBlock, into: &buffer)
     }
 
-    public init<Bytes: Swift.Collection>(
+    public init<Bytes: Swift::Collection>(
         binary bytes: Bytes
     ) throws(RFC_8446.Extension.PreSharedKey.Error)
     where Bytes.Element == Byte {

@@ -24,12 +24,14 @@ extension RFC_8446.Extension {
             self.padding = padding
         }
 
-        public static let extensionType: RFC_8446.Extension.ExtensionType = .padding
-
         public var extensionData: RFC_8446.Extension.Data {
             RFC_8446.Extension.Data(__unchecked: (), type: Self.extensionType, data: self.bytes)
         }
     }
+}
+
+extension RFC_8446.Extension.Padding {
+    public static let extensionType: RFC_8446.Extension.ExtensionType = .padding
 }
 
 extension RFC_8446.Extension.Padding: Binary.Serializable {
@@ -40,7 +42,7 @@ extension RFC_8446.Extension.Padding: Binary.Serializable {
         buffer.append(contentsOf: value.padding)
     }
 
-    public init<Bytes: Swift.Collection>(binary bytes: Bytes) throws(Error)
+    public init<Bytes: Swift::Collection>(binary bytes: Bytes) throws(Error)
     where Bytes.Element == Byte {
         let padding = Array(bytes)
         guard padding.count <= 0xFFFF else {

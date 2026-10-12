@@ -101,7 +101,7 @@ extension RFC_8446.Handshake.Message: Binary.Serializable {
         buffer.append(contentsOf: message.body)
     }
 
-    public init<Bytes: Swift.Collection>(binary bytes: Bytes) throws(Error)
+    public init<Bytes: Swift::Collection>(binary bytes: Bytes) throws(Error)
     where Bytes.Element == Byte {
         var reader = RFC_8446.Wire.Reader(Array(bytes))
         let rawType: UInt8

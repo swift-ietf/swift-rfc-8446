@@ -17,12 +17,14 @@ extension RFC_8446.Extension {
             self.namedGroupList = namedGroupList
         }
 
-        public static let extensionType: RFC_8446.Extension.ExtensionType = .supportedGroups
-
         public var extensionData: RFC_8446.Extension.Data {
             RFC_8446.Extension.Data(__unchecked: (), type: Self.extensionType, data: self.bytes)
         }
     }
+}
+
+extension RFC_8446.Extension.SupportedGroups {
+    public static let extensionType: RFC_8446.Extension.ExtensionType = .supportedGroups
 }
 
 extension RFC_8446.Extension.SupportedGroups: Binary.Serializable {
@@ -33,7 +35,7 @@ extension RFC_8446.Extension.SupportedGroups: Binary.Serializable {
         RFC_8446.Wire.appendUInt16List(value.namedGroupList.map(\.rawValue), into: &buffer)
     }
 
-    public init<Bytes: Swift.Collection>(binary bytes: Bytes) throws(Error)
+    public init<Bytes: Swift::Collection>(binary bytes: Bytes) throws(Error)
     where Bytes.Element == Byte {
         var reader = RFC_8446.Wire.Reader(Array(bytes))
         do {
