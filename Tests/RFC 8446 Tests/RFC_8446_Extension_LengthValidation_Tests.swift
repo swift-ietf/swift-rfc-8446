@@ -13,8 +13,7 @@ extension RFC_8446.Extension.Data {
             }
         }
 
-        @Test func `init accepts extension_data at the uint16 bound and serializes totally`() throws
-        {
+        @Test func `init accepts extension_data at the uint16 bound and serializes totally`() throws {
             let ext = try RFC_8446.Extension.Data(
                 type: .serverName,
                 data: [Byte](repeating: Byte(0xAB), count: 0xFFFF)

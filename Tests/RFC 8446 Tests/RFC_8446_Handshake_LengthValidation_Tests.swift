@@ -53,8 +53,7 @@ extension RFC_8446.Handshake.ClientHello {
                     extensions: []
                 )
             }
-            #expect(throws: RFC_8446.Handshake.ClientHello.Error.invalidCompressionMethodsLength(0))
-            {
+            #expect(throws: RFC_8446.Handshake.ClientHello.Error.invalidCompressionMethodsLength(0)) {
                 _ = try RFC_8446.Handshake.ClientHello(
                     random: Self.random32,
                     cipherSuites: [.aes128GcmSha256],

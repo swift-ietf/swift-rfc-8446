@@ -22,8 +22,7 @@ extension RFC_8446.Extension.OidFilters {
             self.certificateExtensionValues = certificateExtensionValues
         }
 
-        init(__unchecked: Void, certificateExtensionOID: [Byte], certificateExtensionValues: [Byte])
-        {
+        init(__unchecked: Void, certificateExtensionOID: [Byte], certificateExtensionValues: [Byte]) {
             self.certificateExtensionOID = certificateExtensionOID
             self.certificateExtensionValues = certificateExtensionValues
         }

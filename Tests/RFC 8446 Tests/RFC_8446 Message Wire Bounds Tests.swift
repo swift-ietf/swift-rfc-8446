@@ -23,7 +23,8 @@ struct `Message wire bounds` {
 
     @Test
     func `a server session id echo longer than 32 bytes is refused`() {
-        let wire: [UInt8] = [3, 3] + [UInt8](repeating: 0, count: 32) + [33] + [UInt8](repeating: 1, count: 33)
+        let wire: [UInt8] =
+            [3, 3] + [UInt8](repeating: 0, count: 32) + [33] + [UInt8](repeating: 1, count: 33)
             + [0x13, 0x01] + [0] + [0, 0]
         #expect(throws: RFC_8446.Handshake.ServerHello.Error.self) {
             try RFC_8446.Handshake.ServerHello(binary: Self.bytes(wire))
@@ -37,8 +38,10 @@ struct `Message wire bounds` {
             binary: Self.bytes([0, 0, 0, 1] + [0, 0, 0, 2] + [0] + [0, 1, 0xAB] + [0, 0])
         )
         _ = try RFC_8446.Handshake.ServerHello(
-            binary: Self.bytes([3, 3] + [UInt8](repeating: 0, count: 32) + [32] + [UInt8](repeating: 1, count: 32)
-                + [0x13, 0x01] + [0] + [0, 0])
+            binary: Self.bytes(
+                [3, 3] + [UInt8](repeating: 0, count: 32) + [32] + [UInt8](repeating: 1, count: 32)
+                    + [0x13, 0x01] + [0] + [0, 0]
+            )
         )
     }
 }

@@ -61,7 +61,10 @@ extension RFC_8446.Record: Binary.Serializable {
         var iterator = bytes.makeIterator()
 
         func next() -> UInt8 {
-            iterator.next()!.underlying
+            guard let byte = iterator.next() else {
+                preconditionFailure("The header size was checked against the byte count above")
+            }
+            return byte.underlying
         }
 
         let ct = next()

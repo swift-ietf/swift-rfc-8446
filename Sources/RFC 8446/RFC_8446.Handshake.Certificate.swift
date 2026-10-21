@@ -8,8 +8,7 @@ extension RFC_8446.Handshake {
 
         public let certificateList: [Entry]
 
-        public init(certificateRequestContext: [Byte] = [], certificateList: [Entry]) throws(Error)
-        {
+        public init(certificateRequestContext: [Byte] = [], certificateList: [Entry]) throws(Error) {
             guard certificateRequestContext.count <= 0xFF else {
                 throw Error.invalidContextLength(certificateRequestContext.count)
             }
