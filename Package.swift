@@ -22,7 +22,7 @@ let package = Package(
         .trait(
             name: "RFC8446StandardLibraryIntegration",
             description: "RFC 8446 Standard Library Integration and the dependencies only it needs"
-        ),
+        )
     ],
     dependencies: [
         .package(
