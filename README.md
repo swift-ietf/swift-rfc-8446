@@ -5,7 +5,7 @@ Use this package when you build or parse TLS 1.3 wire structures, or derive TLS 
 ## Laws
 
 - Every structure serializes to the exact bytes of RFC 8446, and the RFC 8448 example handshake parses and serializes back byte for byte.
-- Building a value checks each length bound of the RFC's wire syntax and throws when one is broken, such as a random that isn't 32 bytes, an empty cipher suite list or an extension body over 65535 bytes.
+- Building a value checks each length bound of the RFC's wire syntax and throws when one is broken, such as a random that isn't 32 bytes, an empty cipher suite list or an extension body over 65535 bytes. `RFC_8446.Extension.PreSharedKey.OfferedPsks` is an exception that accepts empty identity and binder lists, and `RFC_8446.KeySchedule.HkdfLabel` checks no bound.
 - Parsing a message body or extension body must use up every byte. Too few bytes fail as truncated, and bytes left over fail as trailing data. A handshake message's declared length must equal the bytes that follow its header.
 - Code points the package doesn't name, such as an unknown cipher suite, extension type or group, are kept as raw values. Extensions keep their order, so unknown ones survive a parse and serialize.
 - Building a record sets the legacy version to TLS 1.2 (`0x0303`) and refuses a fragment over 16384 bytes. Parsing a record allows up to 16640 bytes, the ciphertext limit, and reads only the first record in the input.
