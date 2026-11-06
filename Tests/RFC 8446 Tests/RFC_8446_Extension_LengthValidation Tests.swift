@@ -2,7 +2,9 @@ import Binary
 import RFC_8446
 import Testing
 
-extension RFC_8446.Extension.Data {
+enum `RFC_8446.Extension.Data Tests` {}
+
+extension `RFC_8446.Extension.Data Tests` {
     @Suite struct `Edge Case` {
         @Test func `init rejects extension_data over the uint16 bound`() {
             #expect(throws: RFC_8446.Extension.Data.Error.dataTooLong(0x1_0000)) {
@@ -26,7 +28,9 @@ extension RFC_8446.Extension.Data {
     }
 }
 
-extension RFC_8446.Extension.Cookie {
+enum `RFC_8446.Extension.Cookie Tests` {}
+
+extension `RFC_8446.Extension.Cookie Tests` {
     @Suite struct `Edge Case` {
         @Test func `init rejects empty and oversize cookies`() {
             #expect(throws: RFC_8446.Extension.Cookie.Error.invalidCookieLength(0)) {
@@ -39,7 +43,9 @@ extension RFC_8446.Extension.Cookie {
     }
 }
 
-extension RFC_8446.Extension.KeyShare.Entry {
+enum `RFC_8446.Extension.KeyShare.Entry Tests` {}
+
+extension `RFC_8446.Extension.KeyShare.Entry Tests` {
     @Suite struct `Edge Case` {
         @Test func `init rejects empty key_exchange`() {
             #expect(throws: RFC_8446.Extension.KeyShare.Error.invalidKeyExchangeLength(0)) {
@@ -49,7 +55,9 @@ extension RFC_8446.Extension.KeyShare.Entry {
     }
 }
 
-extension RFC_8446.Extension.KeyShare.ClientHello {
+enum `RFC_8446.Extension.KeyShare.ClientHello Tests` {}
+
+extension `RFC_8446.Extension.KeyShare.ClientHello Tests` {
     @Suite struct `Edge Case` {
         @Test func `init rejects an oversize client_shares block`() throws {
             let big = try RFC_8446.Extension.KeyShare.Entry(
@@ -63,7 +71,9 @@ extension RFC_8446.Extension.KeyShare.ClientHello {
     }
 }
 
-extension RFC_8446.Extension.CertificateAuthorities {
+enum `RFC_8446.Extension.CertificateAuthorities Tests` {}
+
+extension `RFC_8446.Extension.CertificateAuthorities Tests` {
     @Suite struct `Edge Case` {
         @Test func `init rejects empty authorities and oversize blocks`() {
             #expect(
@@ -83,7 +93,9 @@ extension RFC_8446.Extension.CertificateAuthorities {
     }
 }
 
-extension RFC_8446.Extension.OidFilters {
+enum `RFC_8446.Extension.OidFilters Tests` {}
+
+extension `RFC_8446.Extension.OidFilters Tests` {
     @Suite struct `Edge Case` {
         @Test func `filter init rejects empty OID and oversize values`() {
             #expect(throws: RFC_8446.Extension.OidFilters.Error.invalidOIDLength(0)) {
@@ -112,7 +124,9 @@ extension RFC_8446.Extension.OidFilters {
     }
 }
 
-extension RFC_8446.Extension.PreSharedKey.OfferedPsks {
+enum `RFC_8446.Extension.PreSharedKey.OfferedPsks Tests` {}
+
+extension `RFC_8446.Extension.PreSharedKey.OfferedPsks Tests` {
     @Suite struct `Edge Case` {
         @Test func `identity init rejects empty identity`() {
             #expect(throws: RFC_8446.Extension.PreSharedKey.Error.invalidIdentityLength(0)) {
@@ -149,7 +163,9 @@ extension RFC_8446.Extension.PreSharedKey.OfferedPsks {
     }
 }
 
-extension RFC_8446.Extension.PskKeyExchangeModes {
+enum `RFC_8446.Extension.PskKeyExchangeModes Tests` {}
+
+extension `RFC_8446.Extension.PskKeyExchangeModes Tests` {
     @Suite struct `Edge Case` {
         @Test func `init rejects empty and oversize mode lists`() {
             #expect(throws: RFC_8446.Extension.PskKeyExchangeModes.Error.invalidModeCount(0)) {
@@ -164,7 +180,9 @@ extension RFC_8446.Extension.PskKeyExchangeModes {
     }
 }
 
-extension RFC_8446.Extension.SupportedVersions.ClientHello {
+enum `RFC_8446.Extension.SupportedVersions.ClientHello Tests` {}
+
+extension `RFC_8446.Extension.SupportedVersions.ClientHello Tests` {
     @Suite struct `Edge Case` {
         @Test func `init rejects empty and oversize version lists`() {
             #expect(throws: RFC_8446.Extension.SupportedVersions.Error.invalidVersionCount(0)) {
@@ -179,7 +197,9 @@ extension RFC_8446.Extension.SupportedVersions.ClientHello {
     }
 }
 
-extension RFC_8446.Extension.SupportedGroups {
+enum `RFC_8446.Extension.SupportedGroups Tests` {}
+
+extension `RFC_8446.Extension.SupportedGroups Tests` {
     @Suite struct `Edge Case` {
         @Test func `init rejects empty and oversize group lists`() {
             #expect(throws: RFC_8446.Extension.SupportedGroups.Error.invalidGroupCount(0)) {
@@ -194,7 +214,9 @@ extension RFC_8446.Extension.SupportedGroups {
     }
 }
 
-extension RFC_8446.Extension.SignatureAlgorithms {
+enum `RFC_8446.Extension.SignatureAlgorithms Tests` {}
+
+extension `RFC_8446.Extension.SignatureAlgorithms Tests` {
     @Suite struct `Edge Case` {
         @Test func `init rejects empty and oversize algorithm lists`() {
             #expect(throws: RFC_8446.Extension.SignatureAlgorithms.Error.invalidAlgorithmCount(0)) {
@@ -211,7 +233,9 @@ extension RFC_8446.Extension.SignatureAlgorithms {
     }
 }
 
-extension RFC_8446.Extension.SignatureAlgorithmsCert {
+enum `RFC_8446.Extension.SignatureAlgorithmsCert Tests` {}
+
+extension `RFC_8446.Extension.SignatureAlgorithmsCert Tests` {
     @Suite struct `Edge Case` {
         @Test func `init rejects empty and oversize algorithm lists`() {
             #expect(
@@ -223,7 +247,9 @@ extension RFC_8446.Extension.SignatureAlgorithmsCert {
     }
 }
 
-extension RFC_8446.Extension.Padding {
+enum `RFC_8446.Extension.Padding Tests` {}
+
+extension `RFC_8446.Extension.Padding Tests` {
     @Suite struct `Edge Case` {
         @Test func `binary init rejects oversize input and accepts the uint16 bound`() throws {
             #expect(throws: RFC_8446.Extension.Padding.Error.invalidPaddingLength(0x1_0000)) {

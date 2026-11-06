@@ -2,7 +2,9 @@ import Binary
 import RFC_8446
 import Testing
 
-extension RFC_8446.Handshake.Message {
+enum `RFC_8446.Handshake.Message Tests` {}
+
+extension `RFC_8446.Handshake.Message Tests` {
     @Suite struct `Edge Case` {
         @Test func `init rejects bodies over the uint24 bound`() {
             #expect(throws: RFC_8446.Handshake.Message.Error.bodyTooLong(0x100_0000)) {
@@ -26,7 +28,9 @@ extension RFC_8446.Handshake.Message {
     }
 }
 
-extension RFC_8446.Handshake.ClientHello {
+enum `RFC_8446.Handshake.ClientHello Tests` {}
+
+extension `RFC_8446.Handshake.ClientHello Tests` {
     @Suite struct `Edge Case` {
         static let random32 = [Byte](repeating: Byte(7), count: 32)
 
@@ -76,7 +80,9 @@ extension RFC_8446.Handshake.ClientHello {
     }
 }
 
-extension RFC_8446.Handshake.ServerHello {
+enum `RFC_8446.Handshake.ServerHello Tests` {}
+
+extension `RFC_8446.Handshake.ServerHello Tests` {
     @Suite struct `Edge Case` {
         @Test func `init rejects out-of-bounds fields`() throws {
             #expect(throws: RFC_8446.Handshake.ServerHello.Error.invalidRandomLength(31)) {
@@ -98,7 +104,9 @@ extension RFC_8446.Handshake.ServerHello {
     }
 }
 
-extension RFC_8446.Handshake.Certificate {
+enum `RFC_8446.Handshake.Certificate Tests` {}
+
+extension `RFC_8446.Handshake.Certificate Tests` {
     @Suite struct `Edge Case` {
         @Test func `entry init rejects empty cert_data`() {
             #expect(throws: RFC_8446.Handshake.Certificate.Error.invalidCertificateDataLength(0)) {
@@ -118,7 +126,9 @@ extension RFC_8446.Handshake.Certificate {
     }
 }
 
-extension RFC_8446.Handshake.CertificateRequest {
+enum `RFC_8446.Handshake.CertificateRequest Tests` {}
+
+extension `RFC_8446.Handshake.CertificateRequest Tests` {
     @Suite struct `Edge Case` {
         @Test func `init rejects oversize certificate_request_context`() {
             #expect(throws: RFC_8446.Handshake.CertificateRequest.Error.invalidContextLength(256)) {
@@ -131,7 +141,9 @@ extension RFC_8446.Handshake.CertificateRequest {
     }
 }
 
-extension RFC_8446.Handshake.CertificateVerify {
+enum `RFC_8446.Handshake.CertificateVerify Tests` {}
+
+extension `RFC_8446.Handshake.CertificateVerify Tests` {
     @Suite struct `Edge Case` {
         @Test func `init rejects signatures over the uint16 bound`() {
             #expect(throws: RFC_8446.Handshake.CertificateVerify.Error.signatureTooLong(0x1_0000)) {
@@ -144,7 +156,9 @@ extension RFC_8446.Handshake.CertificateVerify {
     }
 }
 
-extension RFC_8446.Handshake.EncryptedExtensions {
+enum `RFC_8446.Handshake.EncryptedExtensions Tests` {}
+
+extension `RFC_8446.Handshake.EncryptedExtensions Tests` {
     @Suite struct `Edge Case` {
         @Test func `init rejects an oversize extensions block`() throws {
             let fat = try RFC_8446.Extension.Data(
@@ -160,7 +174,9 @@ extension RFC_8446.Handshake.EncryptedExtensions {
     }
 }
 
-extension RFC_8446.Handshake.NewSessionTicket {
+enum `RFC_8446.Handshake.NewSessionTicket Tests` {}
+
+extension `RFC_8446.Handshake.NewSessionTicket Tests` {
     @Suite struct `Edge Case` {
         @Test func `init rejects oversize nonce and empty ticket`() {
             #expect(throws: RFC_8446.Handshake.NewSessionTicket.Error.invalidNonceLength(256)) {
@@ -183,7 +199,9 @@ extension RFC_8446.Handshake.NewSessionTicket {
     }
 }
 
-extension RFC_8446.Handshake.Finished {
+enum `RFC_8446.Handshake.Finished Tests` {}
+
+extension `RFC_8446.Handshake.Finished Tests` {
     @Suite struct `Edge Case` {
         @Test func `binary init rejects verify_data over the uint24 bound`() {
             #expect(throws: RFC_8446.Handshake.Finished.Error.verifyDataTooLong(0x100_0000)) {
