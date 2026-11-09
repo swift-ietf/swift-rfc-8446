@@ -15,10 +15,10 @@ extension RFC_8446.KeySchedule {
         secret: [Byte],
         label: some StringProtocol,
         context: [Byte],
-        length: Int
-    ) -> [Byte] {
-        let hkdfLabel = HkdfLabel(length: UInt16(length), label: label, context: context)
-        return witness.expand(secret, hkdfLabel.bytes, length)
+        length: UInt16
+    ) throws(HkdfLabel.Error) -> [Byte] {
+        let hkdfLabel = try HkdfLabel(length: length, label: label, context: context)
+        return witness.expand(secret, hkdfLabel.bytes, Int(length))
     }
 
     public static func deriveSecret(
@@ -26,8 +26,8 @@ extension RFC_8446.KeySchedule {
         secret: [Byte],
         label: some StringProtocol,
         transcriptHash: [Byte]
-    ) -> [Byte] {
-        expandLabel(
+    ) throws(HkdfLabel.Error) -> [Byte] {
+        try expandLabel(
             witness,
             secret: secret,
             label: label,
@@ -41,11 +41,11 @@ extension RFC_8446.KeySchedule {
         secret: [Byte],
         label: some StringProtocol,
         messages: [Byte]
-    ) -> [Byte] {
-        deriveSecret(witness, secret: secret, label: label, transcriptHash: witness.hash(messages))
+    ) throws(HkdfLabel.Error) -> [Byte] {
+        try deriveSecret(witness, secret: secret, label: label, transcriptHash: witness.hash(messages))
     }
 
     public static func zeros(_ witness: Witness) -> [Byte] {
-        Array(repeating: Byte(0), count: witness.hashLength)
+        Array(repeating: Byte(0), count: Int(witness.hashLength))
     }
 }

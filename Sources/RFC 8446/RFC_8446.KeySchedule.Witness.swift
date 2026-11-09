@@ -4,7 +4,7 @@ extension RFC_8446.KeySchedule {
 
     public struct Witness {
 
-        public let hashLength: Int
+        public let hashLength: UInt16
 
         public let hash: ([Byte]) -> [Byte]
 
@@ -13,7 +13,7 @@ extension RFC_8446.KeySchedule {
         public let expand: (_ prk: [Byte], _ info: [Byte], _ length: Int) -> [Byte]
 
         public init(
-            hashLength: Int,
+            hashLength: UInt16,
             hash: @escaping ([Byte]) -> [Byte],
             extract: @escaping (_ salt: [Byte], _ ikm: [Byte]) -> [Byte],
             expand: @escaping (_ prk: [Byte], _ info: [Byte], _ length: Int) -> [Byte]

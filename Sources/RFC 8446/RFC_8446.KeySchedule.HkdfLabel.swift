@@ -10,16 +10,22 @@ extension RFC_8446.KeySchedule {
 
         public let context: [Byte]
 
-        public init(length: UInt16, label: [Byte], context: [Byte]) {
+        public init(length: UInt16, label: [Byte], context: [Byte]) throws(Error) {
+            guard (7...255).contains(label.count) else {
+                throw .invalidLabelLength(label.count)
+            }
+            guard context.count <= 255 else {
+                throw .invalidContextLength(context.count)
+            }
             self.length = length
             self.label = label
             self.context = context
         }
 
-        public init(length: UInt16, label: some StringProtocol, context: [Byte]) {
+        public init(length: UInt16, label: some StringProtocol, context: [Byte]) throws(Error) {
             var full = Self.prefix
             full.append(contentsOf: label.utf8.map(Byte.init(bitPattern:)))
-            self.init(length: length, label: full, context: context)
+            try self.init(length: length, label: full, context: context)
         }
     }
 }
@@ -41,17 +47,20 @@ extension RFC_8446.KeySchedule.HkdfLabel: Binary.Serializable {
     public init<Bytes: Swift::Collection>(binary bytes: Bytes) throws(Error)
     where Bytes.Element == Byte {
         var reader = RFC_8446.Wire.Reader(Array(bytes))
+        let length: UInt16
+        let label: [Byte]
+        let context: [Byte]
         do {
-            let length = try reader.uint16()
-            let label = try reader.vector8()
-            let context = try reader.vector8()
+            length = try reader.uint16()
+            label = try reader.vector8()
+            context = try reader.vector8()
             try reader.expectEnd()
-            self.init(length: length, label: label, context: context)
         } catch {
             switch error {
             case .trailingData(let n): throw .trailingData(n)
             case .truncated, .lengthOverflow: throw .truncated
             }
         }
+        try self.init(length: length, label: label, context: context)
     }
 }

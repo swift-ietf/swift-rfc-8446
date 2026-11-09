@@ -10,8 +10,8 @@ extension RFC_8446.KeySchedule {
         _ witness: Witness,
         earlySecret: [Byte],
         isExternal: Bool
-    ) -> [Byte] {
-        deriveSecret(
+    ) throws(HkdfLabel.Error) -> [Byte] {
+        try deriveSecret(
             witness,
             secret: earlySecret,
             label: isExternal ? Label.externalBinder : Label.resumptionBinder,
@@ -23,8 +23,8 @@ extension RFC_8446.KeySchedule {
         _ witness: Witness,
         earlySecret: [Byte],
         clientHello: [Byte]
-    ) -> [Byte] {
-        deriveSecret(
+    ) throws(HkdfLabel.Error) -> [Byte] {
+        try deriveSecret(
             witness,
             secret: earlySecret,
             label: Label.clientEarlyTraffic,
@@ -36,8 +36,8 @@ extension RFC_8446.KeySchedule {
         _ witness: Witness,
         earlySecret: [Byte],
         clientHello: [Byte]
-    ) -> [Byte] {
-        deriveSecret(
+    ) throws(HkdfLabel.Error) -> [Byte] {
+        try deriveSecret(
             witness,
             secret: earlySecret,
             label: Label.earlyExporterMaster,
@@ -45,8 +45,11 @@ extension RFC_8446.KeySchedule {
         )
     }
 
-    public static func derivedSecret(_ witness: Witness, secret: [Byte]) -> [Byte] {
-        deriveSecret(
+    public static func derivedSecret(
+        _ witness: Witness,
+        secret: [Byte]
+    ) throws(HkdfLabel.Error) -> [Byte] {
+        try deriveSecret(
             witness,
             secret: secret,
             label: Label.derived,
@@ -66,8 +69,8 @@ extension RFC_8446.KeySchedule {
         _ witness: Witness,
         handshakeSecret: [Byte],
         transcriptHash: [Byte]
-    ) -> [Byte] {
-        deriveSecret(
+    ) throws(HkdfLabel.Error) -> [Byte] {
+        try deriveSecret(
             witness,
             secret: handshakeSecret,
             label: Label.clientHandshakeTraffic,
@@ -79,8 +82,8 @@ extension RFC_8446.KeySchedule {
         _ witness: Witness,
         handshakeSecret: [Byte],
         transcriptHash: [Byte]
-    ) -> [Byte] {
-        deriveSecret(
+    ) throws(HkdfLabel.Error) -> [Byte] {
+        try deriveSecret(
             witness,
             secret: handshakeSecret,
             label: Label.serverHandshakeTraffic,
@@ -96,8 +99,8 @@ extension RFC_8446.KeySchedule {
         _ witness: Witness,
         masterSecret: [Byte],
         transcriptHash: [Byte]
-    ) -> [Byte] {
-        deriveSecret(
+    ) throws(HkdfLabel.Error) -> [Byte] {
+        try deriveSecret(
             witness,
             secret: masterSecret,
             label: Label.clientApplicationTraffic,
@@ -109,8 +112,8 @@ extension RFC_8446.KeySchedule {
         _ witness: Witness,
         masterSecret: [Byte],
         transcriptHash: [Byte]
-    ) -> [Byte] {
-        deriveSecret(
+    ) throws(HkdfLabel.Error) -> [Byte] {
+        try deriveSecret(
             witness,
             secret: masterSecret,
             label: Label.serverApplicationTraffic,
@@ -122,8 +125,8 @@ extension RFC_8446.KeySchedule {
         _ witness: Witness,
         masterSecret: [Byte],
         transcriptHash: [Byte]
-    ) -> [Byte] {
-        deriveSecret(
+    ) throws(HkdfLabel.Error) -> [Byte] {
+        try deriveSecret(
             witness,
             secret: masterSecret,
             label: Label.exporterMaster,
@@ -135,8 +138,8 @@ extension RFC_8446.KeySchedule {
         _ witness: Witness,
         masterSecret: [Byte],
         transcriptHash: [Byte]
-    ) -> [Byte] {
-        deriveSecret(
+    ) throws(HkdfLabel.Error) -> [Byte] {
+        try deriveSecret(
             witness,
             secret: masterSecret,
             label: Label.resumptionMaster,
@@ -144,8 +147,11 @@ extension RFC_8446.KeySchedule {
         )
     }
 
-    public static func finishedKey(_ witness: Witness, baseKey: [Byte]) -> [Byte] {
-        expandLabel(
+    public static func finishedKey(
+        _ witness: Witness,
+        baseKey: [Byte]
+    ) throws(HkdfLabel.Error) -> [Byte] {
+        try expandLabel(
             witness,
             secret: baseKey,
             label: Label.finished,
@@ -162,16 +168,27 @@ extension RFC_8446.KeySchedule {
         extract(witness, salt: finishedKey, ikm: transcriptHash)
     }
 
-    public static func writeKey(_ witness: Witness, secret: [Byte], keyLength: Int) -> [Byte] {
-        expandLabel(witness, secret: secret, label: Label.key, context: [], length: keyLength)
+    public static func writeKey(
+        _ witness: Witness,
+        secret: [Byte],
+        keyLength: UInt16
+    ) throws(HkdfLabel.Error) -> [Byte] {
+        try expandLabel(witness, secret: secret, label: Label.key, context: [], length: keyLength)
     }
 
-    public static func writeIV(_ witness: Witness, secret: [Byte], ivLength: Int) -> [Byte] {
-        expandLabel(witness, secret: secret, label: Label.iv, context: [], length: ivLength)
+    public static func writeIV(
+        _ witness: Witness,
+        secret: [Byte],
+        ivLength: UInt16
+    ) throws(HkdfLabel.Error) -> [Byte] {
+        try expandLabel(witness, secret: secret, label: Label.iv, context: [], length: ivLength)
     }
 
-    public static func nextApplicationTrafficSecret(_ witness: Witness, secret: [Byte]) -> [Byte] {
-        expandLabel(
+    public static func nextApplicationTrafficSecret(
+        _ witness: Witness,
+        secret: [Byte]
+    ) throws(HkdfLabel.Error) -> [Byte] {
+        try expandLabel(
             witness,
             secret: secret,
             label: Label.trafficUpdate,
@@ -184,8 +201,8 @@ extension RFC_8446.KeySchedule {
         _ witness: Witness,
         resumptionMasterSecret: [Byte],
         ticketNonce: [Byte]
-    ) -> [Byte] {
-        expandLabel(
+    ) throws(HkdfLabel.Error) -> [Byte] {
+        try expandLabel(
             witness,
             secret: resumptionMasterSecret,
             label: Label.resumption,

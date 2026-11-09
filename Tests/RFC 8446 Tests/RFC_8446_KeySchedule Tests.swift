@@ -11,8 +11,8 @@ struct RFC_8446_KeySchedule_Tests {
     @Suite("HkdfLabel byte-exact shapes")
     struct HkdfLabelShapes {
         @Test
-        func `derived label matches logged info`() {
-            let label = KS.HkdfLabel(
+        func `derived label matches logged info`() throws {
+            let label = try KS.HkdfLabel(
                 length: 32,
                 label: KS.Label.derived,
                 context: RFC8448.emptyHash
@@ -22,8 +22,8 @@ struct RFC_8446_KeySchedule_Tests {
         }
 
         @Test
-        func `c hs traffic label matches logged info`() {
-            let label = KS.HkdfLabel(
+        func `c hs traffic label matches logged info`() throws {
+            let label = try KS.HkdfLabel(
                 length: 32,
                 label: KS.Label.clientHandshakeTraffic,
                 context: RFC8448.handshakeTranscriptHash
@@ -32,21 +32,53 @@ struct RFC_8446_KeySchedule_Tests {
         }
 
         @Test
-        func `key label matches logged info`() {
-            let label = KS.HkdfLabel(length: 16, label: KS.Label.key, context: [])
+        func `key label matches logged info`() throws {
+            let label = try KS.HkdfLabel(length: 16, label: KS.Label.key, context: [])
             #expect(label.bytes == RFC8448.keyInfo)
         }
 
         @Test
-        func `iv label matches logged info`() {
-            let label = KS.HkdfLabel(length: 12, label: KS.Label.iv, context: [])
+        func `iv label matches logged info`() throws {
+            let label = try KS.HkdfLabel(length: 12, label: KS.Label.iv, context: [])
             #expect(label.bytes == RFC8448.ivInfo)
         }
 
         @Test
-        func `finished label matches logged info`() {
-            let label = KS.HkdfLabel(length: 32, label: KS.Label.finished, context: [])
+        func `finished label matches logged info`() throws {
+            let label = try KS.HkdfLabel(length: 32, label: KS.Label.finished, context: [])
             #expect(label.bytes == RFC8448.finishedInfo)
+        }
+
+        @Test
+        func `init rejects a label outside 7 to 255 bytes`() {
+            #expect(throws: KS.HkdfLabel.Error.invalidLabelLength(6)) {
+                _ = try KS.HkdfLabel(length: 32, label: KS.HkdfLabel.prefix, context: [])
+            }
+            #expect(throws: KS.HkdfLabel.Error.invalidLabelLength(256)) {
+                _ = try KS.HkdfLabel(
+                    length: 32,
+                    label: String(repeating: "a", count: 250),
+                    context: []
+                )
+            }
+        }
+
+        @Test
+        func `init rejects a context over 255 bytes`() {
+            #expect(throws: KS.HkdfLabel.Error.invalidContextLength(256)) {
+                _ = try KS.HkdfLabel(
+                    length: 32,
+                    label: KS.Label.key,
+                    context: [Byte](repeating: Byte(0), count: 256)
+                )
+            }
+        }
+
+        @Test
+        func `parse rejects a label shorter than 7 bytes`() {
+            #expect(throws: KS.HkdfLabel.Error.invalidLabelLength(0)) {
+                _ = try KS.HkdfLabel(binary: [Byte(0), Byte(32), Byte(0), Byte(0)])
+            }
         }
 
         @Test
@@ -73,11 +105,11 @@ struct RFC_8446_KeySchedule_Tests {
 
         @Test
 
-        func `early handshake and master secrets`() {
+        func `early handshake and master secrets`() throws {
             let early = KS.earlySecret(witness)
             #expect(early == RFC8448.earlySecret)
 
-            let derived1 = KS.derivedSecret(witness, secret: early)
+            let derived1 = try KS.derivedSecret(witness, secret: early)
             #expect(derived1 == RFC8448.derivedForHandshake)
 
             let handshake = KS.handshakeSecret(
@@ -87,7 +119,7 @@ struct RFC_8446_KeySchedule_Tests {
             )
             #expect(handshake == RFC8448.handshakeSecret)
 
-            let derived2 = KS.derivedSecret(witness, secret: handshake)
+            let derived2 = try KS.derivedSecret(witness, secret: handshake)
             #expect(derived2 == RFC8448.derivedForMaster)
 
             let master = KS.masterSecret(witness, previousDerived: derived2)
@@ -95,9 +127,9 @@ struct RFC_8446_KeySchedule_Tests {
         }
 
         @Test
-        func `handshake traffic secrets and write keys`() {
+        func `handshake traffic secrets and write keys`() throws {
             let early = KS.earlySecret(witness)
-            let derived1 = KS.derivedSecret(witness, secret: early)
+            let derived1 = try KS.derivedSecret(witness, secret: early)
             let handshake = KS.handshakeSecret(
                 witness,
                 previousDerived: derived1,
@@ -109,14 +141,14 @@ struct RFC_8446_KeySchedule_Tests {
             transcript.append(RFC8448.serverHello)
             let hash = transcript.hash(using: witness)
 
-            let clientHS = KS.clientHandshakeTrafficSecret(
+            let clientHS = try KS.clientHandshakeTrafficSecret(
                 witness,
                 handshakeSecret: handshake,
                 transcriptHash: hash
             )
             #expect(clientHS == RFC8448.clientHandshakeTraffic)
 
-            let serverHS = KS.serverHandshakeTrafficSecret(
+            let serverHS = try KS.serverHandshakeTrafficSecret(
                 witness,
                 handshakeSecret: handshake,
                 transcriptHash: hash
@@ -124,11 +156,11 @@ struct RFC_8446_KeySchedule_Tests {
             #expect(serverHS == RFC8448.serverHandshakeTraffic)
 
             #expect(
-                KS.writeKey(witness, secret: serverHS, keyLength: 16)
+                try KS.writeKey(witness, secret: serverHS, keyLength: 16)
                     == RFC8448.serverHandshakeWriteKey
             )
             #expect(
-                KS.writeIV(witness, secret: serverHS, ivLength: 12)
+                try KS.writeIV(witness, secret: serverHS, ivLength: 12)
                     == RFC8448.serverHandshakeWriteIV
             )
         }
@@ -136,7 +168,7 @@ struct RFC_8446_KeySchedule_Tests {
         @Test
         func `server Finished key and verify_data`() throws {
             let early = KS.earlySecret(witness)
-            let derived1 = KS.derivedSecret(witness, secret: early)
+            let derived1 = try KS.derivedSecret(witness, secret: early)
             let handshake = KS.handshakeSecret(
                 witness,
                 previousDerived: derived1,
@@ -145,13 +177,13 @@ struct RFC_8446_KeySchedule_Tests {
             var chSH = KS.Transcript()
             chSH.append(RFC8448.clientHello)
             chSH.append(RFC8448.serverHello)
-            let serverHS = KS.serverHandshakeTrafficSecret(
+            let serverHS = try KS.serverHandshakeTrafficSecret(
                 witness,
                 handshakeSecret: handshake,
                 transcriptHash: chSH.hash(using: witness)
             )
 
-            let finishedKey = KS.finishedKey(witness, baseKey: serverHS)
+            let finishedKey = try KS.finishedKey(witness, baseKey: serverHS)
             #expect(finishedKey == RFC8448.serverFinishedKey)
 
             var transcript = KS.Transcript()
@@ -174,15 +206,15 @@ struct RFC_8446_KeySchedule_Tests {
         }
 
         @Test
-        func `application traffic secrets and write keys`() {
+        func `application traffic secrets and write keys`() throws {
             let early = KS.earlySecret(witness)
-            let derived1 = KS.derivedSecret(witness, secret: early)
+            let derived1 = try KS.derivedSecret(witness, secret: early)
             let handshake = KS.handshakeSecret(
                 witness,
                 previousDerived: derived1,
                 sharedSecret: RFC8448.ecdheSharedSecret
             )
-            let derived2 = KS.derivedSecret(witness, secret: handshake)
+            let derived2 = try KS.derivedSecret(witness, secret: handshake)
 
             let master = KS.masterSecret(witness, previousDerived: derived2)
 
@@ -195,21 +227,21 @@ struct RFC_8446_KeySchedule_Tests {
             transcript.append(RFC8448.serverFinished)
             let hash = transcript.hash(using: witness)
 
-            let clientAP = KS.clientApplicationTrafficSecret0(
+            let clientAP = try KS.clientApplicationTrafficSecret0(
                 witness,
                 masterSecret: master,
                 transcriptHash: hash
             )
             #expect(clientAP == RFC8448.clientApplicationTraffic)
 
-            let serverAP = KS.serverApplicationTrafficSecret0(
+            let serverAP = try KS.serverApplicationTrafficSecret0(
                 witness,
                 masterSecret: master,
                 transcriptHash: hash
             )
             #expect(serverAP == RFC8448.serverApplicationTraffic)
 
-            let exporter = KS.exporterMasterSecret(
+            let exporter = try KS.exporterMasterSecret(
                 witness,
                 masterSecret: master,
                 transcriptHash: hash
@@ -217,33 +249,33 @@ struct RFC_8446_KeySchedule_Tests {
             #expect(exporter == RFC8448.exporterMaster)
 
             #expect(
-                KS.writeKey(witness, secret: serverAP, keyLength: 16)
+                try KS.writeKey(witness, secret: serverAP, keyLength: 16)
                     == RFC8448.serverApplicationWriteKey
             )
             #expect(
-                KS.writeIV(witness, secret: serverAP, ivLength: 12)
+                try KS.writeIV(witness, secret: serverAP, ivLength: 12)
                     == RFC8448.serverApplicationWriteIV
             )
         }
 
         @Test
 
-        func `client Finished and resumption master secret`() {
+        func `client Finished and resumption master secret`() throws {
             let early = KS.earlySecret(witness)
-            let derived1 = KS.derivedSecret(witness, secret: early)
+            let derived1 = try KS.derivedSecret(witness, secret: early)
             let handshake = KS.handshakeSecret(
                 witness,
                 previousDerived: derived1,
                 sharedSecret: RFC8448.ecdheSharedSecret
             )
-            let derived2 = KS.derivedSecret(witness, secret: handshake)
+            let derived2 = try KS.derivedSecret(witness, secret: handshake)
 
             let master = KS.masterSecret(witness, previousDerived: derived2)
 
             var chSH = KS.Transcript()
             chSH.append(RFC8448.clientHello)
             chSH.append(RFC8448.serverHello)
-            let clientHS = KS.clientHandshakeTrafficSecret(
+            let clientHS = try KS.clientHandshakeTrafficSecret(
                 witness,
                 handshakeSecret: handshake,
                 transcriptHash: chSH.hash(using: witness)
@@ -258,7 +290,7 @@ struct RFC_8446_KeySchedule_Tests {
             throughServerFinished.append(RFC8448.serverFinished)
             let hashThroughServerFinished = throughServerFinished.hash(using: witness)
 
-            let clientFinishedKey = KS.finishedKey(witness, baseKey: clientHS)
+            let clientFinishedKey = try KS.finishedKey(witness, baseKey: clientHS)
             #expect(clientFinishedKey == RFC8448.clientFinishedKey)
 
             let clientVerify = KS.finishedVerifyData(
@@ -270,7 +302,7 @@ struct RFC_8446_KeySchedule_Tests {
 
             var throughClientFinished = throughServerFinished
             throughClientFinished.append(RFC8448.clientFinished)
-            let resumption = KS.resumptionMasterSecret(
+            let resumption = try KS.resumptionMasterSecret(
                 witness,
                 masterSecret: master,
                 transcriptHash: throughClientFinished.hash(using: witness)
