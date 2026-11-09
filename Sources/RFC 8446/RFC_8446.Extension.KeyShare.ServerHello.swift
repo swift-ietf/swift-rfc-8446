@@ -33,15 +33,21 @@ extension RFC_8446.Extension.KeyShare.ServerHello: Binary.Serializable {
     ) throws(RFC_8446.Extension.KeyShare.Error)
     where Bytes.Element == Byte {
         var reader = RFC_8446.Wire.Reader(Array(bytes))
+        let entry: RFC_8446.Extension.KeyShare.Entry
         do {
-            let entry = try reader.keyShareEntry()
+            entry = try reader.keyShareEntry()
             try reader.expectEnd()
-            self.init(serverShare: entry)
         } catch {
             switch error {
             case .trailingData(let n): throw .trailingData(n)
             case .truncated, .lengthOverflow: throw .truncated
             }
         }
+        self.init(
+            serverShare: try RFC_8446.Extension.KeyShare.Entry(
+                group: entry.group,
+                keyExchange: entry.keyExchange
+            )
+        )
     }
 }

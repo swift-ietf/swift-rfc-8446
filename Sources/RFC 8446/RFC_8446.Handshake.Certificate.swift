@@ -23,11 +23,6 @@ extension RFC_8446.Handshake {
             self.certificateList = certificateList
         }
 
-        init(__unchecked: Void, certificateRequestContext: [Byte], certificateList: [Entry]) {
-            self.certificateRequestContext = certificateRequestContext
-            self.certificateList = certificateList
-        }
-
         public var message: RFC_8446.Handshake.Message {
             RFC_8446.Handshake.Message(__unchecked: (), type: Self.handshakeType, body: self.bytes)
         }
@@ -55,21 +50,27 @@ extension RFC_8446.Handshake.Certificate: Binary.Serializable {
     public init<Bytes: Swift::Collection>(binary bytes: Bytes) throws(Error)
     where Bytes.Element == Byte {
         var reader = RFC_8446.Wire.Reader(Array(bytes))
+        let context: [Byte]
+        var entries: [Entry] = []
         do {
-            let context = try reader.vector8()
+            context = try reader.vector8()
             let entriesBlock = try reader.vector24()
             var sub = RFC_8446.Wire.Reader(entriesBlock)
-            var entries: [Entry] = []
             while !sub.isAtEnd {
                 entries.append(try sub.certificateEntry())
             }
             try reader.expectEnd()
-            self.init(__unchecked: (), certificateRequestContext: context, certificateList: entries)
         } catch {
             switch error {
             case .trailingData(let n): throw .trailingData(n)
             case .truncated, .lengthOverflow: throw .truncated
             }
         }
+        try self.init(
+            certificateRequestContext: context,
+            certificateList: entries.map { (entry) throws(Error) in
+                try Entry(certificateData: entry.certificateData, extensions: entry.extensions)
+            }
+        )
     }
 }

@@ -15,10 +15,6 @@ extension RFC_8446.Extension.SupportedVersions {
             self.versions = versions
         }
 
-        init(__unchecked: Void, versions: [RFC_8446.ProtocolVersion]) {
-            self.versions = versions
-        }
-
         public var extensionData: RFC_8446.Extension.Data {
             RFC_8446.Extension.Data(
                 __unchecked: (),
@@ -46,20 +42,20 @@ extension RFC_8446.Extension.SupportedVersions.ClientHello: Binary.Serializable 
     ) throws(RFC_8446.Extension.SupportedVersions.Error)
     where Bytes.Element == Byte {
         var reader = RFC_8446.Wire.Reader(Array(bytes))
+        var versions: [RFC_8446.ProtocolVersion] = []
         do {
             let block = try reader.vector8()
             var sub = RFC_8446.Wire.Reader(block)
-            var versions: [RFC_8446.ProtocolVersion] = []
             while !sub.isAtEnd {
                 versions.append(RFC_8446.ProtocolVersion(rawValue: try sub.uint16()))
             }
             try reader.expectEnd()
-            self.init(__unchecked: (), versions: versions)
         } catch {
             switch error {
             case .trailingData(let n): throw .trailingData(n)
             case .truncated, .lengthOverflow: throw .truncated
             }
         }
+        try self.init(versions: versions)
     }
 }

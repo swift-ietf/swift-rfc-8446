@@ -16,10 +16,6 @@ extension RFC_8446.Extension {
             self.filters = filters
         }
 
-        init(__unchecked: Void, filters: [Filter]) {
-            self.filters = filters
-        }
-
         public var extensionData: RFC_8446.Extension.Data {
             RFC_8446.Extension.Data(__unchecked: (), type: Self.extensionType, data: self.bytes)
         }
@@ -45,20 +41,27 @@ extension RFC_8446.Extension.OidFilters: Binary.Serializable {
     public init<Bytes: Swift::Collection>(binary bytes: Bytes) throws(Error)
     where Bytes.Element == Byte {
         var reader = RFC_8446.Wire.Reader(Array(bytes))
+        var filters: [Filter] = []
         do {
             let block = try reader.vector16()
             var sub = RFC_8446.Wire.Reader(block)
-            var filters: [Filter] = []
             while !sub.isAtEnd {
                 filters.append(try sub.oidFilter())
             }
             try reader.expectEnd()
-            self.init(__unchecked: (), filters: filters)
         } catch {
             switch error {
             case .trailingData(let n): throw .trailingData(n)
             case .truncated, .lengthOverflow: throw .truncated
             }
         }
+        try self.init(
+            filters: filters.map { (filter) throws(Error) in
+                try Filter(
+                    certificateExtensionOID: filter.certificateExtensionOID,
+                    certificateExtensionValues: filter.certificateExtensionValues
+                )
+            }
+        )
     }
 }

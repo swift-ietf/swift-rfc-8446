@@ -14,10 +14,6 @@ extension RFC_8446.Extension.KeyShare {
             self.clientShares = clientShares
         }
 
-        init(__unchecked: Void, clientShares: [Entry]) {
-            self.clientShares = clientShares
-        }
-
         public var extensionData: RFC_8446.Extension.Data {
             RFC_8446.Extension.Data(
                 __unchecked: (),
@@ -45,20 +41,24 @@ extension RFC_8446.Extension.KeyShare.ClientHello: Binary.Serializable {
     ) throws(RFC_8446.Extension.KeyShare.Error)
     where Bytes.Element == Byte {
         var reader = RFC_8446.Wire.Reader(Array(bytes))
+        var entries: [RFC_8446.Extension.KeyShare.Entry] = []
         do {
             let block = try reader.vector16()
             var sub = RFC_8446.Wire.Reader(block)
-            var entries: [RFC_8446.Extension.KeyShare.Entry] = []
             while !sub.isAtEnd {
                 entries.append(try sub.keyShareEntry())
             }
             try reader.expectEnd()
-            self.init(__unchecked: (), clientShares: entries)
         } catch {
             switch error {
             case .trailingData(let n): throw .trailingData(n)
             case .truncated, .lengthOverflow: throw .truncated
             }
         }
+        try self.init(
+            clientShares: entries.map { (entry) throws(RFC_8446.Extension.KeyShare.Error) in
+                try RFC_8446.Extension.KeyShare.Entry(group: entry.group, keyExchange: entry.keyExchange)
+            }
+        )
     }
 }
