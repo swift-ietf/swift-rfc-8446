@@ -12,6 +12,12 @@ extension RFC_8446.Extension.PreSharedKey {
             identities: [Identity],
             binders: [[Byte]]
         ) throws(RFC_8446.Extension.PreSharedKey.Error) {
+            guard !identities.isEmpty else {
+                throw .invalidIdentityCount(identities.count)
+            }
+            guard binders.count == identities.count else {
+                throw .binderCountMismatch(identities: identities.count, binders: binders.count)
+            }
             for binder in binders {
                 guard (32...255).contains(binder.count) else {
                     throw .invalidBinderLength(binder.count)
@@ -23,11 +29,6 @@ extension RFC_8446.Extension.PreSharedKey {
             guard total <= 0xFFFF else {
                 throw .offeredPsksTooLong(total)
             }
-            self.identities = identities
-            self.binders = binders
-        }
-
-        init(__unchecked: Void, identities: [Identity], binders: [[Byte]]) {
             self.identities = identities
             self.binders = binders
         }
@@ -65,28 +66,36 @@ extension RFC_8446.Extension.PreSharedKey.OfferedPsks: Binary.Serializable {
     ) throws(RFC_8446.Extension.PreSharedKey.Error)
     where Bytes.Element == Byte {
         var reader = RFC_8446.Wire.Reader(Array(bytes))
+        var identities: [RFC_8446.Extension.PreSharedKey.Identity] = []
+        var binders: [[Byte]] = []
         do {
             let identitiesBlock = try reader.vector16()
             var identitiesReader = RFC_8446.Wire.Reader(identitiesBlock)
-            var identities: [RFC_8446.Extension.PreSharedKey.Identity] = []
             while !identitiesReader.isAtEnd {
                 identities.append(try identitiesReader.pskIdentity())
             }
 
             let bindersBlock = try reader.vector16()
             var bindersReader = RFC_8446.Wire.Reader(bindersBlock)
-            var binders: [[Byte]] = []
             while !bindersReader.isAtEnd {
                 binders.append(try bindersReader.vector8())
             }
 
             try reader.expectEnd()
-            self.init(__unchecked: (), identities: identities, binders: binders)
         } catch {
             switch error {
             case .trailingData(let n): throw .trailingData(n)
             case .truncated, .lengthOverflow: throw .truncated
             }
         }
+        try self.init(
+            identities: identities.map { (identity) throws(RFC_8446.Extension.PreSharedKey.Error) in
+                try RFC_8446.Extension.PreSharedKey.Identity(
+                    identity: identity.identity,
+                    obfuscatedTicketAge: identity.obfuscatedTicketAge
+                )
+            },
+            binders: binders
+        )
     }
 }

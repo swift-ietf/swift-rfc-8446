@@ -11,6 +11,10 @@ extension RFC_8446.Extension.PreSharedKey {
         case invalidBinderLength(_ count: Int)
 
         case offeredPsksTooLong(_ byteCount: Int)
+
+        case invalidIdentityCount(_ count: Int)
+
+        case binderCountMismatch(identities: Int, binders: Int)
     }
 }
 
@@ -31,6 +35,12 @@ extension RFC_8446.Extension.PreSharedKey.Error: CustomStringConvertible {
 
         case .offeredPsksTooLong(let byteCount):
             return "TLS pre_shared_key OfferedPsks too long: \(byteCount) bytes (max 65535)"
+
+        case .invalidIdentityCount(let count):
+            return "TLS pre_shared_key identity count invalid: \(count) (expected at least 1)"
+
+        case .binderCountMismatch(let identities, let binders):
+            return "TLS pre_shared_key has \(binders) binders for \(identities) identities"
         }
     }
 }

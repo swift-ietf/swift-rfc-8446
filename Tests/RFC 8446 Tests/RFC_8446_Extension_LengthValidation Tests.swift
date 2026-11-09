@@ -160,6 +160,49 @@ extension `RFC_8446.Extension.PreSharedKey.OfferedPsks Tests` {
                 )
             }
         }
+
+        @Test func `init rejects empty identities and a binder count other than the identity count`() throws {
+            let identity = try RFC_8446.Extension.PreSharedKey.Identity(
+                identity: [Byte(1)],
+                obfuscatedTicketAge: 0
+            )
+            let binder = [Byte](repeating: Byte(0), count: 32)
+            #expect(throws: RFC_8446.Extension.PreSharedKey.Error.invalidIdentityCount(0)) {
+                _ = try RFC_8446.Extension.PreSharedKey.OfferedPsks(identities: [], binders: [])
+            }
+            #expect(
+                throws: RFC_8446.Extension.PreSharedKey.Error.binderCountMismatch(identities: 1, binders: 0)
+            ) {
+                _ = try RFC_8446.Extension.PreSharedKey.OfferedPsks(identities: [identity], binders: [])
+            }
+            #expect(
+                throws: RFC_8446.Extension.PreSharedKey.Error.binderCountMismatch(identities: 1, binders: 2)
+            ) {
+                _ = try RFC_8446.Extension.PreSharedKey.OfferedPsks(
+                    identities: [identity],
+                    binders: [binder, binder]
+                )
+            }
+        }
+
+        @Test func `parse rejects an empty identity, a short binder, and a missing binder`() {
+            let age: [Byte] = [Byte(0), Byte(0), Byte(0), Byte(0)]
+            let emptyIdentity: [Byte] = [Byte(0), Byte(6), Byte(0), Byte(0)] + age
+            let oneIdentity: [Byte] = [Byte(0), Byte(7), Byte(0), Byte(1), Byte(9)] + age
+            let shortBinder: [Byte] = [Byte(0), Byte(2), Byte(1), Byte(0)]
+            let goodBinder: [Byte] = [Byte(0), Byte(33), Byte(32)] + [Byte](repeating: Byte(0), count: 32)
+            #expect(throws: RFC_8446.Extension.PreSharedKey.Error.invalidIdentityLength(0)) {
+                _ = try RFC_8446.Extension.PreSharedKey.OfferedPsks(binary: emptyIdentity + goodBinder)
+            }
+            #expect(throws: RFC_8446.Extension.PreSharedKey.Error.invalidBinderLength(1)) {
+                _ = try RFC_8446.Extension.PreSharedKey.OfferedPsks(binary: oneIdentity + shortBinder)
+            }
+            #expect(
+                throws: RFC_8446.Extension.PreSharedKey.Error.binderCountMismatch(identities: 1, binders: 0)
+            ) {
+                _ = try RFC_8446.Extension.PreSharedKey.OfferedPsks(binary: oneIdentity + [Byte(0), Byte(0)])
+            }
+        }
     }
 }
 
