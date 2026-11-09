@@ -316,5 +316,14 @@ extension `RFC_8446.Extension.Padding Tests` {
                 )
             }
         }
+
+        @Test func `init and binary init reject a non-zero padding byte`() {
+            #expect(throws: RFC_8446.Extension.Padding.Error.nonZeroByte(2)) {
+                _ = try RFC_8446.Extension.Padding(padding: [Byte(0), Byte(0), Byte(1)])
+            }
+            #expect(throws: RFC_8446.Extension.Padding.Error.nonZeroByte(0)) {
+                _ = try RFC_8446.Extension.Padding(binary: [Byte(0xFF)])
+            }
+        }
     }
 }

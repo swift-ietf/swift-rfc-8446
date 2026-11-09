@@ -10,6 +10,9 @@ extension RFC_8446.Extension {
             guard padding.count <= 0xFFFF else {
                 throw Error.invalidPaddingLength(padding.count)
             }
+            if let offset = padding.firstIndex(where: { $0 != Byte(0) }) {
+                throw Error.nonZeroByte(offset)
+            }
             self.padding = padding
         }
 
@@ -18,10 +21,6 @@ extension RFC_8446.Extension {
                 throw Error.invalidPaddingLength(length)
             }
             self.padding = Array(repeating: Byte(0), count: length)
-        }
-
-        init(__unchecked: Void, padding: [Byte]) {
-            self.padding = padding
         }
 
         public var extensionData: RFC_8446.Extension.Data {
@@ -44,10 +43,6 @@ extension RFC_8446.Extension.Padding: Binary.Serializable {
 
     public init<Bytes: Swift::Collection>(binary bytes: Bytes) throws(Error)
     where Bytes.Element == Byte {
-        let padding = Array(bytes)
-        guard padding.count <= 0xFFFF else {
-            throw Error.invalidPaddingLength(padding.count)
-        }
-        self.init(__unchecked: (), padding: padding)
+        try self.init(padding: Array(bytes))
     }
 }
